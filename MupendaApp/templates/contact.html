@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="bg-dark">
+    <div class="container text-center py-5">
+        <p class="btn fw-semibold">Accueil > Contact</p>
+        <h1 class="text-white">Contactez - nous!</h1>
+    </div>
+</section>
+<section>
+    <div class="container py-5">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <h1 class="fw-semibold">Contact Infos</h1>
+                <p>N'hésitez pas à nous contacter, nous sommes disponible pour répondre à toutes vos question et réaccueillir toute suggestion.</p>
+                <div class="bg-secondary bg-opacity-10 fw-semibold rounded-3 p-3">
+                    <p><i class="bi bi-house-fill"></i> Goma(Drc)</p>
+                    <hr>
+                    <p><i class="bi bi-envelope-at-fill"></i> admin@gmail.com</p>
+                    <hr>
+                    <p><i class="bi bi-telephone-outbound-fill"></i> (+243) 000 000 000</p>
+                    <hr>
+                    <p><i class="bi bi-door-open-fill"></i> Lundi - Samedi 08:00 - 16:00</p>
+                    <hr>
+                    <p>Suivez - nous sur tous nos réseaux sociaux!</p>
+                    <p class="fs-4 d-flex">
+                        <a class="nav-link pe-3" href=""><i class="bi bi-youtube"></i></a>
+                        <a class="nav-link pe-3" href=""><i class="bi bi-facebook"></i></a>
+                        <a class="nav-link pe-3" href=""><i class="bi bi-whatsapp"></i></a>
+                        <a class="nav-link pe-3" href=""><i class="bi bi-twitter-x"></i></a>
+                        <a class="nav-link pe-3" href=""><i class="bi bi-linkedin"></i></a>
+                      </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h1 class="fw-semibold">Laissez un Message</h1>
+                <p>Veuillez nous appeler directement ou sur WhatsApp, soit laissez-nous un message, notre service client prendra soin de vous.</p>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <input class="form-control my-3 fw-semibold bg-secondary bg-opacity-10" type="text" name="nom" placeholder="Nom">
+                    <input class="form-control fw-semibold bg-secondary bg-opacity-10" type="text" name="prenom" placeholder="Prénom">
+                    <input class="form-control my-3 fw-semibold bg-secondary bg-opacity-10" type="text" name="phone" placeholder="Phone">
+                    <input class="form-control fw-semibold bg-secondary bg-opacity-10" type="email" name="email" placeholder="Email">
+                    <textarea class="form-control my-3 fw-semibold bg-secondary bg-opacity-10" name="message" placeholder="Message"></textarea>
+                    <button class="btn fw-semibold form-control" type="submit" name="envoyer">Envoyer Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

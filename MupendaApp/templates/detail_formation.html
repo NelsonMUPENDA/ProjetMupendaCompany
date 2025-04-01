@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="bg-dark">
+    <div class="container text-center py-5">
+        <p class="btn fw-semibold">Accueil > Détails de la formation</p>
+        <h1 class="text-white">Nos Formations</h1>
+        <p class="text-white">Découvrer nos dernières formations mise en ligne!</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container pb-4">
+        <div class="row">
+            <div class="col-md-8  left">
+                <h4>
+                    {% block title %}
+                        {{object.nom}}
+                    {% endblock title %}
+                </h4>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-3 shadow">
+                    {% if formation.image %}
+                    <img src="{{formation.image.url}}" class="card-img-top" alt="{{formation.nom}}">
+                    {% endif %}
+                    <div class="card-body">
+                      <h3 class="card-title fw-semibold">{{formation.nom}}</h3>
+                      <p class="card-text">{{formation.description|safe}}.</p>
+                      <p class="card-text"><small class="text-muted">Date de début : {{formation.date_debut}} | Date de Fin {{formation.date_fin}}</small></p>
+                      <p class="card-text">Heure de début : {{formation.heure_debut}} | Heure de fin : {{formation.heure_fin}}</p>
+                      <p class="card-text">Prix de la formation : <span class="text-success fw-semibold fs-4">{{formation.prix}}</span> $</p>
+                      <a href="{% url 'formation' %}" class="btn btn-primary fw-semibold">Retour</a>
+                    </div>
+                </div>
+            </div>
+                    <!-- bloc barre latterale -->
+                    {% block sidebar %}
+                        {% include 'sidebar.html' %}
+                    {% endblock sidebar %}
+        </div>
+    </div>
+</section>
+{% endblock content %}

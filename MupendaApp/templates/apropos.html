@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="bg-dark">
+    <div class="container text-center py-5">
+        <p class="btn fw-semibold">Accueil > A propos</p>
+        <h1 class="text-white">Qui sommes - nous?</h1>
+    </div>
+</section>
+{% for apropos in apropos %}
+<section>
+    <div class="container pt-5">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <img class="img-fluid shadow rounded-4" src="{{ apropos.photo.url }}" alt="Image mupenda" width="100%">
+            </div>
+            <div class="col-md-8">
+                <h1 class="fw-semibold">{{ apropos.nom }}</h1>
+            </div>
+        </div>
+        <div class="row g-3 py-5">
+            <div class="col-md-12">
+                <p class="fs-5">{{apropos.contenus|safe}}</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endfor %}
+
+<!-- <section class="bg-secondary bg-opacity-10">
+    <div class="container pb-5">
+        <div class="row pt-5 g-3">
+            <div class="col-md-4 border-start border-4 border-dark shadow p-3 bg-white">
+                <h2 class="fw-semibold"> NOS OBJECTIFS</h2>
+                <hr>
+                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Créer une stratégie marketing basée sur les objectifs et les cibles du client;</p>
+                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Créer et offrir les emplois partout en RDC, en Afrique et dans le monde entier ;
+                </p>
+                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Etre une société au cœur de l’innovation congolaise et africaine ;</p>
+                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Promouvoir la technologie congolaise et africaine.</p>
+            </div>
+            <div class="col-md-4 border-start border-4 border-dark shadow p-3 bg-white">
+                <h2 class="fw-semibold"> NOS VALEURS</h2>
+                <hr>
+                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Respect de la vie privée et dignité à nos clients;</p>
+                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Motivation, Créativité et innovation.</p>
+            </div>
+            <div class="col-md-4 border-start border-4 border-dark shadow p-3 bg-white">
+                <h2 class="fw-semibold">  NOTRE MISSION</h2>
+                <hr>
+                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Apporter une assistance technologique et informatique au cœur des sociétés et entreprises congolaises;</p>
+                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Encadrement et formation de jeunes ambitieux et dotés d’un esprit d’innovation et de la créativité.</p>
+            </div>
+        </div>
+    </div>
+</section> -->
+
+{% endblock %}

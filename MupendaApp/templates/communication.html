@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<section class="bg-dark">
+    <div class="container text-center py-5">
+        <p class="btn fw-semibold">Accueil > Services > Stratégie de communication</p>
+        <h1 class="text-white">Stratégie de communication</h1>
+        <p class="text-white">Notre société vous accompagne dans l'élaboration de votre communication globale à travers plusieurs services.</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h1>Branding</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Notre société conçoit en collaboration avec vous, le branding de votre entreprise afin que cette identité soit le reflet de votre vision entrepreneuriale, qu'elle correspondent aux attentes de vos clients et quelle permette de vous démarquer. </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Campagne de pub</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Notre société réalise vos campagnes de publicité : affiche, flyers, pub TV, pub radio, publicité presse, publicité web... Nous élaborons le ciblage de vos campagnes du pub, définissons le concept, créons le graphisme, imprimons les supports et nous diffusons vos campagnes de pub. </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Stratégie digitale</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Notre société réalise la stratégie digitale d'entreprise, de l'élaboration du plan d'action, en passant par la création du site internet, de son référencement et du web marketing, jusqu'à la stratégie de diffusion sur les réseaux sociaux et blogs. </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Conseil en communication</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Notre société conseille et suit votre communication de A à Z. Nous travaillons pour comprendre votre activité et vos problématiques, nous analysons votre marché et votre entreprise, nous créons un plan de communication adapté puis nous suivons la réalisation de toutes les opérations de communication.  </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock%}

@@ -1,0 +1,253 @@
+<!-- Ajout de la page base.html dans index.html  -->
+{% extends 'base.html' %}
+{% load static %}
+<!-- Fin  -->
+{% block content %}
+<!-- Caroussel  -->
+ <section>
+   <div id="carouselExampleCaptions" class="carousel slide bg-dark">
+       <div class="carousel-indicators">
+         <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+         <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+         <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+       </div>
+       <div class="carousel-inner">
+         <div class="carousel-item active">
+           <img src="https://th.bing.com/th/id/OIP.oHkC3fSVELyfqn__uVTcUgAAAA?w=401&h=244&rs=1&pid=ImgDetMain" class="d-block opacity-25" alt="..." width="100%">
+           <div class="carousel-caption d-none d-md-block">
+             <h2>Mupenda Company</h2>
+             <p class="fw-semibold">Entreprise Congolaise de solutions Informatique et technologique.</p>
+           </div>
+         </div>
+         <div class="carousel-item">
+           <img src="https://th.bing.com/th/id/OIP.DBYOvHLQxU85fdkCRzn0bQHaE8?rs=1&pid=ImgDetMain" class="d-block opacity-25" alt="..." width="100%">
+           <div class="carousel-caption d-none d-md-block">
+             <h5>Second slide label</h5>
+             <p>Some representative placeholder content for the second slide.</p>
+           </div>
+         </div>
+         <div class="carousel-item">
+           <img src="https://th.bing.com/th/id/OIP.bEBqJSM5K21ZgYqj2JhobAHaE8?w=777&h=518&rs=1&pid=ImgDetMain" class="d-block opacity-25" alt="..." width="100%">
+           <div class="carousel-caption d-none d-md-block">
+             <h5>Third slide label</h5>
+             <p>Some representative placeholder content for the third slide.</p>
+           </div>
+         </div>
+       </div>
+       <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+         <span class="visually-hidden">Précédent</span>
+       </button>
+       <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+         <span class="carousel-control-next-icon" aria-hidden="true"></span>
+         <span class="visually-hidden">Suivant</span>
+       </button>
+     </div>
+    <!-- Fin Caroussel -->
+ </section>
+
+ <!-- Section A propos de nous  -->
+  <section class="pb-5">
+    <div class="container pt-5">
+      <div class="row g-3">
+        {% if afficherApropos %}
+        <div class="col-md-6">
+          {% for apropos in afficherApropos %}
+          <img class="img shadow" src="{{apropos.photo.url}}" alt="{{apropos.nom}}" width="100%">
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="alert fw-semibold alert-danger text-dark">Aucune Image à afficher pour le moment !</p>
+        {% endif %}                                                         
+        <div class="col-md-6">
+          <h1 class="apropos fw-semibold">A propos de nous !</h1>
+          <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
+          <!-- {% for apropos in afficherApropos %} -->
+          <h3 class="text-dark pt-3 fw-semibold">Nous vous aidons à développer votre entreprise.</h3>
+          <p>Nous mettons à votre disposition des solutions numériques pour      simplifier la gestion et favoriser la croissance de votre entreprise.
+            Loyauté, Intégrité et Professionnalisme restent nos seules valeurs loyales.</p>
+          <!-- {% endfor %} -->
+          <a href="{% url 'apropos' %}" class="btn fw-semibold mt-3">En savoir plus </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+ <!-- Section Nos realisation -->
+ <section class="bg-dark pb-4">
+   <div class="container py-5">
+     <div class="text-center mb-4">
+       <h1 class="realisation fw-semibold">Nos Réalisations</h1>
+       <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
+      </div>
+      <p class="text-white text-center fs-5 pb-2">Explorez notre parcours numérique, 
+        des projets qui ont transformé des idées en réalité, <br>
+        des pixels qui racontent des histoires.
+      </p>
+      {% if afficher %}
+      <div class="row g-3">
+        {% for realisation in afficher %}
+        <div class="col-md-4">
+          <div class="card shadow" style="width: 100%;">
+            <img src="{{ realisation.image.url }}" class="card-img-top img-fluid" alt="{{realisation.titre}}">
+            <div class="card-body">
+              <h5 class="card-title">{{ realisation.titre }}</h5>
+              <p class="card-text">{{ realisation.description }}</p>
+              <a href="#" class="btn btn-primary fw-semibold">Voir plus</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+        <p class="alert fw-semibold alert-danger text-dark">Aucune Réalisation à afficher pour le moment !</p>
+      {% endif %}      
+    </div>
+  </section>
+
+<!-- Section Nos Services -->
+<section>
+  <div class="container py-5">
+    <div class="text-center mb-4">
+      <h1 class="realisation fw-semibold">Nos Services</h1>
+      <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
+    </div>
+    <p class="text-center fs-5 pb-2">Explorez notre parcours numérique, 
+      des projets qui ont transformé des idées en réalité, <br>
+      des pixels qui racontent des histoires.
+    </p>
+    {% if service %}
+    <div class="row g-3">
+      {% for Services in service %}
+      <div class="col-md-4 d-flex pt-3">
+        <div class="card shadow" style="width: 100%;">
+          <img src="{{ Services.photo.url }}" class="card-img-top img-fluid" alt="{{ Services.nom }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ Services.nom }}</h5>
+            <p class="card-text"></p>
+            <P>{{ Services.description }}</P>
+            <a href="" class="btn btn-primary fw-semibold">Voir plus</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+        <p class="alert fw-semibold alert-danger text-dark">Aucun Service à afficher pour le moment !</p>
+      {% endif %}
+    </div>
+</div>
+ </section>
+
+<!-- Section Pourquoi nous choisir ? -->
+ <section class="bg-dark py-5 shadow">
+   <div class="container">
+    <div class="text-center mb-4">
+      <h1 class="choix fw-semibold">Pourquoi nous choisir ?</h1>
+      <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
+    </div>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <h2 class="text-white">Expérience</h2>
+        <hr class="text-white w-50">
+        <p class="text-white">Nous disposons d'une expérience de plus de 8 ans, Nous avons une équipe qui est  toujours à l’écoute de nos clients. Vous accompagner, vous satisfaire et réussir votre projet sont nos principales préoccupations.</p>
+      </div>
+      <div class="col-md-3">
+        <h2 class="text-white">Modernité</h2>
+        <hr class="text-white w-50">
+        <p class="text-white">Nous sommes créatifs et pointus dans notre travail. Vous pouvez naviguer et consulter notre site officiel en tapant : www.mupenda.cd et découvrer nos réalisations et références afin de vous en assurer.</p>
+      </div>
+      <div class="col-md-3">
+        <h2 class="text-white">Equipe</h2>
+        <hr class="text-white w-50">
+        <p class="text-white">Notre société est composée d'une équipe dirigée par le Graphiste en personne. vous aurez donc un contact direct avec celui-ci sans passer par des commerciaux.</p>
+      </div>
+      <div class="col-md-3">
+        <h2 class="text-white">Rapide et Propre</h2>
+        <hr class="text-white w-50">
+        <p class="text-white">Nous exerçons notre métier avec passion, implication et courage. le taux de satisfaction de nos clients témoigne de la qualité de notre travail.</p>
+      </div>
+    </div>
+    <a class="btn fw-semibold mb-2 mt-3" href="{% url 'contact' %}">Nous contacter </a>
+   </div>
+ </section>
+
+<!-- Nos partenaires -->
+ <div class="container py-5">
+  <div class="text-center">
+    <h1 class="partenaires fw-semibold">Nos Partenaires</h1>
+    <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
+  </div>
+  <div class="row g-3 mt-3">
+    <div class="col-md-4">
+      <img class="w-75" src="{% static '/images/Mupenda Company.png' %}" alt="">
+    </div>
+    <div class="col-md-4">
+      <img class="w-75" src="{% static '/images/Mupenda Company.png' %}" alt="">
+    </div>
+    <div class="col-md-4">
+      <img class="w-75" src="{% static '/images/Mupenda Company.png' %}" alt="">
+    </div>
+  </div>
+  <!-- <a class="btn" href="">Voir plus ...</a> -->
+ </div>
+
+ <!-- Temoignages -->
+  <section class="bg-dark mt-5">
+    <div class="container py-5">
+      <div class="text-center mb-4">
+        <h1 class="fw-semibold">Témoignages</h1>
+        <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
+      </div>
+     <div class="row g-3">
+      <div class="col-md-4">
+        <div class="card" style="width: 100%;">
+          <img src="..." class="card-img-top" alt="...">
+          <div class="card-body">
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card" style="width: 100%;">
+          <img src="..." class="card-img-top" alt="...">
+          <div class="card-body">
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card" style="width: 100%;">
+          <img src="..." class="card-img-top" alt="...">
+          <div class="card-body">
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          </div>
+        </div>
+      </div>
+     </div>
+    </div>
+  </section>
+
+  <!-- Années d'expérience -->
+   <section>
+    <div class="container py-5">
+      <div class="row g-3">
+        <div class="col-md-3 text-center">
+          <h1 class="text-dark fw-semibold">+ 5 ans</h1>
+          <h4>Années d'expérience</h4>
+        </div>
+        <div class="col-md-3 text-center">
+          <h1 class="text-dark fw-semibold">+ 50%</h1>
+          <h4>Projets terminés</h4>
+        </div>
+        <div class="col-md-3 text-center">
+          <h1 class="text-dark fw-semibold">+ 105</h1>
+          <h4>Clients satisfaits</h4>
+        </div>
+        <div class="col-md-3 text-center">
+          <h1 class="text-dark fw-semibold">+ 8</h1>
+          <h4>Experts en services</h4>
+        </div>
+      </div>
+    </div>
+   </section>
+  {% endblock %}

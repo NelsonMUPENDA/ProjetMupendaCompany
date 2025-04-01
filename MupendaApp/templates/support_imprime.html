@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<section class="bg-dark">
+    <div class="container text-center py-5">
+        <p class="btn fw-semibold">Accueil > Services > Supports imprimés</p>
+        <h1 class="text-white">Supports de communication imprimés</h1>
+        <p class="text-white">Notre société conçoit tous vos outils de com imprimés pour votre entreprise.</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h1>Packaging</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Notre agence est spécialisée en création graphique et design de packagings produits personnalisés, pour divers domaines (industrie, alimentaire, technologie...).   </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Etiquette adhésive</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Pour une étiquette autocollante orginale et totalement personnalisée choisissez notre agence qui sera vous surprendre. Nous réalisons vos étiquettes produit sur-mesure. </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Plaquette commerciale</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Nous réalisons des plaquettes commerciales, institutionnelles (ou corporate). Nous pouvons concevoir le design, les textes, les photos et l'impression.  </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Affiches</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>De la stratégie créative, en passant par l'élaboration des contenus (textes et photos), jusqu'à l'impression, L'agence Graphicstyle réalise vos affiches et posters personnalisés. </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Catalogue</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Notre agence est experte en création de catalogues ou brochures. Nous réalisons le design, la mise en forme et l'impression de toutes sortes de catalogues et brochures.  </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Carte de visite</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>La carte de visite est le support de communication le plus répendu dans les entreprises. Notre agence se charge de la création et de l'impression.  </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock%}

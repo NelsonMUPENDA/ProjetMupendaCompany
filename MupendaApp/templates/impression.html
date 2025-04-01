@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<section class="bg-dark">
+    <div class="container text-center py-5">
+        <p class="btn fw-semibold">Accueil > Services > Impression</p>
+        <h1 class="text-white">Impression et signalétique</h1>
+        <p class="text-white">Afin de garantir la gestion d'une communication globale pour nos clients, nous réalisons l'impression et la signalétique de leurs entreprises. </p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h1>Kakémono</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Nous réalisons des kakémonos que ce soit pour des évènements ou pour la décoration de vos locaux : Kakémono roll'up, kakémono suspendus...</p>
+            </div>
+            <div class="col-md-6">
+                <h1>Impression</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Nous imprimons l'ensemble des outils de communication de nos clients en petite et grande série : catalogue, plaquette commerciale, affiche, flyer...  </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Enseigne</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Nous réalisons le graphisme, la fabrication et l'installation de votre enseigne pour votre magasin, bureau ou local professionnel.</p>
+            </div>
+            <div class="col-md-6">
+                <h1>Autocollant</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Nous concevons toutes sortes d'autocollants : adhésifs pour vitrines, décoration de véhicules, stickers... </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Impression textile</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Nous personnalisons les textiles d'entreprises à leur image avec logo, photo ou dessin. Nous réalisons le graphisme si besoin, puis l'impression sur tee-shirt, veste, sweat... </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Bâche publicitaire</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Découvrez notre service de création graphique et d'impression de bâches et banderoles publicitaires pour vos événements.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock%}

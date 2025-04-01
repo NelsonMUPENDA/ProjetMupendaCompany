@@ -1,0 +1,14 @@
+{% extends 'administration/indexAdmin.html' %}
+
+{% block content %}
+<!-- UPDATE -->
+          <h1 class="modal-title fs-5 fw-semibold" id="staticBackdropLabel_{{apropos.id}}"><i class="bi bi-pencil-square me-2"></i> Modifier la Désription de votre site {{apropos.id}}</h1>
+          <form action="" method="post">
+            {% csrf_token %}
+                <label class="label-control py-3" for="nom">Nom</label>
+                <input class="form-control" type="text" id="nom" name="nom" value="{{apropos.nom}}">
+                <label class="label-control py-3" for="description">Contenus</label>
+                <textarea class="form-control" name="description" id="description">{{apropos.contenus}}</textarea>
+                <input type="submit" class="btn fw-semibold form-control my-3" value="Enregistrer">
+            </form>
+{% endblock %}

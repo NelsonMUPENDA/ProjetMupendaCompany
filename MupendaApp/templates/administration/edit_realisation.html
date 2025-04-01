@@ -1,0 +1,28 @@
+{% extends 'administration/indexAdmin.html' %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row g-3 justify-content-center">
+          <div class="col-md-8">
+            <h2><i class="bi bi-pencil-fill me-2"></i> Modifier une Réalisation</h2>
+              <form action="" method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <label class="label label-control py-3" for="nom">Titre</label>
+                  <input class="form-control" type="text" name="nom" id="nom" value="{{edit_real.titre}}">
+                  <label class="label label-control py-3" for="description">Déscription</label>
+                  <textarea class="form-control" name="description" id="description"> {{edit_real.description}}</textarea>
+                  {% if edit_real.image %}
+                  <p class="pt-3">Image actuelle :</p>
+                  <img class="py-3" width="150" src="{{edit_real.image.url}}" alt="{{edit_real.titre}}"><br>
+                  {% endif %}
+                  <label class="label label-control py-3" for="image">Sélectionner une nouvelle Image</label>
+                  <input class="form-control" type="file" name="image" id="image">
+                  <input type="submit" class="btn fw-semibold form-control mt-5" value="Enregistrer les modifications">
+              </form>
+          </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

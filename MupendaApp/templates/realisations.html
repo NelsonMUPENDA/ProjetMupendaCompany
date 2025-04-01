@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Cette section présente l'entete  -->
+<section class="bg-dark">
+    <div class="container text-center py-5">
+        <p class="btn fw-semibold">Accueil > Réalisations</p>
+        <h1 class="text-white">Nos Réalisations</h1>
+    </div>
+</section>
+
+<!-- Cette section présente toutes nos réalisations -->
+ <section>
+    <div class="container py-5">
+      {% if afficher %}
+        <div class="row g-3">
+            {% for realisation in afficher %}
+            <div class="col-md-4">
+              <div class="card shadow" style="width: 100%;">
+                <img src="{{ realisation.image.url }}" class="card-img-top img-fluid" alt="{{realisation.titre}}">
+                <div class="card-body">
+                  <h5 class="card-title">{{ realisation.titre }}</h5>
+                  <p class="card-text">{{ realisation.description }}</p>
+                  <a href="#" class="btn btn-primary fw-semibold">Voir plus</a>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+            <p class="alert fw-semibold alert-danger text-dark">Aucune Réalisation à afficher pour le moment !</p>
+          {% endif %}      
+    </div>
+ </section>
+{% endblock %}

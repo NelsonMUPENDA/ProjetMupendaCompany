@@ -1,0 +1,92 @@
+{% extends 'administration/indexAdmin.html' %}
+
+{% block content %}
+<section class="pt-5">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-md-12">
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Recherche" aria-label="Search">
+                    <button class="btn" id="btn" type="submit"><i class="bi bi-search"></i></button>
+                  </form>
+            </div>
+        </div>
+    </div>
+  <!-- Modal -->
+  <div class="modal fade pt-5" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog pt-5">
+      <div class="modal-content">
+        <div class="modal-header bg-dark">
+          <h1 class="modal-title fs-5 fw-semibold" id="staticBackdropLabel"><i class="bi bi-plus-square-fill me-2"></i> Ajouter Une Désription à votre site</h1>
+          <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{form.as_p}}
+                <input type="submit" class="btn fw-semibold form-control" value="Enregistrer">
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Cette section permet d'afficher les données de la BD dans un tableau -->
+<section class="py-3">
+    <div class="container">
+        <div class="row g-3">
+
+            <div class="col-md-12">
+              <div class="d-flex py-5">
+                <div class="col-md-8">
+                  <h2 class="fw-semibold pb-2"><i class="bi bi-eye-fill me-2"></i> <span class="text-dark">Liste des déscriptions</span></h2>
+                </div>
+                <div class="col-md-4">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary shadow fw-semibold w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"><i class="bi bi-plus-square-fill me-2"></i>
+                        Ajouter Une Désription à votre site
+                    </button>
+                </div>
+              </div>
+                {% if afficher %}
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                      <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">TITRE</th>
+                        <th scope="col">DESCRIPTION</th>
+                        <th scope="col">IMAGE</th>
+                        <th scope="col">STATUS</th>
+                        <th scope="col">DATE</th>
+                        <th scope="col">ACTIONS</th>
+                      </tr>
+                    </thead>
+                    {% for apropos in afficher %}
+                    <tbody>
+                      <tr>
+                        <th scope="row">{{apropos.id}}</th>
+                        <td>{{apropos.nom}}</td>
+                        <td>{{apropos.contenus}}</td>
+                        <td><img width="150" src="{{apropos.photo.url}}" alt="{{apropos.nom}}"></td>
+                        <td>{{apropos.status}}</td>
+                        <td>{{apropos.date_ajout}}</td>
+                        <td>
+                          <form action="" method="post" class="d-flex">
+                              <a href=" administration/updateApropos' " class="text-success fs-4 p-3"><i class="bi bi-pencil-fill"></i></a>
+                              <a href="#" class="text-danger fs-4 p-3"><i class="bi bi-trash-fill"></i></a>
+                          </form>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                    <p class="text-danger fw-semibold">Aucun enregistrement à afficher!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

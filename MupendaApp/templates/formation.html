@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="bg-dark">
+    <div class="container text-center py-5">
+        <p class="btn fw-semibold">Accueil > Formation</p>
+        <h1 class="text-white">Nos Formations</h1>
+        <p class="text-white">Découvrer nos dernières formations mise en ligne!</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-md-8 left">
+                {% for formation in object_list %}
+                <div class="card mb-3 shadow">
+                    {% if formation.image %}
+                    <img src="{{formation.image.url}}" class="card-img-top" alt="{{formation.nom}}">
+                    {% endif %}
+                    <div class="card-body">
+                      <h3 class="card-title fw-semibold"><a class="text-dark" href="{% url 'detail_formation' formation.slug %}"> {{formation.nom}}</a></h3>
+                      <!-- <script>
+                        CKEDITOR.replace('description'); // Remplacez par l'ID de votre champ
+                    </script> -->
+                      <p class="card-text"><small class="text-muted">Date de début : {{formation.date_debut}} | Date de Fin : {{formation.date_fin}}</small></p>
+                      <p class="card-text">Heure de début : {{formation.heure_debut}} | Heure de fin : {{formation.heure_fin}}</p>
+                      <p class="card-text">Prix de la formation : <span class="text-success fw-semibold fs-4">{{formation.prix}}</span> $</p>
+                      <a href="{% url 'detail_formation' formation.slug %}" class="btn btn-primary fw-semibold">Lire la suite ></a>
+                    </div>
+                </div>
+                {% empty %}
+                    <p class="alert alert-danger">Aucune formation pour le moment!</p>
+                {% endfor %}
+            </div>
+            <!-- bloc barre latterale -->
+            {% block sidebar %}
+                {% include 'sidebar.html' %}
+            {% endblock sidebar %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

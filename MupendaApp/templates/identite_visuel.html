@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<section class="bg-dark">
+    <div class="container text-center py-5">
+        <p class="btn fw-semibold">Accueil > Services > Identité visuelle</p>
+        <h1 class="text-white">Identité visuelle et création logo</h1>
+        <p class="text-white">Notre société réalise l'identité visuelle globale d'entreprise.</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h1>Création Logo</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Le logo est l'emblème d'une entreprise. Il permet de l'identifier mais également de lui y associer des valeurs. Il reflète votre domaine d'activité, le type de services et produits proposés, ainsi que la qualité associée à votre entreprise.  </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Identité visuelle</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>L'identité visuelle regroupe tout ce qui est visuel dans votre entreprise, logo, plaquette commerciale, textile du personnel, décoration de vos véhicules, de votre enseigne... </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Charte Graphique</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Ce document regoupe l'ensemble des fondamentaux graphiques de votre identité visuelle, les règles d'utilisation du logo et des différents, documents ainsi que les codes colorimétrique et typographiques.  </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Design Graphique</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Le design graphique ou création graphique est la dicipline visant à créer toutes sortes de supports de communication : affiches, flyers, plaquette commerciale, catalogue, campagne de pub, autocollants, panneaux...  </p>
+            </div>
+            <div class="col-md-6">
+                <h1>Modélisation 3D</h1>
+                <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="120">
+                <p>Notre service d'inforgaphie 3D est en mesure de réaliser toutes sortes de projets en 3 dimensions, de la modélisation 3D à l'animation des éléments 3D. </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock%}
