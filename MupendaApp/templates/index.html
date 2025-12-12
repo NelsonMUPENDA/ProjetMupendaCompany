@@ -3,9 +3,24 @@
 {% load static %}
 <!-- Fin  -->
 {% block content %}
+<style>
+  .bg-custom {
+    background-image: url('{% static "images/bg_3.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+  .bg-realisation {
+    background-image: url('{% static "images/bg-5.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+</style>
+
 <!-- Caroussel  -->
- <section>
-   <div id="carouselExampleCaptions" class="carousel slide bg-dark">
+ <section class="mb-5" style="margin-top: 60px;">
+   <div id="carouselExampleCaptions" class="carousel slide bg-dark w-100 h-100 mx-auto" data-bs-ride="carousel">
        <div class="carousel-indicators">
          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -13,21 +28,21 @@
        </div>
        <div class="carousel-inner">
          <div class="carousel-item active">
-           <img src="https://th.bing.com/th/id/OIP.oHkC3fSVELyfqn__uVTcUgAAAA?w=401&h=244&rs=1&pid=ImgDetMain" class="d-block opacity-25" alt="..." width="100%">
+           <img src="{% static 'images/fond_1.jpg' %}" class="d-block" alt="..." width="100%">
            <div class="carousel-caption d-none d-md-block">
              <h2>Mupenda Company</h2>
              <p class="fw-semibold">Entreprise Congolaise de solutions Informatique et technologique.</p>
            </div>
          </div>
          <div class="carousel-item">
-           <img src="https://th.bing.com/th/id/OIP.DBYOvHLQxU85fdkCRzn0bQHaE8?rs=1&pid=ImgDetMain" class="d-block opacity-25" alt="..." width="100%">
+           <img src="{% static 'images/caroussel_3.jpg' %}" class="d-block" alt="..." width="100%">
            <div class="carousel-caption d-none d-md-block">
              <h5>Second slide label</h5>
              <p>Some representative placeholder content for the second slide.</p>
            </div>
          </div>
          <div class="carousel-item">
-           <img src="https://th.bing.com/th/id/OIP.bEBqJSM5K21ZgYqj2JhobAHaE8?w=777&h=518&rs=1&pid=ImgDetMain" class="d-block opacity-25" alt="..." width="100%">
+           <img src="{% static 'images/caroussel_2.jpg' %}" class="d-block" alt="..." width="100%">
            <div class="carousel-caption d-none d-md-block">
              <h5>Third slide label</h5>
              <p>Some representative placeholder content for the third slide.</p>
@@ -35,11 +50,11 @@
          </div>
        </div>
        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+         <span class="carousel-control-prev-icon btn btn-secondary" aria-hidden="true"></span>
          <span class="visually-hidden">Précédent</span>
        </button>
        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-         <span class="carousel-control-next-icon" aria-hidden="true"></span>
+         <span class="carousel-control-next-icon btn btn-secondary" aria-hidden="true"></span>
          <span class="visually-hidden">Suivant</span>
        </button>
      </div>
@@ -47,53 +62,56 @@
  </section>
 
  <!-- Section A propos de nous  -->
-  <section class="pb-5">
-    <div class="container pt-5">
-      <div class="row g-3">
+  <section class="py-5 bg-custom">
+    <div class="container py-5">
+      <div class="row g-3 justify-content-center align-items-center h-100">
         {% if afficherApropos %}
         <div class="col-md-6">
           {% for apropos in afficherApropos %}
-          <img class="img shadow" src="{{apropos.photo.url}}" alt="{{apropos.nom}}" width="100%">
+          <img class="img shadow rounded-5" src="{{apropos.photo.url}}" alt="{{apropos.nom}}" width="100%">
           {% endfor %}
         </div>
         {% else %}
         <p class="alert fw-semibold alert-danger text-dark">Aucune Image à afficher pour le moment !</p>
         {% endif %}                                                         
-        <div class="col-md-6">
-          <h1 class="apropos fw-semibold">A propos de nous !</h1>
+        <div class="col-md-6 text-white text-center p-5">
+          <h1 class="apropos fw-bold display-5">A propos de nous !</h1>
           <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
           <!-- {% for apropos in afficherApropos %} -->
-          <h3 class="text-dark pt-3 fw-semibold">Nous vous aidons à développer votre entreprise.</h3>
+          <h3 class="pt-3 fw-semibold">Nous vous aidons à développer votre entreprise.</h3>
           <p>Nous mettons à votre disposition des solutions numériques pour      simplifier la gestion et favoriser la croissance de votre entreprise.
             Loyauté, Intégrité et Professionnalisme restent nos seules valeurs loyales.</p>
           <!-- {% endfor %} -->
-          <a href="{% url 'apropos' %}" class="btn fw-semibold mt-3">En savoir plus </a>
+          <a href="{% url 'apropos' %}" class="btn fw-semibold mt-3" style="background-color: #ff6700; color: black;">En savoir plus </a>
         </div>
       </div>
     </div>
   </section>
 
  <!-- Section Nos realisation -->
- <section class="bg-dark pb-4">
+ <section class="bg-dark py-5 bg-realisation">
    <div class="container py-5">
-     <div class="text-center mb-4">
-       <h1 class="realisation fw-semibold">Nos Réalisations</h1>
+     <div class="text-center my-5">
+       <h1 class="text-white realisation fw-bold display-5">Nos Réalisations</h1>
        <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
       </div>
-      <p class="text-white text-center fs-5 pb-2">Explorez notre parcours numérique, 
+      <p class="text-white text-center fs-5 pb-5">Explorez notre parcours numérique, 
         des projets qui ont transformé des idées en réalité, <br>
         des pixels qui racontent des histoires.
       </p>
       {% if afficher %}
-      <div class="row g-3">
+      <div class="row g-4">
         {% for realisation in afficher %}
-        <div class="col-md-4">
-          <div class="card shadow" style="width: 100%;">
+        <div class="col-md-3">
+          <div class="card shadow h-100" style="width: 100%;">
+            {% if realisation.image %}
             <img src="{{ realisation.image.url }}" class="card-img-top img-fluid" alt="{{realisation.titre}}">
+            {% else %}
+            <img src="{% static 'images/caroussel_3.jpg' %}" class="card-img-top img-fluid" alt="Image par défaut">
+            {% endif %}
             <div class="card-body">
               <h5 class="card-title">{{ realisation.titre }}</h5>
-              <p class="card-text">{{ realisation.description }}</p>
-              <a href="#" class="btn btn-primary fw-semibold">Voir plus</a>
+              <a href="#" class="btn btn-dark fw-semibold">Voir plus</a>
             </div>
           </div>
         </div>
@@ -106,27 +124,29 @@
   </section>
 
 <!-- Section Nos Services -->
-<section>
+<section class="bg-custom py-5">
   <div class="container py-5">
-    <div class="text-center mb-4">
-      <h1 class="realisation fw-semibold">Nos Services</h1>
+    <div class="text-center mb-5">
+      <h1 class="text-white fw-bold display-5">Nos Services</h1>
       <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
     </div>
-    <p class="text-center fs-5 pb-2">Explorez notre parcours numérique, 
+    <p class="text-white text-center fs-5 pb-5">Explorez notre parcours numérique, 
       des projets qui ont transformé des idées en réalité, <br>
       des pixels qui racontent des histoires.
     </p>
     {% if service %}
-    <div class="row g-3">
+    <div class="row g-4">
       {% for Services in service %}
-      <div class="col-md-4 d-flex pt-3">
-        <div class="card shadow" style="width: 100%;">
+      <div class="col-md-3 d-flex pt-3">
+        <div class="card shadow h-100" style="width: 100%;">
+          {% if Services.photo %} 
           <img src="{{ Services.photo.url }}" class="card-img-top img-fluid" alt="{{ Services.nom }}">
+          {% else %}
+          <img src="{% static 'images/caroussel_3.jpg' %}" class="card-img-top img-fluid" alt="Image par défaut">
+          {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ Services.nom }}</h5>
-            <p class="card-text"></p>
-            <P>{{ Services.description }}</P>
-            <a href="" class="btn btn-primary fw-semibold">Voir plus</a>
+            <a href="" class="btn btn-dark fw-semibold">Voir plus</a>
           </div>
         </div>
       </div>
@@ -139,53 +159,53 @@
  </section>
 
 <!-- Section Pourquoi nous choisir ? -->
- <section class="bg-dark py-5 shadow">
-   <div class="container">
-    <div class="text-center mb-4">
-      <h1 class="choix fw-semibold">Pourquoi nous choisir ?</h1>
-      <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
+ <section class="py-5">
+   <div class="container py-5 text-center">
+    <div class="my-5"> 
+      <h1 class="text-white fw-bold display-5 mb-3">Pourquoi nous choisir ?</h1>
+      <img class="mb-5" src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
     </div>
-    <div class="row g-3">
+    <div class="row g-4">
       <div class="col-md-3">
         <h2 class="text-white">Expérience</h2>
-        <hr class="text-white w-50">
+        <hr class="text-white w-100">
         <p class="text-white">Nous disposons d'une expérience de plus de 8 ans, Nous avons une équipe qui est  toujours à l’écoute de nos clients. Vous accompagner, vous satisfaire et réussir votre projet sont nos principales préoccupations.</p>
       </div>
       <div class="col-md-3">
         <h2 class="text-white">Modernité</h2>
-        <hr class="text-white w-50">
+        <hr class="text-white w-100">
         <p class="text-white">Nous sommes créatifs et pointus dans notre travail. Vous pouvez naviguer et consulter notre site officiel en tapant : www.mupenda.cd et découvrer nos réalisations et références afin de vous en assurer.</p>
       </div>
       <div class="col-md-3">
         <h2 class="text-white">Equipe</h2>
-        <hr class="text-white w-50">
+        <hr class="text-white w-100">
         <p class="text-white">Notre société est composée d'une équipe dirigée par le Graphiste en personne. vous aurez donc un contact direct avec celui-ci sans passer par des commerciaux.</p>
       </div>
       <div class="col-md-3">
         <h2 class="text-white">Rapide et Propre</h2>
-        <hr class="text-white w-50">
+        <hr class="text-white w-100">
         <p class="text-white">Nous exerçons notre métier avec passion, implication et courage. le taux de satisfaction de nos clients témoigne de la qualité de notre travail.</p>
       </div>
     </div>
-    <a class="btn fw-semibold mb-2 mt-3" href="{% url 'contact' %}">Nous contacter </a>
+    <a class="btn fw-semibold my-5" href="{% url 'contact' %}" style="background-color: #ff6700; color:black">Nous contacter </a>
    </div>
  </section>
 
 <!-- Nos partenaires -->
  <div class="container py-5">
   <div class="text-center">
-    <h1 class="partenaires fw-semibold">Nos Partenaires</h1>
+    <h1 class="text-white fw-bold display-5">Nos Partenaires</h1>
     <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
   </div>
-  <div class="row g-3 mt-3">
-    <div class="col-md-4">
-      <img class="w-75" src="{% static '/images/Mupenda Company.png' %}" alt="">
+  <div class="row g-4 my-5 justify-content-center align-items-center">
+    <div class="col-md-2">
+      <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
     </div>
-    <div class="col-md-4">
-      <img class="w-75" src="{% static '/images/Mupenda Company.png' %}" alt="">
+    <div class="col-md-2">
+      <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
     </div>
-    <div class="col-md-4">
-      <img class="w-75" src="{% static '/images/Mupenda Company.png' %}" alt="">
+    <div class="col-md-2">
+      <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
     </div>
   </div>
   <!-- <a class="btn" href="">Voir plus ...</a> -->
