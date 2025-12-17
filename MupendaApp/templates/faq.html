@@ -1,35 +1,35 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 
-<section class="bg-dark">
+<section class="py-5">
     <div class="container text-center py-5">
-        <p class="btn fw-semibold">Accueil > Faq</p>
-        <h1 class="text-white">Foire Aux Questions</h1>
+        <p class="btn fw-semibold text-white">Accueil > Faq</p>
+        <h1 class="display-5 fw-bold" style="color: #ff6700;">Foire Aux Questions</h1>
         <p class="text-white">Découvrer nos dernières questions mise en ligne!</p>
     </div>
 </section>
 
-<section class="py-5">
+<section class="">
     <div class="container">
-        <div class="row">
+        <div class="row g-4 py-5">
             <div class="col-md-6">
-                <img src="" alt="">
+                <img src="{% static 'images/bg-6.jpg' %}" alt="FAQ Image" width="100%">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 text-white d-flex flex-column justify-content-center">
                 <h1 class="fw-semibold">Les Questions les plus fréquentes.</h1>
                 <p>Dans cette section, trouver les questions les plus populaires de prospects et clients qui vous ont précédé. Si jamais votre préoccupation ne trouvera sa réponse, n’hésitez pas de nous contacter pour en discuter d'avantage.</p>
-                <a href="" class="btn fw-semibold"><i class="bi bi-whatsapp"></i> Discuter maintenant</a>
+                <a href="" class="btn fw-semibold" style="background-color: #ff6700; color: black;"><i class="bi bi-whatsapp"></i> Discuter maintenant</a>
             </div>
         </div>
     </div>
 </section>
 
-<section class="py-5 bg-dark">
+<section class="py-5">
     <div class="container">
-        <div class="row">
+        <div class="row g-4 text-white">
             <div class="col-md-12">
-                <h3 class="pb-2">Questions sur le Site web</h3>
+                <h1 class="pb-2 fw-bold">Questions sur le Site web</h1>
                 <div class="accordion" id="accordionExample">
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingOne">
@@ -45,12 +45,12 @@
                     </div>
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                             Combien de temps peut-il prendre la conception d'un site web ?
                         </button>
                       </h2>
                       <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
+                        <div class="accordion-body bg-dark text-white">
                             Généralement, le délai de livraison pour un site web de type vitrine (entreprise, ONG, etc.), site d’actualité, e-commerce ou cours en ligne est estimé entre 3 à 5 jours.
 
                             Mais cela peut aussi dépendre de la quantité de données du site, du temps de transmission de données du site par le client, de la complexité du site, etc.
@@ -58,13 +58,13 @@
                       </div>
                     </div>
                     <div class="accordion-item">
-                      <h2 class="accordion-header" id="headingThree">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">                    
+                      <h2 class="accordion-header fw-semibold" id="headingThree">
+                        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">                    
                             Puis-je avoir les liens de quelques sites web que vous avez déjà réalisé ?
                         </button>
                       </h2>
                       <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
+                        <div class="accordion-body bg-dark text-white">
                             Bien-sûr ! Pour des sites que nous avons réalisés, prière de consulter notre portfolio n cliquant sur le lien suivant :
                         </div>
                       </div>
@@ -77,14 +77,14 @@
 
 <section class="py-5">
     <div class="container">
-        <div class="row">
+        <div class="row mb-5">
             <div class="col-md-6">
-                <img src="" alt="">
+                <img class="rounded-3" src="{% static 'images/contact.jpg' %}" alt="FAQ Image" width="100%">
             </div>
-            <div class="col-md-6">
-                <h1>Poser une Question ?</h1>
+            <div class="col-md-6 d-flex flex-column justify-content-center text-white">
+                <h1 class="fw-bold my-3">Poser une Question ?</h1>
                 <p>N'hésitez pas à nous contacter, nous sommes disponible pour répondre à toutes vos question et réaccueillir toute suggestion.</p>
-                <a href="" class="btn fw-semibold"><i class="bi bi-whatsapp"></i> Discuter maintenant</a>
+                <a href="" class="btn fw-bold" style="background-color: #ff6700; color: black;"><i class="bi bi-whatsapp"></i> Discuter maintenant</a>
             </div>
         </div>
     </div>

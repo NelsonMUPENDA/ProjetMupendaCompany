@@ -10,8 +10,24 @@
     background-position: center;
     background-repeat: no-repeat;
 }
+  .bg-custom2 {
+    background-image: url('{% static "images/cartoon-man.jpg" %}');
+    background-color: rgba(0, 0, 0, 0.8); /* couche semi-transparente */ 
+    background-blend-mode: multiply;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
   .bg-realisation {
     background-image: url('{% static "images/bg-5.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+  .partenaire {
+    background-image: url('{% static "images/bg-7.jpg" %}');
+    background-color: rgba(0, 0, 0, 0.5); /* couche semi-transparente */ 
+    background-blend-mode: multiply;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -62,7 +78,7 @@
  </section>
 
  <!-- Section A propos de nous  -->
-  <section class="py-5 bg-custom">
+  <section class="bg-custom">
     <div class="container py-5">
       <div class="row g-3 justify-content-center align-items-center h-100">
         {% if afficherApropos %}
@@ -89,7 +105,7 @@
   </section>
 
  <!-- Section Nos realisation -->
- <section class="bg-dark py-5 bg-realisation">
+ <section class="bg-dark bg-realisation">
    <div class="container py-5">
      <div class="text-center my-5">
        <h1 class="text-white realisation fw-bold display-5">Nos Réalisations</h1>
@@ -152,36 +168,40 @@
       </div>
       {% endfor %}
       {% else %}
-        <p class="alert fw-semibold alert-danger text-dark">Aucun Service à afficher pour le moment !</p>
+      <p class="alert fw-semibold alert-danger text-dark">Aucun Service à afficher pour le moment !</p>
       {% endif %}
     </div>
 </div>
- </section>
+</section>
 
 <!-- Section Pourquoi nous choisir ? -->
- <section class="py-5">
-   <div class="container py-5 text-center">
-    <div class="my-5"> 
+<section class="py-5">
+  <div class="container py-5 text-center">
+    <div> 
       <h1 class="text-white fw-bold display-5 mb-3">Pourquoi nous choisir ?</h1>
       <img class="mb-5" src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
     </div>
     <div class="row g-4">
       <div class="col-md-3">
+        <img class="mb-2" src="{% static 'images/portefeuille.png' %}" alt="Barre" width="150">
         <h2 class="text-white">Expérience</h2>
         <hr class="text-white w-100">
         <p class="text-white">Nous disposons d'une expérience de plus de 8 ans, Nous avons une équipe qui est  toujours à l’écoute de nos clients. Vous accompagner, vous satisfaire et réussir votre projet sont nos principales préoccupations.</p>
       </div>
       <div class="col-md-3">
+        <img class="mb-2" src="{% static 'images/modernite.png' %}" alt="Barre" width="150">
         <h2 class="text-white">Modernité</h2>
         <hr class="text-white w-100">
         <p class="text-white">Nous sommes créatifs et pointus dans notre travail. Vous pouvez naviguer et consulter notre site officiel en tapant : www.mupenda.cd et découvrer nos réalisations et références afin de vous en assurer.</p>
       </div>
       <div class="col-md-3">
+        <img class="mb-2" src="{% static 'images/reunion2.png' %}" alt="Barre" width="150">
         <h2 class="text-white">Equipe</h2>
         <hr class="text-white w-100">
         <p class="text-white">Notre société est composée d'une équipe dirigée par le Graphiste en personne. vous aurez donc un contact direct avec celui-ci sans passer par des commerciaux.</p>
       </div>
       <div class="col-md-3">
+        <img class="mb-2" src="{% static 'images/charge-rapide.png' %}" alt="Barre" width="150">
         <h2 class="text-white">Rapide et Propre</h2>
         <hr class="text-white w-100">
         <p class="text-white">Nous exerçons notre métier avec passion, implication et courage. le taux de satisfaction de nos clients témoigne de la qualité de notre travail.</p>
@@ -192,36 +212,37 @@
  </section>
 
 <!-- Nos partenaires -->
- <div class="container py-5">
-  <div class="text-center">
-    <h1 class="text-white fw-bold display-5">Nos Partenaires</h1>
-    <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
-  </div>
-  <div class="row g-4 my-5 justify-content-center align-items-center">
-    <div class="col-md-2">
-      <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
+ <section class="partenaire">
+   <div class="container py-5">
+    <div class="text-center">
+      <h1 class="text-white fw-bold display-5">Nos Partenaires</h1>
+      <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
     </div>
-    <div class="col-md-2">
-      <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
+    <div class="row g-4 my-5 justify-content-center align-items-center">
+      <div class="col-md-2">
+        <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
+      </div>
+      <div class="col-md-2">
+        <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
+      </div>
+      <div class="col-md-2">
+        <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
+      </div>
     </div>
-    <div class="col-md-2">
-      <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
-    </div>
-  </div>
-  <!-- <a class="btn" href="">Voir plus ...</a> -->
- </div>
+    <!-- <a class="btn" href="">Voir plus ...</a> -->
+   </div>
+ </section>
 
  <!-- Temoignages -->
-  <section class="bg-dark mt-5">
+  <section class="my-5">
     <div class="container py-5">
       <div class="text-center mb-4">
-        <h1 class="fw-semibold">Témoignages</h1>
+        <h1 class="fw-bold text-white display-5">Témoignages</h1>
         <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
       </div>
      <div class="row g-3">
       <div class="col-md-4">
         <div class="card" style="width: 100%;">
-          <img src="..." class="card-img-top" alt="...">
           <div class="card-body">
             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
           </div>
@@ -229,7 +250,6 @@
       </div>
       <div class="col-md-4">
         <div class="card" style="width: 100%;">
-          <img src="..." class="card-img-top" alt="...">
           <div class="card-body">
             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
           </div>
@@ -237,7 +257,6 @@
       </div>
       <div class="col-md-4">
         <div class="card" style="width: 100%;">
-          <img src="..." class="card-img-top" alt="...">
           <div class="card-body">
             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
           </div>
@@ -248,23 +267,23 @@
   </section>
 
   <!-- Années d'expérience -->
-   <section>
+   <section class="mb-5 bg-custom2">
     <div class="container py-5">
-      <div class="row g-3">
+      <div class="row g-3 text-white">
         <div class="col-md-3 text-center">
-          <h1 class="text-dark fw-semibold">+ 5 ans</h1>
+          <h1 class="fw-semibold">+ 3 ans</h1>
           <h4>Années d'expérience</h4>
         </div>
         <div class="col-md-3 text-center">
-          <h1 class="text-dark fw-semibold">+ 50%</h1>
+          <h1 class="fw-semibold">+ 60%</h1>
           <h4>Projets terminés</h4>
         </div>
         <div class="col-md-3 text-center">
-          <h1 class="text-dark fw-semibold">+ 105</h1>
+          <h1 class="fw-semibold">+ 105</h1>
           <h4>Clients satisfaits</h4>
         </div>
         <div class="col-md-3 text-center">
-          <h1 class="text-dark fw-semibold">+ 8</h1>
+          <h1 class="fw-semibold">+ 8</h1>
           <h4>Experts en services</h4>
         </div>
       </div>

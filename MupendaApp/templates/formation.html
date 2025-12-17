@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<section class="bg-dark">
-    <div class="container text-center py-5">
-        <p class="btn fw-semibold">Accueil > Formation</p>
-        <h1 class="text-white">Nos Formations</h1>
+<section class="py-5">
+    <div class="container text-center py-5 text-white">
+        <p class="btn fw-semibold text-white">Accueil > Formation</p>
+        <h1 class="fw-bold display-5" style="color: #ff7600;">Nos Formations</h1>
         <p class="text-white">Découvrer nos dernières formations mise en ligne!</p>
     </div>
 </section>
 
-<section class="py-5">
+<section>
     <div class="container">
-        <div class="row g-3">
+        <div class="row g-4 mb-5">
             <div class="col-md-8 left">
                 {% for formation in object_list %}
                 <div class="card mb-3 shadow">
@@ -19,14 +19,14 @@
                     <img src="{{formation.image.url}}" class="card-img-top" alt="{{formation.nom}}">
                     {% endif %}
                     <div class="card-body">
-                      <h3 class="card-title fw-semibold"><a class="text-dark" href="{% url 'detail_formation' formation.slug %}"> {{formation.nom}}</a></h3>
+                      <h1 class="card-title fw-semibold"><a class="text-dark nav-link" href="{% url 'detail_formation' formation.slug %}"> {{formation.nom}}</a></h1>
                       <!-- <script>
                         CKEDITOR.replace('description'); // Remplacez par l'ID de votre champ
                     </script> -->
-                      <p class="card-text"><small class="text-muted">Date de début : {{formation.date_debut}} | Date de Fin : {{formation.date_fin}}</small></p>
+                      <p class="card-text">Date de début : {{formation.date_debut}} | Date de Fin : {{formation.date_fin}}</p>
                       <p class="card-text">Heure de début : {{formation.heure_debut}} | Heure de fin : {{formation.heure_fin}}</p>
-                      <p class="card-text">Prix de la formation : <span class="text-success fw-semibold fs-4">{{formation.prix}}</span> $</p>
-                      <a href="{% url 'detail_formation' formation.slug %}" class="btn btn-primary fw-semibold">Lire la suite ></a>
+                      <p class="card-text">Prix de la formation : <span class="fw-bold fs-4">{{formation.prix}}$</span></p>
+                      <a href="{% url 'detail_formation' formation.slug %}" class="btn fw-semibold" style="background-color: #ff7600; color: black;">Lire la suite ></a>
                     </div>
                 </div>
                 {% empty %}

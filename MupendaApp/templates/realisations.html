@@ -3,10 +3,10 @@
 {% block content %}
 
 <!-- Cette section présente l'entete  -->
-<section class="bg-dark">
+<section class="py-5">
     <div class="container text-center py-5">
-        <p class="btn fw-semibold">Accueil > Réalisations</p>
-        <h1 class="text-white">Nos Réalisations</h1>
+        <p class="btn fw-semibold text-white">Accueil > Réalisations</p>
+        <h1 class="fw-bold display-5" style="color: #ff7600;">Nos Réalisations</h1>
     </div>
 </section>
 
@@ -14,15 +14,15 @@
  <section>
     <div class="container py-5">
       {% if afficher %}
-        <div class="row g-3">
+        <div class="row g-4 mb-5">
             {% for realisation in afficher %}
             <div class="col-md-4">
-              <div class="card shadow" style="width: 100%;">
+              <div class="card shadow h-100" style="width: 100%;">
                 <img src="{{ realisation.image.url }}" class="card-img-top img-fluid" alt="{{realisation.titre}}">
                 <div class="card-body">
                   <h5 class="card-title">{{ realisation.titre }}</h5>
                   <p class="card-text">{{ realisation.description }}</p>
-                  <a href="#" class="btn btn-primary fw-semibold">Voir plus</a>
+                  <a href="#" class="btn fw-semibold" style="background-color: #ff7600; color: black;">Voir plus</a>
                 </div>
               </div>
             </div>

@@ -2,26 +2,25 @@
 
 {% block content %}
 
-<section class="bg-dark">
-    <div class="container text-center py-5">
-        <p class="btn fw-semibold">Accueil > A propos</p>
-        <h1 class="text-white">Qui sommes - nous?</h1>
+<section class="py-5">
+    <div class="container py-5">
+        <h1 class="pt-5 display-5 fw-bold" style="color: #ff6700;">Qui sommes - nous?</h1>
     </div>
 </section>
 {% for apropos in apropos %}
 <section>
-    <div class="container pt-5">
-        <div class="row g-3">
-            <div class="col-md-4">
+    <div class="container">
+        <div class="row g-4 p-2">
+            <div class="col-md-6">
                 <img class="img-fluid shadow rounded-4" src="{{ apropos.photo.url }}" alt="Image mupenda" width="100%">
             </div>
-            <div class="col-md-8">
-                <h1 class="fw-semibold">{{ apropos.nom }}</h1>
+            <div class="col-md-6 d-flex align-items-center">
+                <h1 class="fw-bold text-white">{{ apropos.nom }}</h1>
             </div>
         </div>
         <div class="row g-3 py-5">
-            <div class="col-md-12">
-                <p class="fs-5">{{apropos.contenus|safe}}</p>
+            <div class="col-md-12 text-white">
+                <p>{{apropos.contenus|safe}}</p>
             </div>
         </div>
     </div>

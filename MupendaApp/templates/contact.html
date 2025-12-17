@@ -2,19 +2,18 @@
 
 {% block content %}
 
-<section class="bg-dark">
+<section class="py-5">
     <div class="container text-center py-5">
-        <p class="btn fw-semibold">Accueil > Contact</p>
-        <h1 class="text-white">Contactez - nous!</h1>
+        <h1 class="fw-bold display-5 mt-5" style="color: #ff6700;">Contactez - nous!</h1>
     </div>
 </section>
 <section>
-    <div class="container py-5">
-        <div class="row g-3">
+    <div class="container">
+        <div class="row g-3 text-white">
             <div class="col-md-6">
                 <h1 class="fw-semibold">Contact Infos</h1>
                 <p>N'hésitez pas à nous contacter, nous sommes disponible pour répondre à toutes vos question et réaccueillir toute suggestion.</p>
-                <div class="bg-secondary bg-opacity-10 fw-semibold rounded-3 p-3">
+                <div class="pt-3">
                     <p><i class="bi bi-house-fill"></i> Goma(Drc)</p>
                     <hr>
                     <p><i class="bi bi-envelope-at-fill"></i> admin@gmail.com</p>
@@ -33,17 +32,17 @@
                       </p>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-5">
                 <h1 class="fw-semibold">Laissez un Message</h1>
                 <p>Veuillez nous appeler directement ou sur WhatsApp, soit laissez-nous un message, notre service client prendra soin de vous.</p>
                 <form action="" method="POST">
                     {% csrf_token %}
-                    <input class="form-control my-3 fw-semibold bg-secondary bg-opacity-10" type="text" name="nom" placeholder="Nom">
-                    <input class="form-control fw-semibold bg-secondary bg-opacity-10" type="text" name="prenom" placeholder="Prénom">
-                    <input class="form-control my-3 fw-semibold bg-secondary bg-opacity-10" type="text" name="phone" placeholder="Phone">
-                    <input class="form-control fw-semibold bg-secondary bg-opacity-10" type="email" name="email" placeholder="Email">
-                    <textarea class="form-control my-3 fw-semibold bg-secondary bg-opacity-10" name="message" placeholder="Message"></textarea>
-                    <button class="btn fw-semibold form-control" type="submit" name="envoyer">Envoyer Message</button>
+                    <input class="form-control my-3" type="text" name="nom" placeholder="Nom">
+                    <input class="form-control" type="text" name="prenom" placeholder="Prénom">
+                    <input class="form-control my-3" type="text" name="phone" placeholder="Phone">
+                    <input class="form-control" type="email" name="email" placeholder="Email">
+                    <textarea class="form-control my-3" name="message" placeholder="Message"></textarea>
+                    <button style="background-color: #ff6700; color: black;" class="btn fw-semibold form-control" type="submit" name="envoyer">Envoyer Message</button>
                 </form>
             </div>
         </div>

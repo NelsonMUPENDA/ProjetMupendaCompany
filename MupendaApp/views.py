@@ -119,36 +119,6 @@ def politique(request):
 def faq(request):
     return render(request, "faq.html")
 
-def communication(request):
-    return render(request, "communication.html")
-
-def identite_visuelle(request):
-    return render(request, "identite_visuel.html")
-
-def supports_imprimes(request):
-    return render(request, "support_imprime.html")
-
-def web_designs(request):
-    return render(request, "web_design.html")
-
-def video_photo(request):
-    return render(request, "video_photo.html")
-
-def impression(request):
-    return render(request, "impression.html")
-
-def maintenance(request):
-    return render(request, "maintenance.html")
-
-def programmation_mobile(request):
-    return render(request, "programmation_mobile.html")
-
-def centre_formation(request):
-    return render(request, "centre_formation.html")
-
-def vente(request):
-    return render(request, "vente.html")
-
 def formation(request):
     return render(request, "formation.html")
 
