@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,64 +9,68 @@
 </head>
 <body>
     {% block content %}
-    <section class="bg-dark">
-        <div class="container">
-            <div class="row g-3 py-3">
-                <div class="col-md-6">
-                    <h3 class="text-white"><i class="bi bi-person-circle"></i> Mon profil</h3>
+    <section class="my-5 py-5">
+        <div class="container mt-3">
+            <div class="row g-3 pt-3">
+                <div class="col-md-12">
+                    <div class="col-md-6 d-flex justify-content-center align-items-center">
+                    </div>
                 </div>
-                <div class="col-md-6 d-flex justify-content-end">
-                    <p class="text-white me-5 fw-semibold">Bienvenue, <span class="text-success">Utilisateur Simple</span> !</p>
+                <div class="col-md-6">
+                    <h2 class="text-white"><i class="bi bi-person-circle"></i> Mon profil</h2>
+                </div>
+                <div class="col-md-6 d-flex justify-content-end align-items-center my-auto">
+                    <p class="text-white fw-bold mx-auto my-auto">Bienvenue <span style="color: #ff6700;"> {{ user.username }}</span> !</p>
+                    <img src="{% static 'images/education.png' %}" class="img-fluid rounded-circle border border-3 mx-3" style="width: 60px;" alt="...">
                     <div class="dropdown">
-                        <button class="btn dropdown-toggle fw-semibold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn dropdown-toggle fw-bold" style="background-color: #ff6700; color: black;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                           Plus
                         </button>
                         <ul class="dropdown-menu">
                           <li><a class="dropdown-item" href="#"><button type="button" class="btn fw-semibold" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="bi bi-pencil-square"></i> Editer le profil</button></a></li>
-                          <li><a class="dropdown-item" href="{% url 'deconnexion' %}"><button class="btn fw-semibold" type="submit"><i class="bi bi-box-arrow-left"></i> Déconnexion</button></a></li>
-
+                          <li><a class="dropdown-item" href="{% url 'deconnexion' %}"><button class="btn fw-bold" style="background-color: #ff6700;" type="submit"><i class="bi bi-box-arrow-left"></i> Déconnexion</button></a></li>
                         </ul>
-                      </div>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-md-12">
+                    <nav aria-label="breadcrumb" class="bg-secondary rounded-3 p-3 my-4">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a class="nav-link" href="{% url 'index' %}">Accueil</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Mon profil</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-md-12">
+                    <h2 class="mb-4 text-white"><i class="bi bi-person-lines-fill"></i> Détails du profil</h2>
+                    <p class="text-white">Voici les informations de votre profil. Vous pouvez les modifier en cliquant sur le bouton "Editer le profil".</p>
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Nom d'utilisateur :</strong> {{ user.username }}</li>
+                        <li class="list-group-item"><strong>Email :</strong> {{ user.email }}</li>
+                        <li class="list-group-item"><strong>Prénom :</strong> {{ user.first_name }}</li>
+                        <li class="list-group-item"><strong>Nom :</strong> {{ user.last_name }}</li>
+                        <li class="list-group-item"><strong>Date de création :</strong> {{ user.date_joined }}</li>
+                        <li class="list-group-item"><strong>Dernière connexion :</strong> {{ user.last_login }}</li>
+                        <li class="list-group-item"><strong>Status du compte :</strong> <span class="badge bg-black">{{ user.is_active }}</span></li>
+                        <li class="list-group-item"><strong>Rôle :</strong> 
+                            {% if user.is_superuser %} <span class="badge" style="background-color: #ff6700; color: black;">Superutilisateur</span> 
+                            {% elif user.is_staff %} <span class="badge" style="background-color: #ff6700; color: black;">Personnel</span>
+                            {% else %} <span class="badge" style="background-color: black; color: #ff6700;">Utilisateur standard</span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
     </section>
 
-    <!-- Modifier le profil -->
-    <section>
-        <!-- Button trigger modal -->
-         <!-- <div id="editerProfil">
-             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                 Launch static backdrop modal
-             </button>
-         </div> -->
-        
-        <!-- Modal -->
-        <div class="modal fade mt-5 pt-5" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-dark">
-                <h1 class="modal-title fs-5 fw-semibold" id="staticBackdropLabel"><i class="bi bi-pencil-square"></i> Modifier mon profil</h1>
-                <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="" method="post">
-                        <label class="label-control" for="nom">Nom</label>
-                        <input class="form-control" type="text" name="nom" id="nom">
-                        <label class="label-control" for="email">Email</label>
-                        <input class="form-control" type="email" name="email" id="email">
-                        <label class="label-control" for="mdp">Mot de passe</label>
-                        <input class="form-control" type="password" name="mdp" id="mdp">
-                    </form>
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary fw-semibold" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary fw-semibold">Sauvegarder</button>
-                </div>
-            </div>
-            </div>
-        </div>
-    </section>
     {% endblock %}
 </body>
 </html>

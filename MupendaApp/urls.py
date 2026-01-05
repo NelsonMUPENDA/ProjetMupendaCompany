@@ -15,13 +15,14 @@ urlpatterns=[
     path('apropos/',views.apropos, name="apropos"),
     path('faq/',views.faq, name="faq"),
     path('blog/',views.PostList.as_view(), name="blog"),
+    path('service/', views.service, name="service"),
     path('<slug:slug>/',views.BlogDetailView.as_view(), name="blog_detail"),
     path('<slug:slug>/',views.FormationDetailView.as_view(), name="detail_formation"),
 
     # PARTIE D' ADMINISTRATION DU SITE
 
-    path('administration/indexAdmin/',views.indexAdmin, name="indexAdmin"),
     path('administration/dashboard/',views.dashboard, name="dashboard"),
+    path('administration/indexAdmin/',views.indexAdmin, name="indexAdmin"),
     path('administration/apropos/',views.AdminApropos, name="AdminApropos"),
     path('administration/temoignage/',views.AdminTemoignage, name="AdminTemoignage"),
     path('administration/service/',views.AdminService, name="AdminService"),
@@ -36,5 +37,5 @@ urlpatterns=[
     path('administration/realisation/',views.AdminRealisation, name="AdminRealisation"),
     path('administration/edit_realisation/<str:pk>/',views.EditRealisation, name="edit_realisation"),
     path('administration/delete_realisation/<str:pk>/',views.DeleteRealisation, name="delete_realisation"),
-    path('<int:id>/',views.UpdateApropos, name="UpdateApropos"),
+    path('administration/update_apropos/<int:id_apropos>/',views.UpdateApropos, name="UpdateApropos"),
 ]

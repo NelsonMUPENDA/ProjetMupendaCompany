@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="my-5 py-5">
+    <div class="container">
+        <div class="row g-3 pt-3">
+            <div class="col-md-12 text-center">
+                <p class="text-white">Accueil > Services</p>
+                <h2 class="display-5 fw-bold" style="color: #ff6700;"><i class="bi bi-briefcase-fill"></i> Nos Services</h2>
+                <p class="text-white">Découvrez nos services professionnels</p>
+            </div>
+        </div> 
+    </div>
+    <div class="container py-5">
+        <div class="row g-3">
+            {% for service in service %}
+            <div class="col-md-4">
+                <div class="card h-100 shadow">
+                    {% if service.photo %}
+                    <img src="{{ service.photo.url }}" class="card-img-top" alt="{{ service.nom }}">
+                    {% else %}
+                    <p class="alert alert-danger">Aucune image disponible</p>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ service.nom }}</h5>
+                        <p class="card-text">{{ service.description|safe }}</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-md-12">
+                <p class="text-white">Aucun service disponible pour le moment. Veuillez revenir plus tard.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

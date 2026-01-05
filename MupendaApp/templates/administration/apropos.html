@@ -1,35 +1,32 @@
 {% extends 'administration/indexAdmin.html' %}
 
 {% block content %}
-<section class="pt-5">
+<section class="pt-2">
     <div class="container">
         <div class="row g-3">
             <div class="col-md-12">
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Recherche" aria-label="Search">
-                    <button class="btn" id="btn" type="submit"><i class="bi bi-search"></i></button>
-                  </form>
+                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 my-4">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a class="nav-link" href="{% url 'dashboard' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">A propos</li>
+                    </ol>
+                </nav>
             </div>
         </div>
-    </div>
-  <!-- Modal -->
-  <div class="modal fade pt-5" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog pt-5">
-      <div class="modal-content">
-        <div class="modal-header bg-dark">
-          <h1 class="modal-title fs-5 fw-semibold" id="staticBackdropLabel"><i class="bi bi-plus-square-fill me-2"></i> Ajouter Une Désription à votre site</h1>
-          <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="row">
+          <div class="col-md-12">
+            <h2 class="mb-4"><i class="bi bi-info-circle-fill"></i> Gestion de la section A propos</h2>
+            <p>Dans cette section, vous pouvez ajouter, modifier ou supprimer des descriptions à propos de notre site web. Assurez-vous que les informations fournies sont précises et à jour pour offrir une meilleure expérience aux visiteurs.</p>
         </div>
-        <div class="modal-body">
-            <form action="" method="post">
+        <div class="row">
+          <h2 class="mb-4"><i class="bi bi-plus-square-fill me-2"></i> Ajouter Une Désription du site</h2>
+            <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{form.as_p}}
-                <input type="submit" class="btn fw-semibold form-control" value="Enregistrer">
-            </form>
+                <button type="submit" class="btn fw-bold form-control" style="background-color: black; color: #ff6700">Enregistrer</button>
+            </form>         
         </div>
-      </div>
     </div>
-  </div>
 </section>
 
 <!-- Cette section permet d'afficher les données de la BD dans un tableau -->
@@ -40,13 +37,7 @@
             <div class="col-md-12">
               <div class="d-flex py-5">
                 <div class="col-md-8">
-                  <h2 class="fw-semibold pb-2"><i class="bi bi-eye-fill me-2"></i> <span class="text-dark">Liste des déscriptions</span></h2>
-                </div>
-                <div class="col-md-4">
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary shadow fw-semibold w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"><i class="bi bi-plus-square-fill me-2"></i>
-                        Ajouter Une Désription à votre site
-                    </button>
+                  <h2><i class="bi bi-list"></i> <span class="text-dark">Liste des déscriptions</span></h2>
                 </div>
               </div>
                 {% if afficher %}
@@ -54,10 +45,9 @@
                     <thead class="table-dark">
                       <tr>
                         <th scope="col">ID</th>
+                        <th scope="col">IMAGE</th>
                         <th scope="col">TITRE</th>
                         <th scope="col">DESCRIPTION</th>
-                        <th scope="col">IMAGE</th>
-                        <th scope="col">STATUS</th>
                         <th scope="col">DATE</th>
                         <th scope="col">ACTIONS</th>
                       </tr>
@@ -66,23 +56,24 @@
                     <tbody>
                       <tr>
                         <th scope="row">{{apropos.id}}</th>
-                        <td>{{apropos.nom}}</td>
-                        <td>{{apropos.contenus}}</td>
+                        {% if apropos.photo %}
                         <td><img width="150" src="{{apropos.photo.url}}" alt="{{apropos.nom}}"></td>
-                        <td>{{apropos.status}}</td>
+                        {% else %}
+                        <td>Aucune image</td>
+                        {% endif %}
+                        <td>{{apropos.nom}}</td>
+                        <td>{{apropos.contenus|safe}}</td>
                         <td>{{apropos.date_ajout}}</td>
-                        <td>
-                          <form action="" method="post" class="d-flex">
-                              <a href=" administration/updateApropos' " class="text-success fs-4 p-3"><i class="bi bi-pencil-fill"></i></a>
-                              <a href="#" class="text-danger fs-4 p-3"><i class="bi bi-trash-fill"></i></a>
-                          </form>
+                        <td class="d-flex flex-row gap-2">
+                            <a href="{% url 'UpdateApropos' id_apropos=apropos.id %}" class="btn" style="background-color: black; color: #ff6700"><i class="bi bi-pencil-fill"></i></a>
+                            <a href="#" class="btn" style="background-color: black; color: #ff6700"><i class="bi bi-trash-fill"></i></a>
                         </td>
                       </tr>
                     {% endfor %}
                     </tbody>
                 </table>
                 {% else %}
-                    <p class="text-danger fw-semibold">Aucun enregistrement à afficher!</p>
+                    <p class="alert alert-danger fw-bold">Aucun enregistrement à afficher!</p>
                 {% endif %}
             </div>
         </div>

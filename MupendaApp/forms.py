@@ -17,12 +17,11 @@ class UserForm(UserCreationForm):
 class InsertApropos(forms.ModelForm):
     class Meta:
         model = Apropos
-        fields = ['nom', 'contenus', 'photo', 'status']
+        fields = ['nom', 'contenus', 'photo']
         widgets = {
             'nom' : forms.TextInput(attrs={'class': 'form-control'}),
-            'contenus' : forms.TextInput(attrs={'class': 'form-control'}),
+            'contenus' : forms.Textarea(attrs={'class': 'form-control', 'rows':5}),
             'photo' : forms.FileInput(attrs={'class': 'form-control'}),
-            'status' : forms.Select(attrs={'class': 'form-select'}),
         }
 
 class FormationForm(forms.ModelForm):

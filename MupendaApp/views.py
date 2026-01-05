@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import redirect, render
-from .models import Services, Apropos, Realisation, Post, Contact, Formation
+from .models import Services, Apropos, Realisation, Post, Contact, Formation, TemoignageClient, Category
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.views import generic
@@ -29,14 +29,7 @@ def index(request):
     service = Services.objects.all()
     afficher = Realisation.objects.all()
     afficherApropos = Apropos.objects.all()
-    return render(
-        request, 'index.html', 
-        context={
-            "service":service, 
-            "afficher":afficher, 
-            'afficherApropos':afficherApropos,
-            }
-        )
+    return render(request, 'index.html', {'afficherApropos': afficherApropos, 'service':service, 'afficher':afficher})
 
 #Inscription
 User = get_user_model()
@@ -62,8 +55,8 @@ def connexion(request):
         if user is not None:
             login (request, user)
 
-            if user.is_administrateur:
-                return redirect('administration/indexAdmin')
+            if user.is_superuser:
+                return redirect('dashboard')
             else:
                 return redirect('profil')
         else:
@@ -76,7 +69,24 @@ def indexAdmin(request):
     return render(request, 'administration/indexAdmin.html')
 
 def dashboard(request):
-    return render(request, 'administration/dashboard.html')
+    count_services = Services.objects.count()
+    count_realisations = Realisation.objects.count()
+    count_formations = Formation.objects.count()
+    count_contacts = Contact.objects.count()
+    count_temoignages = TemoignageClient.objects.count()
+    count_blogs = Post.objects.count()
+    count_categories = Category.objects.count()
+    
+    context = {
+        'count_services': count_services,
+        'count_realisations': count_realisations,
+        'count_formations': count_formations,
+        'count_contacts': count_contacts,
+        'count_temoignages': count_temoignages,
+        'count_blogs': count_blogs,
+        'count_categories': count_categories,
+    }
+    return render(request, 'administration/dashboard.html', context)
 
 def profil(request):
     return render(request, 'profil.html')
@@ -122,6 +132,10 @@ def faq(request):
 def formation(request):
     return render(request, "formation.html")
 
+def service(request):
+    service = Services.objects.all()
+    return render(request, 'services.html', context={"service":service})
+
 # PARTIE ADMINISTRATIVE
 
 # Cette fonction permet d'ajouter les données dans la BD
@@ -136,15 +150,17 @@ def AdminApropos(request):
     return render(request, 'administration/apropos.html', {'form':form, 'afficher':afficher})
 
 # Cette fonction permet de modifier les données de la table Apropos
-def UpdateApropos(request, id):
-    x = Apropos.objects.get(pk=id)
-    form = UpdateApropos(request.POST, instance=x)
-    if form.is_valid():
-        form.save()
+def UpdateApropos(request, id_apropos):
+    edit_apropos = Apropos.objects.get(id=id_apropos)
+    if request.method == 'POST':
+        edit_apropos.nom = request.POST.get('nom')
+        edit_apropos.contenus = request.POST.get('contenus')
+        edit_apropos.save()
+        messages.success(request, "Modification effectuée avec succès !")
+        return redirect('AdminApropos')
     else:
-        x = Apropos.objects.get(pk=id)
-        form = UpdateApropos(instance=x)
-    return render(request, 'administration/updateApropos.html', {'form':form})
+        messages.error(request, "Erreur lors de la modification !")
+    return render(request, 'administration/updateApropos.html', {'edit_apropos':edit_apropos})
 
 def AdminTemoignage(request):
     return render(request, 'administration/temoignage.html')

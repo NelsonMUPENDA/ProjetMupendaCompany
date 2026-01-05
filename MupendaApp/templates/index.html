@@ -141,7 +141,7 @@
 
 <!-- Section Nos Services -->
 <section class="bg-custom py-5">
-  <div class="container py-5">
+  <div class="container py-5 d-flex flex-column justify-content-center align-items-center">
     <div class="text-center mb-5">
       <h1 class="text-white fw-bold display-5">Nos Services</h1>
       <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
@@ -162,7 +162,6 @@
           {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ Services.nom }}</h5>
-            <a href="" class="btn btn-dark fw-semibold">Voir plus</a>
           </div>
         </div>
       </div>
@@ -171,7 +170,8 @@
       <p class="alert fw-semibold alert-danger text-dark">Aucun Service à afficher pour le moment !</p>
       {% endif %}
     </div>
-</div>
+    <a href="{% url 'service' %}" class="btn fw-bold mt-5" style="background-color: #ff6700; color: black;">Voir plus</a>
+  </div>
 </section>
 
 <!-- Section Pourquoi nous choisir ? -->

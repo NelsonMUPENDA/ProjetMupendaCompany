@@ -2,27 +2,38 @@
 {% load static %}
 {% block content %}
 
-    <div class="container my-5">
+    <div class="container my-5 py-5">
       <div class="row my-5">
-        <div class="col-md-5 mx-auto my-5">
-          <form class="form form-control mt-5 shadow py-5" action="{% url 'connexion' %}" method="post">
-              {% csrf_token %}
-              <h2 class="text-center fw-semibold mb-3"><i class="bi bi-backpack"></i> Connectez - vous!</h2>
-          
-              <p class="text-danger">{{ erreur }}</p>
-              
-              <div class="mb-3">
-                  <label class="form-label" for="username"><i class="bi bi-person-circle"></i> Nom d'utilisateur</label>
-                  <input class="form-control" type="text" name="username" required>
+        <div class="col-md-12 mx-auto my-5">
+          <div class="card mb-3" style="max-width: 100%;">
+            <div class="row g-0">
+              <div class="col-md-6 justify-content-center align-items-center d-flex">
+                <img src="{% static 'images/contact.jpg' %}" class="img-fluid rounded-start" alt="...">
               </div>
-              <div class="mb-3">
-                  <label class="form-label" for="password"><i class="bi bi-key-fill"></i> Mot de passe</label>
-                  <input class="form-control" type="password" name="password" required>
+              <div class="col-md-6 justify-content-center align-items-center d-flex">
+                <div class="card-body">
+                  <form class="form" action="{% url 'connexion' %}" method="post">
+                      {% csrf_token %}
+                      <h2 class="text-center fw-bold mb-3 display-6"> Connectez - vous !</h2>
+                  
+                      <p class="text-danger">{{ erreur }}</p>
+                      
+                      <div class="mb-3">
+                          <label class="form-label" for="username"> Nom d'utilisateur *</label>
+                          <input class="form-control" type="text" name="username" required placeholder="Entrez votre nom d'utilisateur">
+                      </div>
+                      <div class="mb-3">
+                          <label class="form-label" for="password"> Mot de passe *</label>
+                          <input class="form-control" type="password" name="password" required placeholder="********">
+                      </div>
+                      <button class="btn form-control fw-bold mt-3" style="background-color: black; color: #ff6700" type="submit"> Se connecter</button>
+                      <p class="mt-3 text-center">Pas encore inscrit? <a class="link text-dark" href="{% url 'inscription' %}">S'inscrire</a></p>
+                      <p class="mt-3 text-center">Mot de passe oublié? <a class="link text-dark" href="">Réinitialiser le mot de passe</a></p>
+                  </form>
+                </div>
               </div>
-              <button class="btn form-control fw-bold mt-3" style="background-color: #ff6700; color: black" type="submit"><i class="bi bi-backpack"></i> Se connecter</button>
-              <p class="fw-semibold mt-3 text-center">Pas encore inscrit? <a class="link" href="{% url 'inscription' %}">S'inscrire</a></p>
-              <p class="fw-semibold mt-3 text-center">Mot de passe oublié? <a class="link" href="">Réinitialiser le mot de passe</a></p>
-          </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>

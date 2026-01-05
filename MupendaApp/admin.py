@@ -14,7 +14,7 @@ class ServicesAdmin (admin.ModelAdmin):
     prepopulated_fields = {'slug' : ('nom',)}
 
 class AproposAdmin (admin.ModelAdmin):
-    list_display = ('id', 'nom', 'contenus', 'photo', 'auteur', 'date_ajout', 'update_on', 'status')
+    list_display = ('id', 'nom', 'contenus', 'photo', 'auteur', 'date_ajout', 'update_on')
 
 class RealisationAdmin (admin.ModelAdmin):
     list_display = ('id', 'titre', 'slug', 'description', 'image', 'auteur', 'category', 'status', 'created_on', 'update_on')

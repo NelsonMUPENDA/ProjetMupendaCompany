@@ -74,7 +74,6 @@ class Apropos(models.Model):
     )
     date_ajout = models.DateTimeField(auto_now=True)
     update_on = models.DateTimeField(auto_now_add=True, null=True)
-    status = models.IntegerField(choices=STATUS, default=0)
 
     class Meta:
         ordering = ['date_ajout']
@@ -156,6 +155,7 @@ class Post(models.Model):
     categorie = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     status = models.IntegerField(choices=STATUS, default=0)
     image = models.ImageField(upload_to="static/images", blank=True, null=True)
+    # pays = models.CharField(max_length=100, null=True)
 
     class Meta:
         ordering = ['-created_on']

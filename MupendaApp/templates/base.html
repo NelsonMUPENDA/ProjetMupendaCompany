@@ -26,8 +26,8 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" style="background-color: #ff6700;">
               <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse justify-content-center fw-semibold" id="navbarSupportedContent">
-              <ul class="navbar-nav mb-2 mb-lg-0">
+            <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+              <ul class="navbar-nav mb-2 mb-lg-0 mx-auto">
                 <li class="nav-item">
                   <a class="nav-link text-white" aria-current="page" href="/"> Accueil</a>
                 </li>
@@ -36,13 +36,13 @@
                     A propos de nous
                   </a>
                   <ul class="dropdown-menu bg-white">
-                    <li><a class="dropdown-item text-dark fw-semibold" href="{% url 'apropos' %}">Qui sommes-nous ?</a></li>
-                    <li><a class="dropdown-item text-dark fw-semibold" href="{% url 'realisations' %}">Réalisations</a></li>
-                    <li><a class="dropdown-item text-dark fw-semibold" href="{% url 'blog' %}">Blog</a></li>
+                    <li><a class="dropdown-item text-dark" href="{% url 'apropos' %}">Qui sommes-nous ?</a></li>
+                    <li><a class="dropdown-item text-dark" href="{% url 'realisations' %}">Réalisations</a></li>
+                    <li><a class="dropdown-item text-dark" href="{% url 'blog' %}">Blog</a></li>
                   </ul>
                 </li>
                 <li class="nav-item dropdown">
-                  <a class="nav-link text-white" href="#"> Services </a>
+                  <a class="nav-link text-white" href="{% url 'service' %}"> Services </a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link text-white" href="{% url 'formation' %}">Formation</a>
@@ -54,6 +54,13 @@
                   <a class="nav-link text-white" href="{% url 'faq' %}">Faq</a>
                 </li>
               </ul>
+              <div class="d-flex align-items-center">
+                {% if user.is_authenticated %}
+                  <a href="{% url 'profil' %}" class="btn fw-bold" style="background-color: #ff6700; color: black"><i class="bi bi-person-circle"></i> Profil</a>
+                {% else %}
+                  <a class="btn me-3 fw-bold" id="btn" href="{% url 'connexion' %}" style="background-color: #ff6700; color: black">Se connecter</a>
+                {% endif %}
+              </div>
             </div>
           </div>
         </nav>
@@ -77,11 +84,11 @@
                 de l’expédition jusqu’à la livraison.
               </p>
               <p>
-                <a class="btn btn-outline-danger rounded-circle" href="#"><i class="bi bi-youtube"></i></a>
-                <a class="btn btn-outline-primary rounded-circle" href="#"><i class="bi bi-facebook"></i></a>
-                <a class="btn btn-outline-success rounded-circle" href="#"><i class="bi bi-whatsapp"></i></a>
-                <a class="btn btn-outline-dark rounded-circle" href="#"><i class="bi bi-twitter-x"></i></a>
-                <a class="btn btn-outline-primary rounded-circle" href="#"><i class="bi bi-linkedin"></i></a>
+                <a class="btn text-white rounded-circle" href="#"><i class="bi bi-youtube"></i></a>
+                <a class="btn text-white rounded-circle" href="#"><i class="bi bi-facebook"></i></a>
+                <a class="btn text-white rounded-circle" href="#"><i class="bi bi-whatsapp"></i></a>
+                <a class="btn text-white rounded-circle" href="#"><i class="bi bi-twitter-x"></i></a>
+                <a class="btn text-white rounded-circle" href="#"><i class="bi bi-linkedin"></i></a>
               </p>
             </div>
             <div class="col-md-3">

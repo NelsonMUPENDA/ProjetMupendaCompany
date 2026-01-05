@@ -1,7 +1,160 @@
 {% extends 'administration/indexAdmin.html' %}
+{% load static %}
 
 {% block content %}
 
-<h1 class="text-center">Tableau de bord</h1>
+<section>
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 my-4">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a class="nav-link" href="{% url 'dashboard' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Tableau de bord</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-12">
+                <h2 class="mb-4"><i class="bi bi-speedometer2"></i> Tableau de bord Administrateur</h2>
+                <p>Bienvenue sur le tableau de bord administrateur. Ici, vous pouvez gérer les différentes sections du site web, y compris les services, les réalisations, les formations, les contacts, les FAQ, les témoignages, les partenaires et le blog.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3 shadow" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4 justify-content-center align-items-center d-flex">
+                        <img src="{% static 'images/modernite.png' %}" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Services</h5>
+                            <p class="card-text display-6">{{ count_services }} services</p>
+                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3 shadow" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4 justify-content-center align-items-center d-flex">
+                        <img src="{% static 'images/tache-terminee.png' %}" class="img-fluid rounded-start w-75" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Réalisations</h5>
+                            <p class="card-text display-6">{{ count_realisations }} réalisations</p>
+                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3 shadow" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4 justify-content-center align-items-center d-flex">
+                        <img src="{% static 'images/education.png' %}" class="img-fluid rounded-start w-75" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Formations</h5>
+                            <p class="card-text display-6">{{ count_formations }} formations</p>
+                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3 shadow" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4 justify-content-center align-items-center d-flex">
+                        <img src="{% static 'images/contact.png' %}" class="img-fluid rounded-start w-75" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Contacts</h5>
+                            <p class="card-text display-6">{{ count_contacts }} contacts</p>
+                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3 shadow" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4 justify-content-center align-items-center d-flex">
+                        <img src="{% static 'images/avis-client.png' %}" class="img-fluid rounded-start w-75" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Témoignages</h5>
+                            <p class="card-text display-6">{{ count_temoignages }} témoignages</p>
+                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3 shadow" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4 justify-content-center align-items-center d-flex">
+                        <img src="{% static 'images/content.png' %}" class="img-fluid rounded-start w-75" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Blog</h5>
+                            <p class="card-text display-6">{{ count_blogs }} blogs</p>
+                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 my-3">
+            <div class="col-md-12">
+                <h3 class="mb-4"><i class="bi bi-table"></i> Données récentes</h3>
+            </div>
+            <table class="table">
+                <thead class="table-dark">
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td>@fat</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">3</th>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>@social</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
 
 {% endblock %}

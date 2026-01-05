@@ -1,19 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="bg-dark">
+<section class="pt-5">
     <div class="container text-center py-5">
-        <p class="btn fw-semibold">Accueil > Détails de l'article</p>
-        <h1 class="text-white">Actualités</h1>
+        <h1 class="pt-5 display-5 fw-bold" style="color: #ff6700;">Actualités</h1>
         <p class="text-white">Découvrer nos dernières actualités mise en ligne!</p>
     </div>
 </section>
 
 <section class="py-5">
     <div class="container pb-4">
-        <div class="row">
+        <div class="row g-4">
             <div class="col-md-8  left">
-                <h4>
+                <h4 class="text-white fw-bold">
                     {% block title %}
                         {{object.titre}}
                     {% endblock title %}
@@ -29,10 +28,10 @@
                     <img src="{{post.image.url}}" class="card-img-top" alt="{{post.titre}}">
                     {% endif %}
                     <div class="card-body">
-                      <h3 class="card-title fw-semibold">{{post.titre}}</h3>
-                      <p class="card-text">{{post.content|safe}}...</p>
-                      <p class="card-text"><small class="text-muted">Publié le {{post.created_on}} | Par : {{post.author}}</small></p>
-                      <a href="{% url 'blog' %}" class="btn btn-primary fw-semibold">Retour</a>
+                      <h3 class="card-title fw-semibold">{{post.titre}}.</h3>
+                      <p class="card-text">{{post.content|safe}}</p>
+                      <p class="card-text">Publié le {{post.created_on}} </p>
+                      <a href="{% url 'blog' %}" class="btn fw-semibold" style="background-color: black; color:#ff6700">Retour</a>
                     </div>
                 </div>
             </div>

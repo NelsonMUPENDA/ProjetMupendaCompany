@@ -1,14 +1,88 @@
 {% extends 'administration/indexAdmin.html' %}
 
 {% block content %}
-<!-- UPDATE -->
-          <h1 class="modal-title fs-5 fw-semibold" id="staticBackdropLabel_{{apropos.id}}"><i class="bi bi-pencil-square me-2"></i> Modifier la Désription de votre site {{apropos.id}}</h1>
-          <form action="" method="post">
-            {% csrf_token %}
-                <label class="label-control py-3" for="nom">Nom</label>
-                <input class="form-control" type="text" id="nom" name="nom" value="{{apropos.nom}}">
-                <label class="label-control py-3" for="description">Contenus</label>
-                <textarea class="form-control" name="description" id="description">{{apropos.contenus}}</textarea>
-                <input type="submit" class="btn fw-semibold form-control my-3" value="Enregistrer">
+<style> 
+  .drop-zone { 
+    border: 2px dashed #6c757d; 
+    border-radius: 6px; 
+    padding: 20px; 
+    text-align: center; 
+    cursor: pointer; 
+    color: #6c757d; 
+  } 
+  .drop-zone.dragover { 
+    background-color: #e9ecef; 
+    border-color: #ff6700; 
+    color: #ff6700; 
+  } 
+</style>
+
+<section class="pt-2">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 my-4">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a class="nav-link" href="{% url 'dashboard' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Modifier la description</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <h2 class="mb-4"><i class="bi bi-pencil-fill"></i> Modifier la description du site</h2>
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="nom" class="py-3 fw-bold">Titre:</label>
+                <input type="text" name="nom" id="nom" value="{{ edit_apropos.nom }}" class="form-control">
+                <label for="contenus" class="py-3 fw-bold">Contenus:</label>
+                <textarea name="contenus" id="contenus" class="form-control">{{ edit_apropos.contenus|safe }}</textarea>
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="image_actuelle" class="py-3 fw-bold">Image actuelle:</label>
+                    <p>Si vous ne souhaitez pas changer l'image, laissez ce champ tel quel.</p>
+                    <img class="w-100 rounded-4" id="image_actuelle" src="{{ edit_apropos.photo.url }}" alt="">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="photo" class="py-3 fw-bold">Changer l'image:</label>
+                    <p>Uplodez une nouvelle image</p> 
+                    <div id="drop-zone" class="drop-zone h-75 d-flex flex-column justify-content-center align-items-center border-secondary rounded-4"> 
+                      <i class="bi bi-cloud-arrow-up display-1"></i>
+                      <p>Glissez-déposez une photo ici ou cliquez pour sélectionner </p>
+                      <input type="file" name="photo" id="photo" class="form-control d-none"> 
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center gap-4">
+                  <button type="submit" class="btn fw-bold my-5" style="background-color: black; color: #ff6700">Enregistrer les modifications</button>
+                  <a href="{% url 'AdminApropos' %}" class="btn fw-bold my-5" style="background-color: black; color: white">Annuler les modifications</a>
+                </div>
             </form>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('contenus');
+</script>
+
+<script> 
+  const dropZone = document.getElementById('drop-zone'); 
+  const fileInput = document.getElementById('photo'); 
+  // Clique sur la zone = ouvre le sélecteur 
+  dropZone.addEventListener('click', () => fileInput.click()); 
+  // Quand un fichier est choisi via le sélecteur 
+  fileInput.addEventListener('change', () => { if (fileInput.files.length) { dropZone.textContent = fileInput.files[0].name; } }); 
+  // Drag & drop 
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }); 
+  dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); }); 
+  dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); 
+  if (e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; 
+  // associe le fichier à l’input 
+    dropZone.textContent = e.dataTransfer.files[0].name; } 
+  }); 
+</script>
+
 {% endblock %}
