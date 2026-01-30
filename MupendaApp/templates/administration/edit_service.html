@@ -6,18 +6,20 @@
         <div class="row g-3 justify-content-center">
           <div class="col-md-8">
             <h2><i class="bi bi-pencil-fill me-2"></i> Modifier un service</h2>
+            <p>Ici vous pouvez modifier les informations du service.</p>
               <form action="" method="POST" enctype="multipart/form-data">
-                  {% csrf_token %}
-                  <label class="label label-control py-3" for="nom">Nom du service</label>
-                  <input class="form-control" type="text" name="nom" id="nom" value="{{edit.nom}}">
-                  <label class="label label-control py-3" for="description">Déscription du service</label>
-                  <textarea class="form-control" name="description" id="description"> {{edit.description}}</textarea>
-                  {% if edit.photo %}
-                  <img class="py-3" width="150" src="{{edit.photo.url}}" alt="{{edit.nom}}"><br>
-                  {% endif %}
-                  <label class="label label-control py-3" for="image">Image du service</label>
-                  <input class="form-control" type="file" name="image" id="image">
-                  <input type="submit" class="btn fw-semibold form-control mt-5" value="Enregistrer les modifications">
+                    {% csrf_token %}
+                    <label class="label label-control py-3" for="nom">Nom du service</label>
+                    <input class="form-control" type="text" name="nom" id="nom" value="{{edit.nom}}">
+                    <label class="label label-control py-3" for="description">Déscription du service</label>
+                    <textarea class="form-control" name="description" id="description"> {{edit.description|safe}}</textarea>
+                    {% if edit.photo %}
+                    <img class="py-3" width="150" src="{{edit.photo.url}}" alt="{{edit.nom}}"><br>
+                    {% endif %}
+                    <label class="label label-control py-3" for="image">Image du service</label>
+                    <input class="form-control" type="file" name="image" id="image">
+                    <button type="submit" class="btn form-control mt-5" style="background-color: #ff6700; color: white;">Enregistrer les modifications</button>
+                    <a href="{% url 'AdminService' %}" class="btn btn-secondary mt-3">Annuler</a>
               </form>
           </div>
         </div>

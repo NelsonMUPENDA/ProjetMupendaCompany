@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Modifier {{ collaborateur.user.get_full_name|default:collaborateur.user.username }} - Mupenda Company{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="bi bi-pencil text-primary"></i>
+                Modifier {{ collaborateur.user.get_full_name|default:collaborateur.user.username }}
+            </h1>
+            <p class="text-muted mb-0">Mettre à jour les informations du collaborateur</p>
+        </div>
+        <div>
+            <a href="{% url 'fiche_collaborateur' collaborateur.id %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Retour à la fiche
+            </a>
+        </div>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="poste" class="form-label">Poste *</label>
+                                <select class="form-select" id="poste" name="poste" required>
+                                    {% for poste, label in poste_choices %}
+                                        <option value="{{ poste }}" {% if collaborateur.poste == poste %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="disponibilite" class="form-label">Disponibilité</label>
+                                <select class="form-select" id="disponibilite" name="disponibilite">
+                                    {% for dispo, label in dispo_choices %}
+                                        <option value="{{ dispo }}" {% if collaborateur.disponibilite == dispo %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="tjm" class="form-label">TJM (€) *</label>
+                                <input type="number" class="form-control" id="tjm" name="tjm" 
+                                       step="1" min="0" required value="{{ collaborateur.tjm }}">
+                                <small class="form-text text-muted">Taux Journalier Moyen</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="cout_horaire" class="form-label">Coût horaire (€)</label>
+                                <input type="number" class="form-control" id="cout_horaire" name="cout_horaire" 
+                                       step="0.01" min="0" value="{{ collaborateur.cout_horaire }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="date_embauche" class="form-label">Date d'embauche</label>
+                                <input type="date" class="form-control" id="date_embauche" name="date_embauche"
+                                       {% if collaborateur.date_embauche %}value="{{ collaborateur.date_embauche|date:'Y-m-d' }}"{% endif %}>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="telephone" class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" id="telephone" name="telephone" 
+                                       value="{{ collaborateur.telephone }}" placeholder="06 12 34 56 78">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="linkedin" class="form-label">LinkedIn</label>
+                                <input type="url" class="form-control" id="linkedin" name="linkedin" 
+                                       value="{{ collaborateur.linkedin }}" placeholder="https://linkedin.com/in/...">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="competences" class="form-label">Compétences</label>
+                            <textarea class="form-control" id="competences" name="competences" rows="3" 
+                                      placeholder="Ex: Django, Python, JavaScript, React...">{{ collaborateur.competences }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="actif" name="actif" 
+                                       {% if collaborateur.actif %}checked{% endif %}>
+                                <label class="form-check-label" for="actif">
+                                    Collaborateur actif
+                                </label>
+                            </div>
+                            <small class="form-text text-muted">
+                                Décocher pour désactiver temporairement le collaborateur
+                            </small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'fiche_collaborateur' collaborateur.id %}" class="btn btn-secondary">
+                                <i class="bi bi-x"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Enregistrer les modifications
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Informations actuelles -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Informations actuelles
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="small mb-2">
+                        <strong>Utilisateur:</strong> {{ collaborateur.user.username }}<br>
+                        <strong>Email:</strong> {{ collaborateur.user.email }}<br>
+                        <strong>Poste actuel:</strong> {{ collaborateur.get_poste_display }}<br>
+                        <strong>TJM actuel:</strong> {{ collaborateur.tjm|floatformat:0 }}€
+                    </p>
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-graph-up"></i> Statistiques
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted">
+                        Les modifications n'affectent pas les données historiques déjà enregistrées.
+                    </p>
+                    <p class="small text-muted">
+                        Le TJJ et le coût horaire s'appliqueront aux nouvelles saisies de temps.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Apropos, Equipement, Services, Post, Category, Realisation, TemoignageClient, Formation, Contact, Formateur
+from .models import CustomUser, Apropos, Equipement, Services, Post, Category, Realisation, TemoignageClient, Formation, Contact, Formateur, Client, HistoriqueInteraction, AssociationClientProjet
 
 admin.site.site_header = "mupenda.cd | Administration"
 admin.site.site_title = "mupenda.cd"
@@ -56,6 +56,11 @@ class FormateurAdmin(admin.ModelAdmin):
     list_display = ('id', 'nom', 'postnom', 'prenom', 'sexe', 'age', 'email', 'phone', 'addresse', 'image', 'specialite', 'created_on', 'update_on')
     search_fields = ('id', 'nom', 'postnom', 'prenom', 'email', 'specialite')
     list_filter = ('nom', 'prenom')
+    
+class UserAdmin (admin.ModelAdmin):
+    list_display = ('id', 'photo_profil', 'username', 'email', 'is_administrateur', 'is_utilisateur', 'is_staff')
+    search_fields = ('id', 'username', 'email')
+    list_filter = ('is_administrateur', 'is_utilisateur', 'is_staff')
 
 # Register your models here.
 admin.site.register(CustomUser, UserAdmin)
@@ -69,3 +74,80 @@ admin.site.register(Formation, FormationAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(Equipement, EquipementAdmin)
 admin.site.register(Formateur, FormateurAdmin)
+
+# Admin pour les modèles de gestion des clients
+class ClientAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nom', 'email', 'type_client', 'statut_client', 'responsable_compte', 'date_creation')
+    list_filter = ('type_client', 'statut_client', 'date_creation')
+    search_fields = ['nom', 'email', 'adresse']
+    ordering = ['-date_creation']
+    readonly_fields = ('date_creation', 'date_maj')
+    
+    fieldsets = (
+        ('Informations générales', {
+            'fields': ('nom', 'email', 'telephone', 'adresse')
+        }),
+        ('Classification', {
+            'fields': ('type_client', 'statut_client')
+        }),
+        ('Informations entreprise', {
+            'fields': ('siret', 'secteur_activite', 'site_web'),
+            'classes': ('collapse',)
+        }),
+        ('Gestion', {
+            'fields': ('responsable_compte', 'notes')
+        }),
+        ('Timestamps', {
+            'fields': ('date_creation', 'date_maj'),
+            'classes': ('collapse',)
+        })
+    )
+
+class HistoriqueInteractionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'client', 'type_interaction', 'date_interaction', 'sujet', 'participant', 'duree_minutes')
+    list_filter = ('type_interaction', 'date_interaction', 'participant')
+    search_fields = ['client__nom', 'sujet', 'description']
+    ordering = ['-date_interaction']
+    date_hierarchy = 'date_interaction'
+    readonly_fields = ('cree_le',)
+    
+    fieldsets = (
+        ('Interaction', {
+            'fields': ('client', 'type_interaction', 'date_interaction', 'sujet')
+        }),
+        ('Détails', {
+            'fields': ('duree_minutes', 'description', 'participant', 'prochain_rappel')
+        }),
+        ('Timestamp', {
+            'fields': ('cree_le',),
+            'classes': ('collapse',)
+        })
+    )
+
+class AssociationClientProjetAdmin(admin.ModelAdmin):
+    list_display = ('id', 'client', 'projet', 'role_dans_projet', 'statut_association', 'date_debut_association', 'budget_alloue')
+    list_filter = ('statut_association', 'date_debut_association')
+    search_fields = ['client__nom', 'projet__titre', 'role_dans_projet']
+    ordering = ['-date_debut_association']
+    readonly_fields = ('cree_le',)
+    
+    fieldsets = (
+        ('Association', {
+            'fields': ('client', 'projet', 'role_dans_projet')
+        }),
+        ('Informations projet', {
+            'fields': ('budget_alloue', 'date_debut_association', 'date_fin_association', 'statut_association')
+        }),
+        ('Notes', {
+            'fields': ('notes_association',)
+        }),
+        ('Timestamp', {
+            'fields': ('cree_le',),
+            'classes': ('collapse',)
+        })
+    )
+
+# Enregistrement des modèles clients
+admin.site.register(Client, ClientAdmin)
+admin.site.register(HistoriqueInteraction, HistoriqueInteractionAdmin)
+admin.site.register(AssociationClientProjet, AssociationClientProjetAdmin)

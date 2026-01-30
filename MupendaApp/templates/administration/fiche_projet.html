@@ -1,0 +1,442 @@
+{% extends 'administration/indexAdmin.html' %}
+
+{% block title %}Fiche Projet - {{ projet.nom }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4 my-5">
+        <h1 class="h3">Fiche Projet - {{ projet.nom }}</h1>
+        <div>
+            <a href="{% url 'AdminProjets' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Retour à la liste
+            </a>
+            <a href="{% url 'modifier_projet' projet.id %}" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Modifier
+            </a>
+            <a href="{% url 'supprimer_projet' projet.id %}" class="btn btn-danger">
+                <i class="bi bi-trash"></i> Supprimer
+            </a>
+            <a href="{% url 'AffecterCollaborateur' projet.id %}" class="btn btn-primary">
+                <i class="bi bi-person-plus"></i> Affecter collaborateur
+            </a>
+            <a href="{% url 'SaisirTemps' projet.id %}" class="btn btn-success">
+                <i class="bi bi-clock"></i> Saisir temps
+            </a>
+        </div>
+    </div>
+
+    <!-- Informations principales -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations générales</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>Nom:</strong></td>
+                            <td>{{ projet.nom }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Client:</strong></td>
+                            <td>
+                                <a href="{% url 'fiche_client' projet.client.id %}" class="text-decoration-none">
+                                    {{ projet.client.nom }}
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Type:</strong></td>
+                            <td><span class="badge bg-info">{{ projet.get_type_projet_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Statut:</strong></td>
+                            <td>
+                                {% if projet.statut == 'EN_COURS' %}
+                                    <span class="badge bg-primary">{{ projet.get_statut_display }}</span>
+                                {% elif projet.statut == 'TERMINE' %}
+                                    <span class="badge bg-success">{{ projet.get_statut_display }}</span>
+                                {% elif projet.statut == 'SUSPENDU' %}
+                                    <span class="badge bg-warning">{{ projet.get_statut_display }}</span>
+                                {% elif projet.statut == 'ANNULE' %}
+                                    <span class="badge bg-danger">{{ projet.get_statut_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ projet.get_statut_display }}</span>
+                                {% endif %}
+                                {% if projet.est_en_retard %}
+                                    <br><small class="text-danger"><i class="bi bi-exclamation-triangle"></i> En retard</small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Priorité:</strong></td>
+                            <td>
+                                {% if projet.priorite == 'CRITIQUE' %}
+                                    <span class="badge bg-danger">{{ projet.get_priorite_display }}</span>
+                                {% elif projet.priorite == 'HAUTE' %}
+                                    <span class="badge bg-warning">{{ projet.get_priorite_display }}</span>
+                                {% elif projet.priorite == 'BASSE' %}
+                                    <span class="badge bg-info">{{ projet.get_priorite_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ projet.get_priorite_display }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Chef de projet:</strong></td>
+                            <td>
+                                {% if projet.chef_projet %}
+                                    {{ projet.chef_projet.username }}
+                                {% else %}
+                                    <span class="text-muted">Non assigné</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Planning et Budget</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>Date de début:</strong></td>
+                            <td>{{ projet.date_debut|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date de fin:</strong></td>
+                            <td>{{ projet.date_fin|date:"d/m/Y" }}</td>
+                        </tr>
+                        {% if projet.date_fin_reelle %}
+                        <tr>
+                            <td><strong>Date fin réelle:</strong></td>
+                            <td>{{ projet.date_fin_reelle|date:"d/m/Y" }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td><strong>Durée:</strong></td>
+                            <td>{{ projet.get_duree_jours }} jours</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Jours écoulés:</strong></td>
+                            <td>{{ projet.get_jours_ecoules }} jours</td>
+                        </tr>
+                        {% if projet.budget_initial %}
+                        <tr>
+                            <td><strong>Budget initial:</strong></td>
+                            <td>{{ projet.budget_initial }} €</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Budget consommé:</strong></td>
+                            <td>{{ projet.budget_consomme }} €</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Budget restant:</strong></td>
+                            <td>
+                                {% if projet.get_budget_restant %}
+                                    {{ projet.get_budget_restant }} €
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progression et Description -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Progression</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Avancement</span>
+                            <span>{{ projet.progression }}%</span>
+                        </div>
+                        <div class="progress" style="height: 25px;">
+                            {% if projet.progression >= 80 %}
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ projet.progression }}%"
+                                     aria-valuenow="{{ projet.progression }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ projet.progression }}%
+                                </div>
+                            {% elif projet.progression >= 50 %}
+                                <div class="progress-bar bg-info" role="progressbar" 
+                                     style="width: {{ projet.progression }}%"
+                                     aria-valuenow="{{ projet.progression }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ projet.progression }}%
+                                </div>
+                            {% else %}
+                                <div class="progress-bar bg-warning" role="progressbar" 
+                                     style="width: {{ projet.progression }}%"
+                                     aria-valuenow="{{ projet.progression }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ projet.progression }}%
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body py-2">
+                                    <h5 class="card-title">{{ affectations.count }}</h5>
+                                    <p class="card-text small mb-0">Collaborateurs</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="card bg-info text-white">
+                                <div class="card-body py-2">
+                                    <h5 class="card-title">{{ total_heures|floatformat:1 }}</h5>
+                                    <p class="card-text small mb-0">Heures totales</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="card bg-success text-white">
+                                <div class="card-body py-2">
+                                    <h5 class="card-title">{{ suivi_temps.count }}</h5>
+                                    <p class="card-text small mb-0">Saisies temps</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Description</h5>
+                </div>
+                <div class="card-body">
+                    {{ projet.description|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onglets -->
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="projetTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="collaborateurs-tab" data-bs-toggle="tab" data-bs-target="#collaborateurs" type="button" role="tab">
+                        <i class="bi bi-people"></i> Collaborateurs ({{ affectations.count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="temps-tab" data-bs-toggle="tab" data-bs-target="#temps" type="button" role="tab">
+                        <i class="bi bi-clock"></i> Suivi du temps ({{ suivi_temps.count }})
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="projetTabsContent">
+                <!-- Onglet Collaborateurs -->
+                <div class="tab-pane fade show active" id="collaborateurs" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Collaborateurs affectés</h5>
+                        <a href="{% url 'AffecterCollaborateur' projet.id %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-person-plus"></i> Ajouter un collaborateur
+                        </a>
+                    </div>
+                    
+                    {% if affectations %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Collaborateur</th>
+                                    <th>Rôle</th>
+                                    <th>Taux horaire</th>
+                                    <th>Date d'affectation</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for affectation in affectations %}
+                                <tr>
+                                    <td>{{ affectation.collaborateur.username }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ affectation.get_role_display }}</span>
+                                    </td>
+                                    <td>
+                                        {% if affectation.taux_horaire %}
+                                            {{ affectation.taux_horaire }} €/h
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ affectation.date_affectation|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-sm btn-outline-warning" title="Modifier">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" title="Retirer">
+                                                <i class="bi bi-person-dash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-people fa-3x mb-3"></i>
+                        <p>Aucun collaborateur affecté</p>
+                        <a href="{% url 'AffecterCollaborateur' projet.id %}" class="btn btn-primary">
+                            <i class="bi bi-person-plus"></i> Ajouter un collaborateur
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Onglet Temps -->
+                <div class="tab-pane fade" id="temps" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Suivi du temps</h5>
+                        <a href="{% url 'SaisirTemps' projet.id %}" class="btn btn-success btn-sm">
+                            <i class="bi bi-clock"></i> Saisir du temps
+                        </a>
+                    </div>
+                    
+                    {% if suivi_temps %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Collaborateur</th>
+                                    <th>Heures</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for temps in suivi_temps %}
+                                <tr>
+                                    <td>{{ temps.date_saisie|date:"d/m/Y" }}</td>
+                                    <td>{{ temps.collaborateur.username }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ temps.heures }}h</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ temps.get_type_travail_display }}</span>
+                                    </td>
+                                    <td>{{ temps.description|truncatechars:50 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-clock fa-3x mb-3"></i>
+                        <p>Aucune saisie de temps enregistrée</p>
+                        <a href="{% url 'SaisirTemps' projet.id %}" class="btn btn-success">
+                            <i class="bi bi-clock"></i> Saisir du temps
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.progress {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+.btn {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.badge {
+    font-size: 0.75em;
+    padding: 0.375em 0.75em;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation des barres de progression
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.width = width;
+        }, 100);
+    });
+    
+    // Animation des cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}

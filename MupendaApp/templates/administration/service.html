@@ -1,64 +1,92 @@
 {% extends 'administration/indexAdmin.html' %}
 
 {% block content %}
-<section class="pt-5">
+<section class="pt-2">
     <div class="container">
         <div class="row g-3">
-          {% if messages %}
-            <p class="alert alert-success">{{messages}}</p>
-          {% endif %}
-            <div class="col-md-4">
-                <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary shadow fw-semibold w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop4"><i class="bi bi-plus-square-fill me-2"></i>
-                Ajouter Un Service
-            </button>
-            </div>
-            <div class="col-md-8">
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Recherche" aria-label="Search">
-                    <button class="btn" id="btn" type="submit"><i class="bi bi-search"></i></button>
-                  </form>
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 my-4">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a class="nav-link" href="{% url 'dashboard' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Services</li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>
-  <!-- Modal -->
-  <div class="modal fade pt-5" id="staticBackdrop4" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog pt-5">
-      <div class="modal-content">
-        <div class="modal-header bg-dark">
-          <h1 class="modal-title fs-5 fw-semibold" id="staticBackdropLabel"><i class="bi bi-plus-square-fill me-2"></i> Ajouter Un Service</h1>
-          <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+</section>
+<section class="mb-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="mb-4"><i class="bi bi-gear-fill"></i> Gestion de la section Services</h2>
+                <p>Dans cette section, vous pouvez ajouter, modifier ou supprimer des services offerts par notre entreprise. Assurez-vous que les informations fournies sont précises et à jour pour offrir une meilleure expérience aux visiteurs.</p>
+            </div>
+            <div class="row">
+              <h2 class="mb-4"><i class="bi bi-plus-square-fill me-2"></i> Ajouter Un Service</h2>
+                <form action="" method="post" enctype="multipart/form-data" class="shadow p-3 rounded">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                      <div class="row">
+                        <div class="col-md-4">
+                          <label for="nom" class="form-label">Titre du service :</label>
+                          <input type="text" class="form-control mb-3" id="nom" name="nom" required>
+                        </div>
+                        <div class="col-md-4">
+                          <label for="photo" class="form-label">Image du service :</label>
+                          <input type="file" class="form-control mb-3" id="photo" name="photo" required>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" value="" id="status" name="status">
+                            <label class="form-check-label" for="status">
+                              Activer le service
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="description" class="form-label">Description du service :</label>
+                      <textarea class="form-control mb-3" id="description" name="description" rows="4" required></textarea>
+                      <script>
+                        CKEDITOR.replace( 'description' );
+                      </script>
+                    </div>
+                    <button type="submit" class="btn form-control" style="background-color: black; color: #ff6700">Enregistrer</button>
+                </form>
+            </div>
         </div>
-        <div class="modal-body">
-            <form action="" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <label class="label label-control py-3" for="nom">Nom du service</label>
-                <input class="form-control" type="text" name="nom" id="nom" required>
-                <label class="label label-control py-3" for="description">Déscription du service</label>
-                <textarea class="form-control" name="description" id="description" required></textarea>
-                <label class="label label-control py-3" for="image">Image du service</label>
-                <input type="file" name="image" id="image" required>
-                <input type="submit" class="btn fw-semibold form-control mt-5" value="Enregistrer">
-            </form>
-        </div>
-      </div>
     </div>
-  </div>
 </section>
 
 <section class="py-3">
     <div class="container">
         <div class="row g-3">
             <div class="col-md-12">
-                <h2 class="fw-semibold pb-2"><i class="bi bi-eye-fill me-2"></i> <span class="text-dark">Liste des Services</span></h2>
+              <div class="row">
+                <div class="col-md-6">  
+                  <h2 class="fw-semibold pb-2"><i class="bi bi-eye-fill me-2"></i> <span class="text-dark">Liste des Services</span></h2>
+                  <p><i class="bi bi-info-circle-fill"></i> Ici, vous pouvez voir la liste complète des services disponibles. Vous pouvez rechercher les services proposés par l'entreprise.</p>
+                </div>
+                <div class="col-md-6">
+                  <h2 class="mb-4"><i class="bi bi-search"></i> Recherche de Services</h2>
+                  <form action="{% url 'AdminService' %}" method="get">
+                      <div class="input-group mb-3">
+                          <input type="text" class="form-control" placeholder="Rechercher un service..." name="search" value="{{ request.GET.search }}">
+                          <button class="btn btn-dark" type="submit" id="button-search"><i class="bi bi-search"></i></button>
+                      </div>
+                  </form>
+                </div>
+              </div>
                 {% if afficherService %}
                 <table class="table table-hover">
                     <thead class="table-dark">
                       <tr>
                         <th scope="col">ID</th>
                         <th scope="col">TITRE</th>
-                        <th scope="col">DESCRIPTION</th>
                         <th scope="col">IMAGE</th>
+                        <th scope="col">DESCRIPTION</th>
                         <th scope="col">STATUS</th>
                         <th scope="col">DATE</th>
                         <th scope="col">ACTIONS</th>
@@ -69,9 +97,19 @@
                       <tr>
                         <th scope="row">{{services.id}}</th>
                         <td>{{services.nom}}</td>
-                        <td>{{services.description}}</td>
-                        <td><img width="100" src="{{services.photo.url}}" alt="{{services.nom}}"></td>
-                        <td>{{services.status}}</td>
+                        {% if services.photo %}
+                          <td><img width="200" src="{{services.photo.url}}" alt="{{services.nom}}"></td>
+                        {% else %}
+                          <td>Aucune image</td>
+                        {% endif %}
+                        <td>{{services.description|safe}}</td>
+                        <td>
+                            {% if services.status %}
+                                <span class="badge bg-success">Actif</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactif</span>
+                            {% endif %}
+                        </td>
                         <td>{{services.date_ajout}}</td>
                         <td>
                             <form action="" method="post" class="d-flex">
@@ -90,5 +128,4 @@
         </div>
     </div>
 </section>
-
 {% endblock %}

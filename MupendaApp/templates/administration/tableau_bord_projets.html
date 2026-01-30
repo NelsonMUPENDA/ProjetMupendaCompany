@@ -1,0 +1,287 @@
+{% extends 'administration/indexAdmin.html' %}
+
+{% block title %}Tableau de bord Projets{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4 my-5">
+        <h1 class="h3">Tableau de bord Projets</h1>
+        <div>
+            <span class="badge bg-info me-2">Liste projets: Bientôt</span>
+            <span class="badge bg-success">Nouveau projet: Bientôt</span>
+        </div>
+    </div>
+
+    <!-- Statistiques principales -->
+    <div class="row mb-4">
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.total_projets }}</h5>
+                    <p class="card-text">Total projets</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.projets_en_cours }}</h5>
+                    <p class="card-text">En cours</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.projets_termines }}</h5>
+                    <p class="card-text">Terminés</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.projets_en_retard }}</h5>
+                    <p class="card-text">En retard</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.total_heures|floatformat:1 }}</h5>
+                    <p class="card-text">Heures totales</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.budget_total|floatformat:0 }} €</h5>
+                    <p class="card-text">Budget total</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Projets récents -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Projets récents</h5>
+                </div>
+                <div class="card-body">
+                    {% if projets_recent %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Client</th>
+                                    <th>Statut</th>
+                                    <th>Progression</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for projet in projets_recent %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'fiche_projet' projet.id %}" class="text-decoration-none">
+                                            {{ projet.nom }}
+                                        </a>
+                                    </td>
+                                    <td>{{ projet.client.nom }}</td>
+                                    <td>
+                                        {% if projet.statut == 'EN_COURS' %}
+                                            <span class="badge bg-primary">{{ projet.get_statut_display }}</span>
+                                        {% elif projet.statut == 'TERMINE' %}
+                                            <span class="badge bg-success">{{ projet.get_statut_display }}</span>
+                                        {% elif projet.statut == 'SUSPENDU' %}
+                                            <span class="badge bg-warning">{{ projet.get_statut_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ projet.get_statut_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 15px; width: 100px;">
+                                            {% if projet.progression >= 80 %}
+                                                <div class="progress-bar bg-success" style="width: {{ projet.progression }}%"></div>
+                                            {% elif projet.progression >= 50 %}
+                                                <div class="progress-bar bg-info" style="width: {{ projet.progression }}%"></div>
+                                            {% else %}
+                                                <div class="progress-bar bg-warning" style="width: {{ projet.progression }}%"></div>
+                                            {% endif %}
+                                        </div>
+                                        <small>{{ projet.progression }}%</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Aucun projet récent</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Temps récent -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Saisies de temps récentes</h5>
+                </div>
+                <div class="card-body">
+                    {% if temps_recent %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Projet</th>
+                                    <th>Collaborateur</th>
+                                    <th>Heures</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for temps in temps_recent %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'fiche_projet' temps.projet.id %}" class="text-decoration-none">
+                                            {{ temps.projet.nom }}
+                                        </a>
+                                    </td>
+                                    <td>{{ temps.collaborateur.username }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ temps.heures }}h</span>
+                                    </td>
+                                    <td>{{ temps.date_saisie|date:"d/m/Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Aucune saisie de temps récente</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Actions rapides</h5>
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <span class="badge bg-primary w-100">Nouveau projet: Bientôt</span>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <span class="badge bg-info w-100">Liste projets: Bientôt</span>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="#" class="btn btn-success w-100">
+                                <i class="bi bi-graph-up"></i> Rapports
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="#" class="btn btn-warning w-100">
+                                <i class="bi bi-clock"></i> Saisie temps
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.progress {
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+.btn {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.badge {
+    font-size: 0.75em;
+    padding: 0.375em 0.75em;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation des cards de statistiques
+    const statCards = document.querySelectorAll('.card-body');
+    statCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+    
+    // Animation des barres de progression
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.width = width;
+        }, 500);
+    });
+    
+    // Animation du tableau principal
+    const mainCards = document.querySelectorAll('.card');
+    mainCards.forEach((card, index) => {
+        if (!card.closest('.card-body')) {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100 + 600);
+        }
+    });
+});
+</script>
+{% endblock %}

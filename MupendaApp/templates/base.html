@@ -55,10 +55,11 @@
                 </li>
               </ul>
               <div class="d-flex align-items-center">
+                <a class="btn me-3 text-white" id="btn" href="{% url 'connexion' %}" style="background-color: #ff6700; "><i class="bi bi-phone-fill"></i> Demander un devis</a>
                 {% if user.is_authenticated %}
-                  <a href="{% url 'profil' %}" class="btn fw-bold" style="background-color: #ff6700; color: black"><i class="bi bi-person-circle"></i> Profil</a>
-                {% else %}
-                  <a class="btn me-3 fw-bold" id="btn" href="{% url 'connexion' %}" style="background-color: #ff6700; color: black">Se connecter</a>
+                  <a href="{% url 'profil' %}" class="btn fw-bold" style="background-color: #ff6700;"><i class="bi bi-person-circle"></i> Profil</a>
+                  {% else %}
+                  <a class="btn me-3 text-white" id="btn" href="{% url 'connexion' %}" style="background-color: #ff6700;">Se connecter</a>
                 {% endif %}
               </div>
             </div>
@@ -79,9 +80,7 @@
               <h1 class="text-white"><img src="{% static 'images/White Mupenda Company.png' %}" alt="" width="200"></h1>
               <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
               <p class="text-white py-3">
-                Entreprise Congolaise spécialisée dans le transport routier, 
-                transport maritime, et de la logistique, nous maitrisons l’intégralité de votre chaîne transport, 
-                de l’expédition jusqu’à la livraison.
+                Entreprise Congolaise spécialisée dans les réseaux informatiques, la cyber sécurité, le développement d’applications et logiciels, la conception des systèmes informatisés et embarqués des entreprises et la communication digitale.
               </p>
               <p>
                 <a class="btn text-white rounded-circle" href="#"><i class="bi bi-youtube"></i></a>

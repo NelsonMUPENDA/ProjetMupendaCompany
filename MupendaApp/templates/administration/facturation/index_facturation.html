@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Facturation - Mupenda Company{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="bi bi-file-earmark-text text-primary"></i>
+                Facturation
+            </h1>
+            <p class="text-muted mb-0">Gestion des devis et factures</p>
+        </div>
+        <div>
+            <a href="{% url 'ajouter_devis' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nouveau devis
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card bg-primary text-white">
+                <div class="card-body py-2">
+                    <h5 class="card-title">{{ stats.total_devis }}</h5>
+                    <p class="card-text small mb-0">Total devis</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-warning text-white">
+                <div class="card-body py-2">
+                    <h5 class="card-title">{{ stats.devis_en_attente }}</h5>
+                    <p class="card-text small mb-0">Devis brouillon</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-success text-white">
+                <div class="card-body py-2">
+                    <h5 class="card-title">{{ stats.total_factures }}</h5>
+                    <p class="card-text small mb-0">Total factures</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-info text-white">
+                <div class="card-body py-2">
+                    <h5 class="card-title">{{ stats.factures_impayees }}</h5>
+                    <p class="card-text small mb-0">Factures impayées</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-secondary text-white">
+                <div class="card-body py-2">
+                    <h5 class="card-title">{{ stats.chiffre_affaires|floatformat:0 }}€</h5>
+                    <p class="card-text small mb-0">Chiffre d'affaires</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-danger text-white">
+                <div class="card-body py-2">
+                    <h5 class="card-title">{{ stats.factures_en_retard }}</h5>
+                    <p class="card-text small mb-0">Factures en retard</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation rapide -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="bi bi-file-earmark-plus"></i> Devis récents
+                    </h6>
+                    <a href="{% url 'liste_devis' %}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+                </div>
+                <div class="card-body">
+                    {% if devis_recents %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Numéro</th>
+                                        <th>Client</th>
+                                        <th>Montant</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for devis in devis_recents %}
+                                    <tr>
+                                        <td>{{ devis.numero }}</td>
+                                        <td>{{ devis.client.nom }}</td>
+                                        <td>{{ devis.montant_ttc|floatformat:2 }}€</td>
+                                        <td>
+                                            <span class="badge bg-{% if devis.statut == 'BROUILLON' %}warning{% elif devis.statut == 'ACCEPTE' %}success{% elif devis.statut == 'REFUSE' %}danger{% else %}secondary{% endif %}">
+                                                {{ devis.get_statut_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'fiche_devis' devis.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Aucun devis récent</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="bi bi-file-earmark-check"></i> Factures récentes
+                    </h6>
+                    <a href="{% url 'liste_factures' %}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+                </div>
+                <div class="card-body">
+                    {% if factures_recentes %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Numéro</th>
+                                        <th>Client</th>
+                                        <th>Montant</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for facture in factures_recentes %}
+                                    <tr>
+                                        <td>{{ facture.numero }}</td>
+                                        <td>{{ facture.client.nom }}</td>
+                                        <td>{{ facture.montant_ttc|floatformat:2 }}€</td>
+                                        <td>
+                                            <span class="badge bg-{% if facture.statut == 'ENVOYEE' %}warning{% elif facture.statut == 'PAYEE' %}success{% elif facture.statut == 'EN_RETARD' %}danger{% else %}secondary{% endif %}">
+                                                {{ facture.get_statut_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'fiche_facture' facture.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Aucune facture récente</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-lightning"></i> Actions rapides
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{% url 'ajouter_devis' %}" class="text-decoration-none">
+                                <div class="card border-primary h-100 text-center">
+                                    <div class="card-body">
+                                        <i class="bi bi-plus-circle text-primary" style="font-size: 2rem;"></i>
+                                        <h6 class="card-title mt-2">Créer un devis</h6>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'liste_devis' %}" class="text-decoration-none">
+                                <div class="card border-info h-100 text-center">
+                                    <div class="card-body">
+                                        <i class="bi bi-list-ul text-info" style="font-size: 2rem;"></i>
+                                        <h6 class="card-title mt-2">Liste des devis</h6>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'liste_factures' %}" class="text-decoration-none">
+                                <div class="card border-success h-100 text-center">
+                                    <div class="card-body">
+                                        <i class="bi bi-file-earmark-check text-success" style="font-size: 2rem;"></i>
+                                        <h6 class="card-title mt-2">Liste des factures</h6>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-secondary h-100 text-center">
+                                <div class="card-body">
+                                    <i class="bi bi-graph-up text-secondary" style="font-size: 2rem;"></i>
+                                    <h6 class="card-title mt-2">Rapports (bientôt)</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

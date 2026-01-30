@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Assigner le ticket {{ ticket.numero }} - Mupenda Company{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="bi bi-person-plus text-primary"></i>
+                Assigner le ticket {{ ticket.numero }}
+            </h1>
+            <p class="text-muted mb-0">Assigner ce ticket à un collaborateur</p>
+        </div>
+        <div>
+            <a href="{% url 'fiche_ticket' ticket.id %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Retour au ticket
+            </a>
+        </div>
+    </div>
+
+    <!-- Informations du ticket -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h6 class="mb-0">
+                <i class="bi bi-info-circle"></i> Résumé du ticket
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Numéro:</strong> {{ ticket.numero }}</p>
+                    <p><strong>Client:</strong> {{ ticket.client.nom }}</p>
+                    <p><strong>Titre:</strong> {{ ticket.titre }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Priorité:</strong> 
+                        <span class="badge bg-{% if ticket.priorite == 'URGENTE' %}danger{% elif ticket.priorite == 'HAUTE' %}warning{% elif ticket.priorite == 'NORMALE' %}info{% else %}secondary{% endif %}">
+                            {{ ticket.get_priorite_display }}
+                        </span>
+                    </p>
+                    <p><strong>Type:</strong> 
+                        <span class="badge bg-info">{{ ticket.get_type_demande_display }}</span>
+                    </p>
+                    <p><strong>Statut actuel:</strong> 
+                        <span class="badge bg-{% if ticket.statut == 'OUVERT' %}warning{% elif ticket.statut == 'EN_COURS' %}info{% elif ticket.statut == 'RESOLU' %}success{% else %}secondary{% endif %}">
+                            {{ ticket.get_statut_display }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <p><strong>Description:</strong></p>
+                    <p class="text-muted">{{ ticket.description|truncatechars:200 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulaire d'assignation -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-person-plus"></i> Assignation
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="assigne_a" class="form-label">Assigner à *</label>
+                            <select class="form-select" id="assigne_a" name="assigne_a" required>
+                                <option value="">Choisir un collaborateur</option>
+                                {% for collaborateur in collaborateurs %}
+                                    <option value="{{ collaborateur.id }}">
+                                        {{ collaborateur.get_full_name|default:collaborateur.username }} 
+                                        ({{ collaborateur.username }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                Le statut du ticket passera automatiquement à "En cours"
+                            </small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Information:</strong> Un message système sera automatiquement ajouté pour informer de l'assignation.
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'fiche_ticket' ticket.id %}" class="btn btn-secondary">
+                                <i class="bi bi-x"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Assigner le ticket
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Assignation actuelle -->
+            {% if ticket.assigne_a %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-person-check"></i> Assignation actuelle
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">
+                        <strong>{{ ticket.assigne_a.get_full_name|default:ticket.assigne_a.username }}</strong><br>
+                        <small class="text-muted">{{ ticket.assigne_a.email }}</small>
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Collaborateurs disponibles -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-people"></i> Collaborateurs disponibles
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted mb-3">
+                        {{ collaborateurs|length }} collaborateur(s) disponible(s)
+                    </p>
+                    {% for collaborateur in collaborateurs %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">{{ collaborateur.get_full_name|default:collaborateur.username }}</span>
+                        <span class="badge bg-secondary">{{ collaborateur.username }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

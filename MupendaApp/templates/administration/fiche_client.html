@@ -1,0 +1,340 @@
+{% extends 'administration/indexAdmin.html' %}
+
+{% block title %}Fiche Client - {{ client.nom }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4 my-5">
+        <h1 class="h3">Fiche Client - {{ client.nom }}</h1>
+        <div>
+            <a href="{% url 'clients' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+            <a href="{% url 'modifier_client' client.id %}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+        </div>
+    </div>
+
+    <!-- Informations principales -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations générales</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>Nom:</strong></td>
+                            <td>{{ client.nom }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Email:</strong></td>
+                            <td>{{ client.email }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Téléphone:</strong></td>
+                            <td>{{ client.telephone|default:"Non renseigné" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Adresse:</strong></td>
+                            <td>{{ client.adresse }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Site web:</strong></td>
+                            <td>
+                                {% if client.site_web %}
+                                    <a href="{{ client.site_web }}" target="_blank">{{ client.site_web }}</a>
+                                {% else %}
+                                    Non renseigné
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Type:</strong></td>
+                            <td><span class="badge bg-info">{{ client.get_type_client_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Statut:</strong></td>
+                            <td>
+                                {% if client.statut_client == 'ACTIF' %}
+                                    <span class="badge bg-success">{{ client.get_statut_client_display }}</span>
+                                {% elif client.statut_client == 'PROSPECT' %}
+                                    <span class="badge bg-warning">{{ client.get_statut_client_display }}</span>
+                                {% elif client.statut_client == 'INACTIF' %}
+                                    <span class="badge bg-secondary">{{ client.get_statut_client_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-dark">{{ client.get_statut_client_display }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Responsable:</strong></td>
+                            <td>
+                                {% if client.responsable_compte %}
+                                    {{ client.responsable_compte.username }}
+                                {% else %}
+                                    <span class="text-muted">Non assigné</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if client.siret %}
+                        <tr>
+                            <td><strong>SIRET:</strong></td>
+                            <td>{{ client.siret }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if client.secteur_activite %}
+                        <tr>
+                            <td><strong>Secteur:</strong></td>
+                            <td>{{ client.secteur_activite }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Statistiques</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <h3 class="card-title">{{ total_projets }}</h3>
+                                    <p class="card-text">Projets associés</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <h3 class="card-title">{{ total_interactions }}</h3>
+                                    <p class="card-text">Interactions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if derniere_interaction %}
+                    <div class="mt-3">
+                        <h6>Dernière interaction:</h6>
+                        <div class="alert alert-light">
+                            <strong>{{ derniere_interaction.get_type_interaction_display }}</strong><br>
+                            <small>{{ derniere_interaction.date_interaction|date:"d/m/Y H:i" }}</small><br>
+                            <em>{{ derniere_interaction.sujet }}</em>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if client.notes %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Notes</h5>
+                </div>
+                <div class="card-body">
+                    {{ client.notes|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Actions rapides</h5>
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'modifier_client' client.id %}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Modifier le client
+                        </a>
+                        <a href="{% url 'AjouterClient' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Nouveau client
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onglets -->
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="clientTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="interactions-tab" data-bs-toggle="tab" data-bs-target="#interactions" type="button" role="tab">
+                        <i class="bi bi-chat-dots"></i> Interactions ({{ total_interactions }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="projets-tab" data-bs-toggle="tab" data-bs-target="#projets" type="button" role="tab">
+                        <i class="bi bi-diagram-3"></i> Projets ({{ total_projets }})
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="clientTabsContent">
+                <!-- Onglet Interactions -->
+                <div class="tab-pane fade show active" id="interactions" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Historique des interactions</h5>
+                        <span class="badge bg-secondary">Fonctionnalité à venir</span>
+                    </div>
+                    
+                    {% if interactions %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Sujet</th>
+                                    <th>Participant</th>
+                                    <th>Durée</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for interaction in interactions %}
+                                <tr>
+                                    <td>{{ interaction.date_interaction|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ interaction.get_type_interaction_display }}</span>
+                                    </td>
+                                    <td>{{ interaction.sujet }}</td>
+                                    <td>
+                                        {% if interaction.participant %}
+                                            {{ interaction.participant.username }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if interaction.duree_minutes %}
+                                            {{ interaction.duree_minutes }} min
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-chat-dots fa-3x mb-3"></i>
+                        <p>Aucune interaction enregistrée</p>
+                        <span class="badge bg-info">Fonctionnalité à venir</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Onglet Projets -->
+                <div class="tab-pane fade" id="projets" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Projets associés</h5>
+                        <span class="badge bg-secondary">Fonctionnalité à venir</span>
+                    </div>
+                    
+                    {% if associations %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Projet</th>
+                                    <th>Type</th>
+                                    <th>Statut</th>
+                                    <th>Progression</th>
+                                    <th>Chef projet</th>
+                                    <th>Date début</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for projet in associations %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'fiche_projet' projet.id %}" class="text-decoration-none">
+                                            {{ projet.nom }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ projet.get_type_projet_display }}</span>
+                                    </td>
+                                    <td>
+                                        {% if projet.statut == 'EN_COURS' %}
+                                            <span class="badge bg-primary">{{ projet.get_statut_display }}</span>
+                                        {% elif projet.statut == 'TERMINE' %}
+                                            <span class="badge bg-success">{{ projet.get_statut_display }}</span>
+                                        {% elif projet.statut == 'SUSPENDU' %}
+                                            <span class="badge bg-warning">{{ projet.get_statut_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ projet.get_statut_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 15px; width: 80px;">
+                                            {% if projet.progression >= 80 %}
+                                                <div class="progress-bar bg-success" style="width: {{ projet.progression }}%"></div>
+                                            {% elif projet.progression >= 50 %}
+                                                <div class="progress-bar bg-info" style="width: {{ projet.progression }}%"></div>
+                                            {% else %}
+                                                <div class="progress-bar bg-warning" style="width: {{ projet.progression }}%"></div>
+                                            {% endif %}
+                                        </div>
+                                        <small>{{ projet.progression }}%</small>
+                                    </td>
+                                    <td>
+                                        {% if projet.chef_projet %}
+                                            <a href="#" class="text-decoration-none">
+                                                <i class="bi bi-person-circle"></i> {{ projet.chef_projet.username }}
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">Non assigné</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ projet.date_debut|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'fiche_projet' projet.id %}" class="btn btn-sm btn-outline-primary" title="Voir la fiche">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'modifier_projet' projet.id %}" class="btn btn-sm btn-outline-warning" title="Modifier">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'AffecterCollaborateur' projet.id %}" class="btn btn-sm btn-outline-info" title="Affecter collaborateur">
+                                                <i class="bi bi-person-plus"></i>
+                                            </a>
+                                            <a href="{% url 'SaisirTemps' projet.id %}" class="btn btn-sm btn-outline-success" title="Saisir temps">
+                                                <i class="bi bi-clock"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-diagram-3 fa-3x mb-3"></i>
+                        <p>Aucun projet associé</p>
+                        <span class="badge bg-info">Fonctionnalité à venir</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

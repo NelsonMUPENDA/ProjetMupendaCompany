@@ -1,0 +1,494 @@
+{% extends 'administration/indexAdmin.html' %}
+
+{% block title %}Validation du Temps{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4 my-5">
+        <h1 class="h3">Validation du Temps</h1>
+        <div>
+            <a href="{% url 'suivi_temps' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Retour au suivi
+            </a>
+            <a href="{% url 'rapports_temps' %}" class="btn btn-info">
+                <i class="bi bi-graph-up"></i> Rapports
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistiques de validation -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.en_attente }}</h5>
+                    <p class="card-text">En attente</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.valides }}</h5>
+                    <p class="card-text">Validées</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.rejetes }}</h5>
+                    <p class="card-text">Rejetées</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.montant_en_attente|floatformat:0 }} €</h5>
+                    <p class="card-text">Montant en attente</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label for="collaborateur" class="form-label">Collaborateur</label>
+                    <select class="form-select" id="collaborateur" name="collaborateur">
+                        <option value="">Tous</option>
+                        {% for utilisateur in collaborateurs %}
+                            <option value="{{ utilisateur.id }}" {% if request.GET.collaborateur == utilisateur.id|stringformat:"s" %}selected{% endif %}>
+                                {{ utilisateur.username }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="projet" class="form-label">Projet</label>
+                    <select class="form-select" id="projet" name="projet">
+                        <option value="">Tous</option>
+                        {% for projet in projets %}
+                            <option value="{{ projet.id }}" {% if request.GET.projet == projet.id|stringformat:"s" %}selected{% endif %}>
+                                {{ projet.nom }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="periode" class="form-label">Période</label>
+                    <select class="form-select" id="periode" name="periode">
+                        <option value="semaine" {% if request.GET.periode == 'semaine' %}selected{% endif %}>Cette semaine</option>
+                        <option value="mois" {% if request.GET.periode == 'mois' %}selected{% endif %}>Ce mois</option>
+                        <option value="mois_dernier" {% if request.GET.periode == 'mois_dernier' %}selected{% endif %}>Mois dernier</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-funnel"></i> Filtrer
+                    </button>
+                    <a href="{% url 'validation_temps' %}" class="btn btn-secondary ms-2">
+                        <i class="bi bi-arrow-clockwise"></i> Réinitialiser
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Saisies en attente -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Saisies en attente de validation</h5>
+            <div>
+                <button class="btn btn-sm btn-success" onclick="validerTout()">
+                    <i class="bi bi-check-all"></i> Valider tout
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="rejeterTout()">
+                    <i class="bi bi-x-all"></i> Rejeter tout
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if saisies_en_attente %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="selectAllAttente" onchange="toggleSelectAll('attente')">
+                            </th>
+                            <th>Date</th>
+                            <th>Collaborateur</th>
+                            <th>Projet</th>
+                            <th>Type travail</th>
+                            <th>Heures</th>
+                            <th>Description</th>
+                            <th>Taux horaire</th>
+                            <th>Montant</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for saisie in saisies_en_attente %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="checkbox-attente" value="{{ saisie.id }}">
+                            </td>
+                            <td>{{ saisie.date_saisie|date:"d/m/Y" }}</td>
+                            <td>
+                                <a href="#" class="text-decoration-none">
+                                    <i class="bi bi-person-circle"></i> {{ saisie.collaborateur.username }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'fiche_projet' saisie.projet.id %}" class="text-decoration-none">
+                                    {{ saisie.projet.nom }}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ saisie.get_type_travail_display }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">{{ saisie.heures }}h</span>
+                            </td>
+                            <td>
+                                <span title="{{ saisie.description }}">
+                                    {{ saisie.description|truncatechars:30 }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if saisie.taux_horaire %}
+                                    {{ saisie.taux_horaire }} €/h
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if saisie.montant %}
+                                    <span class="badge bg-success">{{ saisie.montant|floatformat:2 }} €</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="voirDetails({{ saisie.id }})" title="Voir détails">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="validerSaisie({{ saisie.id }})" title="Valider">
+                                        <i class="bi bi-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="rejeterSaisie({{ saisie.id }})" title="Rejeter">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-check-circle fa-3x mb-3"></i>
+                <h5>Aucune saisie en attente</h5>
+                <p>Toutes les saisies ont été validées ou rejetées</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Historique des validations -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Historique des validations récentes</h5>
+        </div>
+        <div class="card-body">
+            {% if validations_recentes %}
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Collaborateur</th>
+                            <th>Projet</th>
+                            <th>Heures</th>
+                            <th>Statut</th>
+                            <th>Validé par</th>
+                            <th>Date validation</th>
+                            <th>Commentaire</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for validation in validations_recentes %}
+                        <tr class="{% if validation.statut == 'VALIDE' %}table-success{% elif validation.statut == 'REJETE' %}table-danger{% endif %}">
+                            <td>{{ validation.date_saisie|date:"d/m/Y" }}</td>
+                            <td>{{ validation.collaborateur.username }}</td>
+                            <td>{{ validation.projet.nom }}</td>
+                            <td>{{ validation.heures }}h</td>
+                            <td>
+                                {% if validation.statut == 'VALIDE' %}
+                                    <span class="badge bg-success">Validé</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Rejeté</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ validation.valide_par.username }}</td>
+                            <td>{{ validation.date_validation|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                {% if validation.commentaire_validation %}
+                                    <span title="{{ validation.commentaire_validation }}">
+                                        {{ validation.commentaire_validation|truncatechars:20 }}
+                                    </span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">Aucune validation récente</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal détails -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Détails de la saisie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detailsContent">
+                <!-- Contenu dynamique -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.btn {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+    padding: 0.375em 0.75em;
+}
+
+.table-success {
+    background-color: rgba(25, 135, 84, 0.1);
+}
+
+.table-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+</style>
+
+<script>
+function toggleSelectAll(type) {
+    const selectAll = document.getElementById('selectAll' + type.charAt(0).toUpperCase() + type.slice(1));
+    const checkboxes = document.querySelectorAll('.checkbox-' + type);
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+}
+
+function validerTout() {
+    const checkboxes = document.querySelectorAll('.checkbox-attente:checked');
+    const ids = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (ids.length === 0) {
+        alert('Veuillez sélectionner au moins une saisie');
+        return;
+    }
+    
+    if (confirm(`Valider ${ids.length} saisie(s) ?`)) {
+        fetch('/administration/temps/valider-selection/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ids: ids})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Erreur lors de la validation');
+            }
+        });
+    }
+}
+
+function rejeterTout() {
+    const checkboxes = document.querySelectorAll('.checkbox-attente:checked');
+    const ids = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (ids.length === 0) {
+        alert('Veuillez sélectionner au moins une saisie');
+        return;
+    }
+    
+    const commentaire = prompt('Raison du rejet (appliquée à toutes les saisies) :');
+    if (commentaire !== null) {
+        fetch('/administration/temps/rejeter-selection/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ids: ids, commentaire: commentaire})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Erreur lors du rejet');
+            }
+        });
+    }
+}
+
+function voirDetails(saisieId) {
+    fetch(`/administration/temps/details/${saisieId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('detailsContent').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Date:</strong> ${data.date_saisie}</p>
+                        <p><strong>Collaborateur:</strong> ${data.collaborateur}</p>
+                        <p><strong>Projet:</strong> ${data.projet}</p>
+                        <p><strong>Type travail:</strong> ${data.type_travail}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Heures:</strong> ${data.heures}h</p>
+                        <p><strong>Taux horaire:</strong> ${data.taux_horaire || '-'} €/h</p>
+                        <p><strong>Montant:</strong> ${data.montant || '-'} €</p>
+                        <p><strong>Statut:</strong> ${data.statut}</p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <p><strong>Description:</strong></p>
+                    <p>${data.description}</p>
+                </div>
+                ${data.commentaire_validation ? `
+                <div class="mt-3">
+                    <p><strong>Commentaire de validation:</strong></p>
+                    <p>${data.commentaire_validation}</p>
+                </div>
+                ` : ''}
+            `;
+            
+            new bootstrap.Modal(document.getElementById('detailsModal')).show();
+        });
+}
+
+function validerSaisie(saisieId) {
+    if (confirm('Valider cette saisie ?')) {
+        fetch(`/administration/temps/valider/${saisieId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Erreur lors de la validation');
+            }
+        });
+    }
+}
+
+function rejeterSaisie(saisieId) {
+    const commentaire = prompt('Raison du rejet :');
+    if (commentaire !== null) {
+        fetch(`/administration/temps/rejeter/${saisieId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({commentaire: commentaire})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Erreur lors du rejet');
+            }
+        });
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Animation des cards
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}

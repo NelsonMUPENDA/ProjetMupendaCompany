@@ -1,0 +1,134 @@
+{% extends 'administration/indexAdmin.html' %}
+
+{% block title %}Ajouter une interaction - {{ client.nom }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Ajouter une interaction - {{ client.nom }}</h1>
+        <a href="{% url 'fiche_client' client.id %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour à la fiche client
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="type_interaction" class="form-label">Type d'interaction *</label>
+                                <select class="form-select" id="type_interaction" name="type_interaction" required>
+                                    {% for type, label in type_choices %}
+                                        <option value="{{ type }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="date_interaction" class="form-label">Date et heure *</label>
+                                <input type="datetime-local" class="form-control" id="date_interaction" name="date_interaction" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="sujet" class="form-label">Sujet *</label>
+                            <input type="text" class="form-control" id="sujet" name="sujet" required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="duree_minutes" class="form-label">Durée (minutes)</label>
+                                <input type="number" class="form-control" id="duree_minutes" name="duree_minutes" min="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="prochain_rappel" class="form-label">Prochain rappel</label>
+                                <input type="datetime-local" class="form-control" id="prochain_rappel" name="prochain_rappel">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description détaillée</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" placeholder="Détails de l'interaction..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'fiche_client' client.id %}" class="btn btn-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer l'interaction
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Informations client</h6>
+                </div>
+                <div class="card-body">
+                    <h5>{{ client.nom }}</h5>
+                    <p class="text-muted">{{ client.email }}</p>
+                    <p><strong>Type:</strong> {{ client.get_type_client_display }}</p>
+                    <p><strong>Statut:</strong> 
+                        {% if client.statut_client == 'ACTIF' %}
+                            <span class="badge bg-success">{{ client.get_statut_client_display }}</span>
+                        {% elif client.statut_client == 'PROSPECT' %}
+                            <span class="badge bg-warning">{{ client.get_statut_client_display }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ client.get_statut_client_display }}</span>
+                        {% endif %}
+                    </p>
+                    
+                    {% if client.get_derniere_interaction %}
+                    <hr>
+                    <h6>Dernière interaction:</h6>
+                    <p><strong>{{ client.get_derniere_interaction.get_type_interaction_display }}</strong></p>
+                    <p><small>{{ client.get_derniere_interaction.date_interaction|date:"d/m/Y H:i" }}</small></p>
+                    <p><em>{{ client.get_derniere_interaction.sujet|truncatechars:50 }}</em></p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Conseils</h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-lightbulb"></i> Types d'interactions</h6>
+                        <ul class="mb-0 small">
+                            <li><strong>Appel:</strong> Communication téléphonique</li>
+                            <li><strong>Email:</strong> Correspondance par email</li>
+                            <li><strong>Rendez-vous:</strong> Meeting physique</li>
+                            <li><strong>Démonstration:</strong> Présentation produit</li>
+                            <li><strong>Proposition:</strong> Offre commerciale</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Définir la date et heure par défaut à maintenant
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const dateInput = document.getElementById('date_interaction');
+    if (dateInput) {
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        dateInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+});
+</script>
+{% endblock %}

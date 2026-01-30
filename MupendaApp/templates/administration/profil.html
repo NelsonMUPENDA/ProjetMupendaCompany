@@ -1,0 +1,101 @@
+{% extends 'administration/indexAdmin.html' %}
+{% load static %}
+
+{% block content %}
+<section class="pb-4">
+    <div class="container">
+        <div class="row g-3 pt-3">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 my-4">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a class="nav-link" href="{% url 'dashboard' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Mon profil</li>
+                    </ol>
+                </nav>
+            </div> 
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row g-3">
+            <p><i class="bi bi-info-circle-fill"></i> Ici vous pouvez gérer votre profil, modifier vos informations personnelles et sécuriser votre compte.</p>
+            <div class="col-md-4">
+                <div class="card shadow rounded">
+                    <div class="card-header bg-dark text-white p-3">
+                        <h3><i class="bi bi-image"></i> Image de profil</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if user.photo_profil %}
+                            <img src="{{ user.photo_profil.url }}" class="img-fluid rounded" alt="Image de profil">
+                        {% else %}
+                            <p class="img-fluid rounded"><i class="bi bi-person-circle"></i></p>
+                        {% endif %}
+                        <hr>
+                        <form action="{% url 'modifier_photo_profil' %}" method="post" enctype="multipart/form-data">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert {% if message.tags == 'success' %}alert-success {% elif message.tags == 'error' %}alert-danger{% endif %}" role="alert">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            {% csrf_token %}
+                            <div class="mb-3 mt-3">
+                                <label for="profileImage" class="form-label">Changer l'image de profil :</label>
+                                <input type="file" class="form-control" id="profileImage" name="photo_profil" required>
+                            </div>
+                            <button type="submit" class="btn form-control" style="background-color: black; color: #ff6700">Mettre à jour l'image</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-dark text-white p-3">
+                        <h3><i class="bi bi-person-lines-fill"></i> Détails du profil</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">Voici les informations de votre profil. Vous pouvez les modifier en cliquant sur le bouton "Editer le profil".</p>
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert {% if message.tags == 'success' %}alert-success {% elif message.tags == 'error' %}alert-danger{% endif %}" role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <ul class="list-group">
+                            <li class="list-group-item"><strong>Nom d'utilisateur :</strong> {{ user.username }}</li>
+                            <li class="list-group-item"><strong>Email :</strong> {{ user.email }}</li>
+                            <li class="list-group-item"><strong>Prénom :</strong> {{ user.first_name }}</li>
+                            <li class="list-group-item"><strong>Nom :</strong> {{ user.last_name }}</li>
+                            <li class="list-group-item"><strong>Date de création :</strong> {{ user.date_joined }}</li>
+                            <li class="list-group-item"><strong>Statut du compte :</strong> 
+                                {% if user.is_active %}
+                                    <span class="badge bg-success">Compte Actif</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Compte Désactivé</span>
+                                {% endif %}
+                            </li>
+                            <li class="list-group-item"><strong>Dernière connexion :</strong> {{ user.last_login }}</li>
+                        </ul>
+                        <a href="{% url 'modifier_mon_profil' %}" class="btn form-control mt-3" style="background-color: black; color: #ff6700">Editer mes informations</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow rounded">
+                    <div class="card-header bg-dark text-white p-3">
+                        <h3><i class="bi bi-shield-lock-fill"></i> Sécurité du compte</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">Pour votre sécurité, il est recommandé de changer régulièrement votre mot de passe.</p>
+                        <a href="{% url 'modifier_mot_de_passe' %}" class="btn form-control mb-3" style="background-color: black; color: #ff6700">Changer le mot de passe</a>
+                        <p class="mb-3">Activer l'authentification à deux facteurs pour une sécurité supplémentaire.</p>
+                        <a href="#" class="btn form-control" style="background-color: black; color: #ff6700">Configurer l'authentification à deux facteurs</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

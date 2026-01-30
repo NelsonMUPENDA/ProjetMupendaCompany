@@ -1,0 +1,37 @@
+{% extends 'administration/indexAdmin.html' %}
+
+{% block content %}
+<section class="pb-4">
+    <div class="container">
+        <div class="row g-3 pt-3">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 my-4">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a class="nav-link" href="{% url 'dashboard' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Modifier Profil</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-8">
+                <h2 class="mb-4"><i class="bi bi-person-lines-fill"></i> Modifier mon profil</h2>
+                <p>Utilisez le formulaire ci-dessous pour modifier les informations de votre profil. Assurez-vous que toutes les informations sont correctes avant de soumettre le formulaire.</p>
+                <form action="{% url 'modifier_mon_profil' %}" method="post" enctype="multipart/form-data" class="shadow p-3 rounded">
+                    {% csrf_token %}
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" name="username" class="form-control mb-3" placeholder="Nom d'utilisateur" value="{{ user.username }}" required>
+                    <label for="first_name">Prénom</label>
+                    <input type="text" name="first_name" class="form-control mb-3" placeholder="Prénom" value="{{ user.first_name }}" required>
+                    <label for="last_name">Nom de famille</label>
+                    <input type="text" name="last_name" class="form-control mb-3" placeholder="Nom de famille" value="{{ user.last_name }}" required>
+                    <label for="email">Email</label>
+                    <input type="email" name="email" class="form-control mb-3" placeholder="Email" value="{{ user.email }}" required>
+                    <button type="submit" class="btn form-control" style="background-color: black; color: #ff6700">Enregistrer les modifications</button>
+                    <a href="{% url 'mon_profil' %}" class="btn form-control mt-3" style="background-color: black; color: #ff6700">Retour au profil</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

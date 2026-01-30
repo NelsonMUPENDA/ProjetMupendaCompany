@@ -1,0 +1,197 @@
+{% extends 'administration/IndexAdmin.html' %}
+
+{% block title %}Tableau de bord CRM{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Tableau de bord CRM</h1>
+        <div>
+            <a href="{% url 'AdminClients' %}" class="btn btn-primary">
+                <i class="fas fa-users"></i> Gestion des clients
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistiques principales -->
+    <div class="row mb-4">
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.total_clients }}</h5>
+                    <p class="card-text">Total clients</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.clients_actifs }}</h5>
+                    <p class="card-text">Clients actifs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.prospects }}</h5>
+                    <p class="card-text">Prospects</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.total_interactions }}</h5>
+                    <p class="card-text">Interactions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.interactions_semaine }}</h5>
+                    <p class="card-text">Cette semaine</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stats.associations_en_cours }}</h5>
+                    <p class="card-text">Projets en cours</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Clients récents -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Clients récents</h5>
+                </div>
+                <div class="card-body">
+                    {% if clients_recent %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Type</th>
+                                    <th>Statut</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for client in clients_recent %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'fiche_client' client.id %}" class="text-decoration-none">
+                                            {{ client.nom }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ client.get_type_client_display }}</span>
+                                    </td>
+                                    <td>
+                                        {% if client.statut_client == 'ACTIF' %}
+                                            <span class="badge bg-success">{{ client.get_statut_client_display }}</span>
+                                        {% elif client.statut_client == 'PROSPECT' %}
+                                            <span class="badge bg-warning">{{ client.get_statut_client_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ client.get_statut_client_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ client.date_creation|date:"d/m/Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Aucun client récent</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactions récentes -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Interactions récentes</h5>
+                </div>
+                <div class="card-body">
+                    {% if interactions_recentes %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Type</th>
+                                    <th>Sujet</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for interaction in interactions_recentes %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'fiche_client' interaction.client.id %}" class="text-decoration-none">
+                                            {{ interaction.client.nom }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ interaction.get_type_interaction_display }}</span>
+                                    </td>
+                                    <td>{{ interaction.sujet|truncatechars:30 }}</td>
+                                    <td>{{ interaction.date_interaction|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Aucune interaction récente</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Actions rapides</h5>
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'AjouterClient' %}" class="btn btn-primary w-100">
+                                <i class="fas fa-user-plus"></i> Nouveau client
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'AdminClients' %}" class="btn btn-info w-100">
+                                <i class="fas fa-list"></i> Liste des clients
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="#" class="btn btn-success w-100">
+                                <i class="fas fa-chart-bar"></i> Rapports
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="#" class="btn btn-warning w-100">
+                                <i class="fas fa-bell"></i> Rappels
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

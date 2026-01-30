@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Liste des devis - Mupenda Company{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="bi bi-file-earmark-plus text-primary"></i>
+                Liste des devis
+            </h1>
+            <p class="text-muted mb-0">{{ devis.count }} devis trouvé(s)</p>
+        </div>
+        <div>
+            <a href="{% url 'ajouter_devis' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nouveau devis
+            </a>
+            <a href="{% url 'facturation' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="search" class="form-label">Recherche</label>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           value="{{ search }}" placeholder="Numéro, client, projet...">
+                </div>
+                <div class="col-md-3">
+                    <label for="statut_filter" class="form-label">Statut</label>
+                    <select class="form-select" id="statut_filter" name="statut">
+                        <option value="">Tous les statuts</option>
+                        {% for statut, label in statut_choices %}
+                            <option value="{{ statut }}" {% if statut_filter == statut %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="client_filter" class="form-label">Client</label>
+                    <select class="form-select" id="client_filter" name="client">
+                        <option value="">Tous les clients</option>
+                        {% for client in clients %}
+                            <option value="{{ client.id }}" {% if client_filter == client.id|stringformat:"s" %}selected{% endif %}>
+                                {{ client.nom }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label><br>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Filtrer
+                    </button>
+                    <a href="{% url 'liste_devis' %}" class="btn btn-secondary">
+                        <i class="bi bi-x"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tableau des devis -->
+    <div class="card">
+        <div class="card-body">
+            {% if devis %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Numéro</th>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Projet</th>
+                                <th>Montant HT</th>
+                                <th>Montant TTC</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dev in devis %}
+                            <tr>
+                                <td>
+                                    <strong>{{ dev.numero }}</strong>
+                                </td>
+                                <td>{{ dev.date_emission|date:"d/m/Y" }}</td>
+                                <td>{{ dev.client.nom }}</td>
+                                <td>
+                                    {% if dev.projet %}
+                                        {{ dev.projet.nom }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ dev.montant_ht|floatformat:2 }}€</td>
+                                <td>{{ dev.montant_ttc|floatformat:2 }}€</td>
+                                <td>
+                                    <span class="badge bg-{% if dev.statut == 'BROUILLON' %}warning{% elif dev.statut == 'ACCEPTE' %}success{% elif dev.statut == 'REFUSE' %}danger{% else %}secondary{% endif %}">
+                                        {{ dev.get_statut_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'fiche_devis' dev.id %}" class="btn btn-sm btn-outline-primary" title="Voir">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        {% if dev.statut == 'ACCEPTE' and not dev.facture %}
+                                            <a href="{% url 'convertir_devis_facture' dev.id %}" class="btn btn-sm btn-outline-success" title="Convertir en facture">
+                                                <i class="bi bi-arrow-right-circle"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-file-earmark-plus text-muted" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">Aucun devis trouvé</h5>
+                    <p class="text-muted">Commencez par créer votre premier devis</p>
+                    <a href="{% url 'ajouter_devis' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Créer un devis
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
