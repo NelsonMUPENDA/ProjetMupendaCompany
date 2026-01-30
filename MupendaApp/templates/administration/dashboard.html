@@ -3,158 +3,782 @@
 
 {% block content %}
 
-<section>
-    <div class="container">
-        <div class="row g-3">
-            <div class="col-md-12">
-                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 my-4">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a class="nav-link" href="{% url 'dashboard' %}">Accueil</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Tableau de bord</li>
-                    </ol>
-                </nav>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    .dashboard-content {
+        padding: 0;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .dashboard-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .dashboard-description {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .breadcrumb-custom {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .breadcrumb-custom .breadcrumb-item {
+        color: var(--text-secondary);
+    }
+
+    .breadcrumb-custom .breadcrumb-item a {
+        color: var(--primary-orange);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb-custom .breadcrumb-item a:hover {
+        color: #ff8533;
+        transform: translateX(3px);
+        display: inline-block;
+    }
+
+    .breadcrumb-custom .breadcrumb-item.active {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-orange) 0%, #ff8533 100%);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(255, 103, 0, 0.2);
+    }
+
+    .stat-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .stat-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-icon::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+        border-radius: 15px;
+    }
+
+    .stat-icon.services {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    }
+
+    .stat-icon.realisations {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    }
+
+    .stat-icon.formations {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    }
+
+    .stat-icon.contacts {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    }
+
+    .stat-icon.temoignages {
+        background: linear-gradient(135deg, #343a40 0%, #23272b 100%);
+    }
+
+    .stat-icon.blog {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    }
+
+    .stat-content h3 {
+        color: var(--text-primary);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-description {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .data-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-title {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: var(--primary-orange);
+    }
+
+    .data-table {
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid var(--glass-border);
+    }
+
+    .data-table table {
+        margin: 0;
+        color: var(--text-primary);
+    }
+
+    .data-table thead {
+        background: linear-gradient(135deg, rgba(255, 103, 0, 0.2) 0%, rgba(255, 103, 0, 0.1) 100%);
+    }
+
+    .data-table thead th {
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+
+    .data-table tbody tr {
+        border-bottom: 1px solid var(--glass-border);
+        transition: all 0.3s ease;
+    }
+
+    .data-table tbody tr:hover {
+        background: rgba(255, 103, 0, 0.05);
+        transform: translateX(5px);
+    }
+
+    .data-table tbody td {
+        padding: 1rem;
+        border-radius: 10px;
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-title {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .activity-description {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .activity-time {
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        opacity: 0.7;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        /* ... existing media queries ... */
+        
+        .dashboard-title {
+            font-size: 1.5rem;
+        }
+        
+        .stat-card {
+            padding: 1rem;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="dashboard-content">
+    <!-- En-tête du dashboard -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="bi bi-speedometer2 me-2"></i>
+            Tableau de bord Administrateur
+        </h1>
+        <p class="dashboard-description">
+            Bienvenue sur votre espace d'administration. Gérez efficacement tous les aspects de votre site web : services, réalisations, formations, contacts, FAQ, témoignages, partenaires et blog.
+        </p>
+    </div>
+
+    <!-- Fil d'Ariane -->
+    <nav aria-label="breadcrumb">
+        <div class="breadcrumb-custom">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'dashboard' %}">
+                        <i class="bi bi-house-door me-1"></i>
+                        Accueil
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <i class="bi bi-speedometer2 me-1"></i>
+                    Tableau de bord
+                </li>
+            </ol>
+        </div>
+    </nav>
+
+    <!-- Statistiques principales -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon services">
+                    <i class="bi bi-gear-fill"></i>
+                </div>
+            </div>
+            <div class="stat-content">
+                <h3>Services</h3>
+                <div class="stat-number">{{ count_services }}</div>
+                <p class="stat-description">Services actifs</p>
+                <span class="stat-trend up">
+                    <i class="bi bi-arrow-up"></i>
+                    +12% ce mois
+                </span>
             </div>
         </div>
 
-        <div class="row g-3">
-            <div class="col-md-12">
-                <h2 class="mb-4"><i class="bi bi-speedometer2"></i> Tableau de bord Administrateur</h2>
-                <p>Bienvenue sur le tableau de bord administrateur. Ici, vous pouvez gérer les différentes sections du site web, y compris les services, les réalisations, les formations, les contacts, les FAQ, les témoignages, les partenaires et le blog.</p>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-3 shadow" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4 justify-content-center align-items-center d-flex">
-                            <i class="bi bi-gear-fill display-4"></i>
-                        </div>
-                        <div class="col-md-8">
-                        <div class="card-body bg-primary text-white">
-                            <h5 class="card-title">Services</h5>
-                            <h4 class="card-text">{{ count_services }} services</h4>
-                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                        </div>
-                        </div>
-                    </div>
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon realisations">
+                    <i class="bi bi-check-circle-fill"></i>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card mb-3 shadow" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4 justify-content-center align-items-center d-flex">
-                            <i class="bi bi-check-circle-fill display-4"></i>
-                        </div>
-                        <div class="col-md-8">
-                        <div class="card-body bg-success text-white">
-                            <h5 class="card-title">Réalisations</h5>
-                            <h4 class="card-text">{{ count_realisations }} réalisations</h4>
-                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-3 shadow" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4 justify-content-center align-items-center d-flex">
-                            <i class="bi bi-clipboard-check-fill display-4"></i>
-                        </div>
-                        <div class="col-md-8">
-                        <div class="card-body bg-warning text-dark">
-                            <h5 class="card-title">Formations</h5>
-                            <h4 class="card-text">{{ count_formations }} formations</h4>
-                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-3 shadow" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4 justify-content-center align-items-center d-flex">
-                            <i class="bi bi-telephone-fill display-4"></i>
-                        </div>
-                        <div class="col-md-8">
-                        <div class="card-body bg-danger text-white">
-                            <h5 class="card-title">Contacts</h5>
-                            <h4 class="card-text">{{ count_contacts }} contacts</h4>
-                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-3 shadow" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4 justify-content-center align-items-center d-flex">
-                            <i class="bi bi-question-circle-fill display-4"></i>
-                        </div>
-                        <div class="col-md-8">
-                        <div class="card-body bg-dark text-white">
-                            <h5 class="card-title">Témoignages</h5>
-                            <h4 class="card-text">{{ count_temoignages }} témoignages</h4>
-                            <p class="card-text"><small class="text-body-light">Last updated 3 mins ago</small></p>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-3 shadow" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4 justify-content-center align-items-center d-flex">
-                            <i class="bi bi-journal-text display-4"></i>
-                        </div>
-                        <div class="col-md-8">
-                        <div class="card-body bg-info text-dark">
-                            <h5 class="card-title">Blog</h5>
-                            <h4 class="card-text">{{ count_blogs }} blogs</h4>
-                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                        </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="stat-content">
+                <h3>Réalisations</h3>
+                <div class="stat-number">{{ count_realisations }}</div>
+                <p class="stat-description">Projets terminés</p>
+                <span class="stat-trend up">
+                    <i class="bi bi-arrow-up"></i>
+                    +8% ce mois
+                </span>
             </div>
         </div>
 
-        <div class="row g-3 my-3">
-            <div class="col-md-12">
-                <h3 class="mb-4"><i class="bi bi-table"></i> Données récentes</h3>
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon formations">
+                    <i class="bi bi-clipboard-check-fill"></i>
+                </div>
             </div>
-            <table class="table">
-                <thead class="table-dark">
+            <div class="stat-content">
+                <h3>Formations</h3>
+                <div class="stat-number">{{ count_formations }}</div>
+                <p class="stat-description">Cours disponibles</p>
+                <span class="stat-trend down">
+                    <i class="bi bi-arrow-down"></i>
+                    -3% ce mois
+                </span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon contacts">
+                    <i class="bi bi-telephone-fill"></i>
+                </div>
+            </div>
+            <div class="stat-content">
+                <h3>Contacts</h3>
+                <div class="stat-number">{{ count_contacts }}</div>
+                <p class="stat-description">Messages reçus</p>
+                <span class="stat-trend up">
+                    <i class="bi bi-arrow-up"></i>
+                    +25% ce mois
+                </span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon temoignages">
+                    <i class="bi bi-question-circle-fill"></i>
+                </div>
+            </div>
+            <div class="stat-content">
+                <h3>Témoignages</h3>
+                <div class="stat-number">{{ count_temoignages }}</div>
+                <p class="stat-description">Avis clients</p>
+                <span class="stat-trend up">
+                    <i class="bi bi-arrow-up"></i>
+                    +15% ce mois
+                </span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon blog">
+                    <i class="bi bi-journal-text"></i>
+                </div>
+            </div>
+            <div class="stat-content">
+                <h3>Blog</h3>
+                <div class="stat-number">{{ count_blogs }}</div>
+                <p class="stat-description">Articles publiés</p>
+                <span class="stat-trend up">
+                    <i class="bi bi-arrow-up"></i>
+                    +5% ce mois
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Graphiques -->
+    <div class="charts-section">
+        <!-- Graphique principal -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">
+                    <i class="bi bi-graph-up"></i>
+                    Évolution des activités
+                </h3>
+                <div class="chart-period">
+                    <button class="period-btn" onclick="updateChart('week')">Semaine</button>
+                    <button class="period-btn active" onclick="updateChart('month')">Mois</button>
+                    <button class="period-btn" onclick="updateChart('year')">Année</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="mainChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Graphique de progression -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">
+                    <i class="bi bi-pie-chart"></i>
+                    Répartition
+                </h3>
+            </div>
+            <div class="mini-chart">
+                <canvas id="pieChart"></canvas>
+            </div>
+            <ul class="progress-list">
+                <li class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">Services</span>
+                        <span class="progress-value">75%</span>
+                    </div>
+                    <div class="progress-bar-custom">
+                        <div class="progress-fill" style="width: 75%; background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);"></div>
+                    </div>
+                </li>
+                <li class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">Projets</span>
+                        <span class="progress-value">60%</span>
+                    </div>
+                    <div class="progress-bar-custom">
+                        <div class="progress-fill" style="width: 60%; background: linear-gradient(90deg, #28a745 0%, #1e7e34 100%);"></div>
+                    </div>
+                </li>
+                <li class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">Formations</span>
+                        <span class="progress-value">45%</span>
+                    </div>
+                    <div class="progress-bar-custom">
+                        <div class="progress-fill" style="width: 45%; background: linear-gradient(90deg, #ffc107 0%, #e0a800 100%);"></div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Section Activités Récentes -->
+    <div class="activity-section">
+        <h3 class="section-title">
+            <i class="bi bi-activity"></i>
+            Activités récentes
+        </h3>
+        <ul class="activity-list">
+            <li class="activity-item">
+                <div class="activity-icon" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);">
+                    <i class="bi bi-plus-circle"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Nouveau service ajouté</div>
+                    <div class="activity-description">Développement web a été ajouté à la liste des services</div>
+                    <div class="activity-time">Il y a 2 heures</div>
+                </div>
+            </li>
+            <li class="activity-item">
+                <div class="activity-icon" style="background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Projet terminé</div>
+                    <div class="activity-description">Site e-commerce pour Client ABC est maintenant en ligne</div>
+                    <div class="activity-time">Il y a 5 heures</div>
+                </div>
+            </li>
+            <li class="activity-item">
+                <div class="activity-icon" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                    <i class="bi bi-envelope"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Nouveau message de contact</div>
+                    <div class="activity-description">John Doe a envoyé une demande de devis</div>
+                    <div class="activity-time">Il y a 8 heures</div>
+                </div>
+            </li>
+            <li class="activity-item">
+                <div class="activity-icon" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
+                    <i class="bi bi-star"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Nouveau témoignage</div>
+                    <div class="activity-description">Sarah Wilson a laissé un avis 5 étoiles</div>
+                    <div class="activity-time">Hier</div>
+                </div>
+            </li>
+            <li class="activity-item">
+                <div class="activity-icon" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                    <i class="bi bi-journal-text"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Article publié</div>
+                    <div class="activity-description">"Les tendances du web en 2024" est maintenant en ligne</div>
+                    <div class="activity-time">Il y a 2 jours</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Section des données récentes -->
+    <div class="data-section">
+        <h2 class="section-title">
+            <i class="bi bi-table"></i>
+            Données récentes
+        </h2>
+        
+        <div class="data-table">
+            <table class="table table-hover">
+                <thead>
                     <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">First</th>
-                    <th scope="col">Last</th>
-                    <th scope="col">Handle</th>
+                        <th scope="col">#</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Statut</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
+                        <th scope="row">1</th>
+                        <td>Mark Otto</td>
+                        <td><span class="badge bg-primary">Client</span></td>
+                        <td>Il y a 2 heures</td>
+                        <td><span class="badge bg-success">Actif</span></td>
                     </tr>
                     <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
+                        <th scope="row">2</th>
+                        <td>Jacob Thornton</td>
+                        <td><span class="badge bg-info">Projet</span></td>
+                        <td>Il y a 5 heures</td>
+                        <td><span class="badge bg-warning">En cours</span></td>
                     </tr>
                     <tr>
-                    <th scope="row">3</th>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>@social</td>
+                        <th scope="row">3</th>
+                        <td>John Doe</td>
+                        <td><span class="badge bg-secondary">Contact</span></td>
+                        <td>Hier</td>
+                        <td><span class="badge bg-success">Traité</span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">4</th>
+                        <td>Sarah Wilson</td>
+                        <td><span class="badge bg-primary">Client</span></td>
+                        <td>Hier</td>
+                        <td><span class="badge bg-success">Actif</span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">5</th>
+                        <td>Mike Johnson</td>
+                        <td><span class="badge bg-info">Projet</span></td>
+                        <td>Il y a 2 jours</td>
+                        <td><span class="badge bg-danger">Terminé</span></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-</section>
+</div>
+
+<script>
+    // Graphique principal - Évolution des activités
+    const ctx = document.getElementById('mainChart').getContext('2d');
+    const mainChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+            datasets: [{
+                label: 'Services',
+                data: [12, 19, 15, 25, 22, 30, 28, 35, 32, 38, 42, 45],
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Projets',
+                data: [8, 12, 10, 18, 15, 22, 20, 25, 23, 28, 32, 35],
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Contacts',
+                data: [5, 8, 6, 12, 10, 15, 14, 18, 16, 20, 24, 28],
+                borderColor: '#dc3545',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        color: '#ffffff',
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)',
+                        borderColor: 'rgba(255, 255, 255, 0.2)'
+                    },
+                    ticks: {
+                        color: '#b0b0b0'
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)',
+                        borderColor: 'rgba(255, 255, 255, 0.2)'
+                    },
+                    ticks: {
+                        color: '#b0b0b0'
+                    }
+                }
+            }
+        }
+    });
+
+    // Graphique circulaire - Répartition
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    const pieChart = new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Services', 'Projets', 'Formations', 'Contacts', 'Autres'],
+            datasets: [{
+                data: [35, 25, 20, 15, 5],
+                backgroundColor: [
+                    '#007bff',
+                    '#28a745',
+                    '#ffc107',
+                    '#dc3545',
+                    '#6c757d'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    // Fonction pour mettre à jour le graphique selon la période
+    function updateChart(period) {
+        // Mettre à jour les boutons
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+
+        // Mettre à jour les données selon la période
+        let labels, data;
+        switch(period) {
+            case 'week':
+                labels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+                data = {
+                    services: [5, 8, 6, 9, 7, 4, 3],
+                    projets: [3, 5, 4, 6, 5, 2, 1],
+                    contacts: [2, 3, 2, 4, 3, 1, 1]
+                };
+                break;
+            case 'year':
+                labels = ['2019', '2020', '2021', '2022', '2023', '2024'];
+                data = {
+                    services: [120, 150, 180, 220, 280, 350],
+                    projets: [80, 100, 130, 160, 200, 250],
+                    contacts: [50, 70, 90, 120, 150, 200]
+                };
+                break;
+            default: // month
+                labels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+                data = {
+                    services: [12, 19, 15, 25, 22, 30, 28, 35, 32, 38, 42, 45],
+                    projets: [8, 12, 10, 18, 15, 22, 20, 25, 23, 28, 32, 35],
+                    contacts: [5, 8, 6, 12, 10, 15, 14, 18, 16, 20, 24, 28]
+                };
+        }
+
+        mainChart.data.labels = labels;
+        mainChart.data.datasets[0].data = data.services;
+        mainChart.data.datasets[1].data = data.projets;
+        mainChart.data.datasets[2].data = data.contacts;
+        mainChart.update();
+    }
+
+    // Animation des barres de progression au chargement
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                bar.style.width = bar.style.width;
+            });
+        }, 500);
+    });
+</script>
 
 {% endblock %}
