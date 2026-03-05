@@ -1,0 +1,64 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}Gestion du Blog{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion du Blog</h1>
+        <div>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Retour</a>
+            <button class="btn btn-primary" onclick="alert('Fonctionnalité à implémenter')">Nouvel Article</button>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Liste des articles</h5>
+        </div>
+        <div class="card-body">
+            {% if posts %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Auteur</th>
+                            <th>Catégorie</th>
+                            <th>Statut</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in posts %}
+                        <tr>
+                            <td>{{ post.titre }}</td>
+                            <td>{{ post.author.get_full_name|default:post.author.username }}</td>
+                            <td>{{ post.categorie.nom|default:"-" }}</td>
+                            <td>
+                                <span class="badge {% if post.status == 1 %}bg-success{% else %}bg-warning{% endif %}">
+                                    {% if post.status == 1 %}Publié{% else %}Brouillon{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ post.created_on|date:"d/m/Y" }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="alert('À implémenter')">Modifier</button>
+                                <button class="btn btn-sm btn-danger" onclick="alert('À implémenter')">Supprimer</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <p class="mb-0">Aucun article de blog trouvé. Le modèle Post existe mais la vue ne récupère pas encore les données.</p>
+                <p class="mb-0 mt-2"><strong>Modèle Post :</strong> titre, slug, author, content, categorie, status, image, created_on</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

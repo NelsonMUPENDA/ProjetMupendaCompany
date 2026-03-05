@@ -1,0 +1,79 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}FAQ{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion des FAQ</h1>
+        <div>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Retour</a>
+            <button class="btn btn-primary" onclick="alert('Fonctionnalité à implémenter')">Nouvelle FAQ</button>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Liste des questions fréquentes</h5>
+                </div>
+                <div class="card-body">
+                    {% if faqs %}
+                    <div class="accordion" id="faqAccordion">
+                        {% for faq in faqs %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#faq{{ faq.id }}">
+                                    <span class="badge bg-secondary me-2">#{{ faq.ordre_affichage }}</span>
+                                    {{ faq.question }}
+                                    {% if faq.est_active %}
+                                    <span class="badge bg-success ms-2">Active</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary ms-2">Inactive</span>
+                                    {% endif %}
+                                </button>
+                            </h2>
+                            <div id="faq{{ faq.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    {{ faq.reponse|safe }}
+                                    <div class="mt-3">
+                                        <small class="text-muted">Catégorie: {{ faq.categorie.nom|default:"Non classé" }} | Modifié le {{ faq.update_on|date:"d/m/Y" }}</small>
+                                    </div>
+                                    <div class="mt-2">
+                                        <button class="btn btn-sm btn-warning" onclick="alert('À implémenter')">Modifier</button>
+                                        <button class="btn btn-sm btn-danger" onclick="alert('À implémenter')">Supprimer</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">Aucune FAQ enregistrée. Le modèle est maintenant disponible !</p>
+                        <p class="mb-0 mt-2"><strong>Modèle FAQ :</strong> question, reponse, categorie, ordre_affichage, est_active</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Les FAQ sont affichées sur le site public pour aider les visiteurs.</p>
+                    <ul class="list-unstyled">
+                        <li><strong>Ordre d'affichage :</strong> Permet de trier les questions</li>
+                        <li><strong>Est active :</strong> Détermine si la question est visible</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

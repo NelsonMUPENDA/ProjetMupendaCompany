@@ -1,0 +1,91 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}Liste des Devis{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Liste des Devis</h1>
+        <div>
+            <a href="{% url 'facturation' %}" class="btn btn-secondary">Retour</a>
+            <a href="{% url 'ajouter_devis' %}" class="btn btn-primary">+ Nouveau devis</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="get" class="mb-3">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="search" class="form-control" placeholder="Rechercher..." value="{{ search }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="statut" class="form-select">
+                            <option value="">Tous les statuts</option>
+                            {% for value, label in statut_choices %}
+                            <option value="{{ value }}" {% if statut_filter == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="client" class="form-select">
+                            <option value="">Tous les clients</option>
+                            {% for client in clients %}
+                            <option value="{{ client.id }}" {% if client_filter == client.id|stringformat:"s" %}selected{% endif %}>{{ client.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Client</th>
+                            <th>Projet</th>
+                            <th>Date émission</th>
+                            <th>Validité</th>
+                            <th>Montant total</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for devis in devis %}
+                        <tr>
+                            <td>{{ devis.numero }}</td>
+                            <td>{{ devis.client.nom }}</td>
+                            <td>{{ devis.projet.nom|default:"-" }}</td>
+                            <td>{{ devis.date_emission|date:"d/m/Y" }}</td>
+                            <td>{{ devis.date_validite|date:"d/m/Y"|default:"-" }}</td>
+                            <td>{{ devis.montant_total }} €</td>
+                            <td>
+                                <span class="badge {% if devis.statut == 'ACCEPTE' %}bg-success{% elif devis.statut == 'ENVOYE' %}bg-info{% elif devis.statut == 'REFUSE' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                    {{ devis.get_statut_display|default:devis.statut }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'fiche_devis' devis.id %}" class="btn btn-sm btn-info">Voir</a>
+                                {% if devis.statut == 'ACCEPTE' and not devis.facture %}
+                                <a href="{% url 'convertir_devis_facture' devis.id %}" class="btn btn-sm btn-success">Facturer</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">Aucun devis trouvé</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

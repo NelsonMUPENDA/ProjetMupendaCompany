@@ -1,0 +1,831 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">Fiche Client</h1>
+{% endblock %}
+
+{% block content %}
+<div class="client-profile-container">
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <i class="bi bi-check-circle-fill"></i>
+            {{ message }}
+            <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Header avec actions -->
+    <div class="profile-header">
+        <div class="header-content">
+            <div class="client-avatar-large">
+                {{ client.nom|first|upper }}
+            </div>
+            <div class="header-info">
+                <h1 class="client-title">{{ client.nom }}</h1>
+                <div class="client-meta">
+                    <span class="badge-type">{{ client.get_type_client_display }}</span>
+                    <span class="badge-status {% if client.statut_client == 'ACTIF' %}status-active{% elif client.statut_client == 'PROSPECT' %}status-prospect{% else %}status-inactive{% endif %}">
+                        {{ client.get_statut_client_display }}
+                    </span>
+                </div>
+                <p class="client-subtitle">Client depuis {{ client.date_creation|date:"F Y" }}</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'clients' %}" class="btn btn-glass-secondary">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+            <a href="{% url 'modifier_client' client.id %}" class="btn btn-glass-warning">
+                <i class="bi bi-pencil"></i> Modifier
+            </a>
+            <a href="{% url 'export_client_pdf' client.id %}" class="btn btn-glass-primary" target="_blank">
+                <i class="bi bi-file-pdf"></i> Export PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-folder"></i></div>
+            <div class="stat-value">{{ stats.total_projets }}</div>
+            <div class="stat-label">Projets</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-file-text"></i></div>
+            <div class="stat-value">{{ stats.total_devis }}</div>
+            <div class="stat-label">Devis</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-receipt"></i></div>
+            <div class="stat-value">{{ stats.total_factures }}</div>
+            <div class="stat-label">Factures</div>
+        </div>
+        <div class="stat-card highlight">
+            <div class="stat-icon"><i class="bi bi-currency-euro"></i></div>
+            <div class="stat-value">{{ stats.chiffre_affaires }}€</div>
+            <div class="stat-label">Chiffre d'affaires</div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <!-- Informations client -->
+        <div class="glass-card info-card">
+            <div class="card-header">
+                <i class="bi bi-person-vcard"></i>
+                <h3>Informations</h3>
+            </div>
+            <div class="card-body">
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-building"></i> Nom</span>
+                    <span class="info-value">{{ client.nom }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-envelope"></i> Email</span>
+                    <span class="info-value">{{ client.email|default:"-" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-telephone"></i> Téléphone</span>
+                    <span class="info-value">{{ client.telephone|default:"-" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-geo-alt"></i> Adresse</span>
+                    <span class="info-value">{{ client.adresse|default:"-" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-globe"></i> Site Web</span>
+                    <span class="info-value">
+                        {% if client.site_web %}
+                        <a href="{{ client.site_web }}" target="_blank">{{ client.site_web }}</a>
+                        {% else %}-{% endif %}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-briefcase"></i> Secteur</span>
+                    <span class="info-value">{{ client.secteur_activite|default:"-" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><i class="bi bi-hash"></i> SIRET</span>
+                    <span class="info-value">{{ client.siret|default:"-" }}</span>
+                </div>
+                {% if client.notes %}
+                <div class="info-notes">
+                    <span class="info-label"><i class="bi bi-sticky"></i> Notes</span>
+                    <p>{{ client.notes }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Statistiques détaillées -->
+        <div class="glass-card stats-detail-card">
+            <div class="card-header">
+                <i class="bi bi-graph-up"></i>
+                <h3>Statistiques</h3>
+            </div>
+            <div class="card-body">
+                <div class="mini-stat">
+                    <div class="mini-stat-icon bg-blue"><i class="bi bi-folder-check"></i></div>
+                    <div class="mini-stat-content">
+                        <span class="mini-stat-value">{{ stats.projets_actifs }}</span>
+                        <span class="mini-stat-label">Projets actifs</span>
+                    </div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-icon bg-orange"><i class="bi bi-clock-history"></i></div>
+                    <div class="mini-stat-content">
+                        <span class="mini-stat-value">{{ stats.factures_impayees }}</span>
+                        <span class="mini-stat-label">Factures impayées</span>
+                    </div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-icon bg-green"><i class="bi bi-ticket-perforated"></i></div>
+                    <div class="mini-stat-content">
+                        <span class="mini-stat-value">{{ stats.total_tickets }}</span>
+                        <span class="mini-stat-label">Tickets support</span>
+                    </div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-icon bg-purple"><i class="bi bi-envelope-open"></i></div>
+                    <div class="mini-stat-content">
+                        <span class="mini-stat-value">{{ stats.tickets_ouverts }}</span>
+                        <span class="mini-stat-label">Tickets ouverts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projets -->
+    <div class="glass-card data-card">
+        <div class="card-header">
+            <div class="header-title">
+                <i class="bi bi-kanban"></i>
+                <h3>Projets associés</h3>
+                <span class="badge-count">{{ stats.total_projets }}</span>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if projets %}
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Statut</th>
+                            <th>Chef de projet</th>
+                            <th>Date début</th>
+                            <th>Date fin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for projet in projets %}
+                        <tr>
+                            <td>
+                                <div class="project-name">{{ projet.nom }}</div>
+                                {% if projet.description %}
+                                <small class="project-desc">{{ projet.description|truncatewords:5 }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-pill {% if projet.statut == 'EN_COURS' %}pill-active{% elif projet.statut == 'TERMINE' %}pill-success{% elif projet.statut == 'ANNULE' %}pill-danger{% else %}pill-default{% endif %}">
+                                    {{ projet.get_statut_display|default:projet.statut }}
+                                </span>
+                            </td>
+                            <td>{{ projet.chef_projet.get_full_name|default:"-" }}</td>
+                            <td>{{ projet.date_debut|date:"d/m/Y"|default:"-" }}</td>
+                            <td>{{ projet.date_fin|date:"d/m/Y"|default:"-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>Aucun projet associé</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Devis et Factures -->
+    <div class="content-grid two-columns">
+        <div class="glass-card data-card">
+            <div class="card-header">
+                <div class="header-title">
+                    <i class="bi bi-file-text"></i>
+                    <h3>Derniers Devis</h3>
+                    <span class="badge-count">{{ stats.total_devis }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if devis %}
+                <div class="item-list">
+                    {% for d in devis|slice:":5" %}
+                    <div class="list-item">
+                        <div class="item-icon bg-blue"><i class="bi bi-file-earmark-text"></i></div>
+                        <div class="item-content">
+                            <div class="item-title">{{ d.titre|default:"Devis sans titre" }}</div>
+                            <div class="item-meta">{{ d.date_creation|date:"d/m/Y" }}</div>
+                        </div>
+                        <div class="item-status">
+                            <span class="status-pill {% if d.statut == 'VALIDE' %}pill-success{% elif d.statut == 'REFUSE' %}pill-danger{% elif d.statut == 'EN_ATTENTE' %}pill-warning{% else %}pill-default{% endif %}">
+                                {{ d.get_statut_display|default:d.statut }}
+                            </span>
+                        </div>
+                        {% if d.montant %}
+                        <div class="item-amount">{{ d.montant }}€</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state small">
+                    <i class="bi bi-file-earmark-x"></i>
+                    <p>Aucun devis</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="glass-card data-card">
+            <div class="card-header">
+                <div class="header-title">
+                    <i class="bi bi-receipt"></i>
+                    <h3>Dernières Factures</h3>
+                    <span class="badge-count">{{ stats.total_factures }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if factures %}
+                <div class="item-list">
+                    {% for f in factures|slice:":5" %}
+                    <div class="list-item">
+                        <div class="item-icon bg-green"><i class="bi bi-receipt-cutoff"></i></div>
+                        <div class="item-content">
+                            <div class="item-title">Facture #{{ f.id }}</div>
+                            <div class="item-meta">{{ f.date_creation|date:"d/m/Y" }}</div>
+                        </div>
+                        <div class="item-status">
+                            <span class="status-pill {% if f.statut == 'PAYEE' %}pill-success{% elif f.statut == 'ENVOYEE' %}pill-warning{% else %}pill-default{% endif %}">
+                                {{ f.get_statut_display|default:f.statut }}
+                            </span>
+                        </div>
+                        {% if f.montant %}
+                        <div class="item-amount">{{ f.montant }}€</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state small">
+                    <i class="bi bi-receipt-x"></i>
+                    <p>Aucune facture</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .client-profile-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .messages-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .alert {
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: rgba(76, 175, 80, 0.15);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        color: #4CAF50;
+        backdrop-filter: blur(10px);
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        opacity: 0.5;
+        margin-left: auto;
+        color: inherit;
+    }
+
+    .profile-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .client-avatar-large {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        font-weight: 700;
+        box-shadow: 0 10px 30px rgba(255, 103, 0, 0.3);
+    }
+
+    .client-title {
+        color: var(--text-primary);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .client-meta {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .badge-type, .badge-status {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-type {
+        background: rgba(255, 103, 0, 0.2);
+        color: var(--primary-orange);
+    }
+
+    .status-active {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+
+    .status-prospect {
+        background: rgba(255, 193, 7, 0.2);
+        color: #FFC107;
+    }
+
+    .status-inactive {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+    }
+
+    .client-subtitle {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-glass-primary, .btn-glass-secondary, .btn-glass-warning {
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-glass-primary {
+        background: linear-gradient(45deg, var(--primary-orange) 0%, #ff8533 100%);
+        color: white;
+    }
+
+    .btn-glass-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(255, 103, 0, 0.4);
+    }
+
+    .btn-glass-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        border: 1px solid var(--glass-border);
+    }
+
+    .btn-glass-secondary:hover {
+        border-color: var(--primary-orange);
+        color: var(--primary-orange);
+    }
+
+    .btn-glass-warning {
+        background: rgba(255, 193, 7, 0.2);
+        color: #FFC107;
+        border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+
+    .btn-glass-warning:hover {
+        background: rgba(255, 193, 7, 0.3);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .stat-card.highlight {
+        background: linear-gradient(135deg, rgba(255, 103, 0, 0.2) 0%, rgba(255, 133, 51, 0.1) 100%);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 103, 0, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: var(--primary-orange);
+        font-size: 1.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .content-grid.two-columns {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .glass-card .card-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .glass-card .card-header h3 {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .glass-card .card-header i {
+        color: var(--primary-orange);
+        font-size: 1.2rem;
+    }
+
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .badge-count {
+        background: rgba(255, 103, 0, 0.2);
+        color: var(--primary-orange);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .glass-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-label i {
+        color: var(--primary-orange);
+    }
+
+    .info-value {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .info-value a {
+        color: var(--primary-orange);
+        text-decoration: none;
+    }
+
+    .info-notes {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--glass-border);
+    }
+
+    .info-notes p {
+        color: var(--text-secondary);
+        margin: 0.5rem 0 0 0;
+        line-height: 1.5;
+    }
+
+    .mini-stat {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        margin-bottom: 0.75rem;
+    }
+
+    .mini-stat:last-child {
+        margin-bottom: 0;
+    }
+
+    .mini-stat-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .bg-blue { background: rgba(33, 150, 243, 0.2); color: #2196F3; }
+    .bg-orange { background: rgba(255, 103, 0, 0.2); color: var(--primary-orange); }
+    .bg-green { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+    .bg-purple { background: rgba(156, 39, 176, 0.2); color: #9C27B0; }
+
+    .mini-stat-content {
+        flex: 1;
+    }
+
+    .mini-stat-value {
+        display: block;
+        color: var(--text-primary);
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .mini-stat-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .data-card {
+        margin-bottom: 1.5rem;
+    }
+
+    .data-table-container {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th {
+        text-align: left;
+        padding: 1rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .data-table td {
+        padding: 1rem;
+        color: var(--text-primary);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .data-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .project-name {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .project-desc {
+        color: var(--text-secondary);
+    }
+
+    .status-pill {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .pill-active { background: rgba(33, 150, 243, 0.2); color: #2196F3; }
+    .pill-success { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+    .pill-danger { background: rgba(244, 67, 54, 0.2); color: #f44336; }
+    .pill-warning { background: rgba(255, 193, 7, 0.2); color: #FFC107; }
+    .pill-default { background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); }
+
+    .item-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .list-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .list-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .item-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .item-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .item-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .item-meta {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .item-amount {
+        font-weight: 700;
+        color: var(--primary-orange);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-state.small {
+        padding: 2rem;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state.small i {
+        font-size: 2rem;
+    }
+
+    @media (max-width: 1200px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+        .content-grid.two-columns {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        .header-content {
+            flex-direction: column;
+        }
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        .header-actions {
+            width: 100%;
+            justify-content: center;
+        }
+        .btn-glass-primary, .btn-glass-secondary, .btn-glass-warning {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

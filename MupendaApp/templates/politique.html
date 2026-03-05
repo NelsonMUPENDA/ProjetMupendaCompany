@@ -1,12 +1,288 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Politique de Confidentialité - Mupenda{% endblock %}
 
 {% block content %}
-<section class="bg-dark">
-    <div class="container text-center py-5">
-        <p class="btn fw-semibold">Accueil > Politique de confidentialité</p>
-        <h1 class="text-white">Politique de confidentialité</h1>
-        <p class="text-white">Veuillez lire attentivement le présent accord, car il contient des informations importantes concernant vos droits et recours légaux.</p>
+<style>
+  .privacy-hero {
+    background: #000000;
+    padding: 6rem 0 4rem;
+    text-align: center;
+    border-bottom: 3px solid #FF6700;
+  }
+
+  [data-bs-theme="light"] .privacy-hero {
+    background: #ffffff;
+  }
+
+  .privacy-hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  [data-bs-theme="light"] .privacy-hero h1 {
+    color: #000000;
+  }
+
+  .privacy-hero p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  [data-bs-theme="light"] .privacy-hero p {
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .privacy-section {
+    background: #000000;
+    padding: 4rem 0 6rem;
+  }
+
+  [data-bs-theme="light"] .privacy-section {
+    background: #ffffff;
+  }
+
+  .privacy-content {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .privacy-article {
+    background: rgba(255, 103, 0, 0.05);
+    border-left: 4px solid #FF6700;
+    border-radius: 0 12px 12px 0;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  [data-bs-theme="light"] .privacy-article {
+    background: rgba(255, 103, 0, 0.03);
+  }
+
+  .privacy-article h2 {
+    color: #FF6700;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .privacy-article h2 i {
+    font-size: 1.2rem;
+  }
+
+  .privacy-article p {
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  [data-bs-theme="light"] .privacy-article p {
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  .privacy-article ul {
+    color: rgba(255, 255, 255, 0.85);
+    padding-left: 1.5rem;
+    line-height: 1.8;
+  }
+
+  [data-bs-theme="light"] .privacy-article ul {
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  .privacy-article li {
+    margin-bottom: 0.5rem;
+  }
+
+  .privacy-article strong {
+    color: #FF6700;
+  }
+
+  .last-updated {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 103, 0, 0.1);
+    border-radius: 12px;
+    margin-bottom: 3rem;
+  }
+
+  .last-updated i {
+    color: #FF6700;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .last-updated p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+  }
+
+  [data-bs-theme="light"] .last-updated p {
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .contact-privacy {
+    background: #FF6700;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    margin-top: 4rem;
+  }
+
+  .contact-privacy h3 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .contact-privacy p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-privacy {
+    background: white;
+    color: #FF6700;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid white;
+  }
+
+  .btn-privacy:hover {
+    background: transparent;
+    color: white;
+  }
+</style>
+
+<section class="privacy-hero">
+  <div class="container">
+    <h1>{% if page %}{{ page.titre }}{% else %}Politique de Confidentialité{% endif %}</h1>
+    <p>{% if page %}{{ page.sous_titre }}{% else %}Nous attachons une grande importance à la protection de vos données personnelles et à votre vie privée.{% endif %}</p>
+  </div>
+</section>
+
+<section class="privacy-section">
+  <div class="container">
+    <div class="privacy-content">
+      
+      <div class="last-updated">
+        <i class="bi bi-shield-check"></i>
+        <p>Dernière mise à jour : {% if page and page.derniere_mise_a_jour %}{{ page.derniere_mise_a_jour|date:"d F Y" }}{% else %}28 Février 2026{% endif %}</p>
+      </div>
+
+      {% if page %}
+        {{ page.contenu|safe }}
+      {% else %}
+
+      <div class="privacy-article">
+        <h2><i class="bi bi-1-circle-fill"></i> Introduction</h2>
+        <p>La présente Politique de Confidentialité décrit comment <strong>Mupenda Company</strong> collecte, utilise, conserve et protège vos données personnelles lorsque vous utilisez nos services et visitez notre site web.</p>
+        <p>En utilisant nos services, vous acceptez les pratiques décrites dans cette politique. Nous nous engageons à protéger votre vie privée et à traiter vos données avec la plus grande confidentialité.</p>
+      </div>
+
+      <div class="privacy-article">
+        <h2><i class="bi bi-2-circle-fill"></i> Données Collectées</h2>
+        <p>Nous pouvons collecter les types de données suivants :</p>
+        <ul>
+          <li><strong>Informations d'identification</strong> : nom, prénom, adresse email, numéro de téléphone</li>
+          <li><strong>Informations professionnelles</strong> : entreprise, poste, secteur d'activité</li>
+          <li><strong>Données de connexion</strong> : adresse IP, type de navigateur, pages visitées</li>
+          <li><strong>Informations de projet</strong> : description de vos besoins et objectifs</li>
+        </ul>
+      </div>
+
+      <div class="privacy-article">
+        <h2><i class="bi bi-3-circle-fill"></i> Utilisation des Données</h2>
+        <p>Vos données personnelles sont utilisées pour :</p>
+        <ul>
+          <li>Fournir et améliorer nos services</li>
+          <li>Communiquer avec vous concernant vos demandes et projets</li>
+          <li>Vous envoyer des informations sur nos services (avec votre consentement)</li>
+          <li>Respecter nos obligations légales et réglementaires</li>
+          <li>Prévenir la fraude et assurer la sécurité de nos systèmes</li>
+        </ul>
+      </div>
+
+      <div class="privacy-article">
+        <h2><i class="bi bi-4-circle-fill"></i> Protection des Données</h2>
+        <p>Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles appropriées pour protéger vos données personnelles contre tout accès non autorisé, modification, divulgation ou destruction.</p>
+        <p>Ces mesures incluent :</p>
+        <ul>
+          <li>Chiffrement des données sensibles</li>
+          <li>Contrôles d'accès stricts</li>
+          <li>Surveillance régulière de nos systèmes</li>
+          <li>Formation de notre personnel aux bonnes pratiques de sécurité</li>
+        </ul>
+      </div>
+
+      <div class="privacy-article">
+        <h2><i class="bi bi-5-circle-fill"></i> Partage des Données</h2>
+        <p>Nous ne vendons, n'échangeons ni ne transférons vos données personnelles à des tiers sans votre consentement, sauf dans les cas suivants :</p>
+        <ul>
+          <li>Lorsque cela est nécessaire pour fournir nos services (sous-traitants)</li>
+          <li>Pour respecter une obligation légale</li>
+          <li>Pour protéger nos droits, notre propriété ou notre sécurité</li>
+        </ul>
+        <p>Nos partenaires et sous-traitants sont tenus par des obligations de confidentialité strictes.</p>
+      </div>
+
+      <div class="privacy-article">
+        <h2><i class="bi bi-6-circle-fill"></i> Vos Droits</h2>
+        <p>Conformément aux lois applicables en matière de protection des données, vous disposez des droits suivants :</p>
+        <ul>
+          <li><strong>Droit d'accès</strong> : obtenir une copie de vos données personnelles</li>
+          <li><strong>Droit de rectification</strong> : corriger des données inexactes</li>
+          <li><strong>Droit à l'effacement</strong> : demander la suppression de vos données</li>
+          <li><strong>Droit d'opposition</strong> : vous opposer au traitement de vos données</li>
+          <li><strong>Droit à la portabilité</strong> : recevoir vos données dans un format structuré</li>
+        </ul>
+        <p>Pour exercer ces droits, contactez-nous à l'adresse : <strong>privacy@mupenda.cd</strong></p>
+      </div>
+
+      <div class="privacy-article">
+        <h2><i class="bi bi-7-circle-fill"></i> Cookies et Technologies Similaires</h2>
+        <p>Notre site utilise des cookies et technologies similaires pour améliorer votre expérience, analyser le trafic et personnaliser le contenu. Vous pouvez gérer vos préférences de cookies via les paramètres de votre navigateur.</p>
+        <p>Les types de cookies que nous utilisons :</p>
+        <ul>
+          <li><strong>Cookies essentiels</strong> : nécessaires au fonctionnement du site</li>
+          <li><strong>Cookies de performance</strong> : pour analyser l'utilisation du site</li>
+          <li><strong>Cookies de fonctionnalité</strong> : pour mémoriser vos préférences</li>
+        </ul>
+      </div>
+
+      <div class="privacy-article">
+        <h2><i class="bi bi-8-circle-fill"></i> Modifications de la Politique</h2>
+        <p>Nous nous réservons le droit de modifier cette politique de confidentialité à tout moment. Les modifications entrent en vigueur dès leur publication sur cette page. Nous vous encourageons à consulter régulièrement cette politique.</p>
+        <p>En cas de modifications substantielles, nous vous en informerons par email ou via une notification sur notre site.</p>
+      </div>
+      {% endif %}
+
+      <div class="contact-privacy">
+        <h3>Questions sur notre politique ?</h3>
+        <p>Notre délégué à la protection des données est à votre écoute.</p>
+        <a href="{% url 'contact' %}" class="btn-privacy">
+          <i class="bi bi-envelope-fill"></i>
+          Nous Contacter
+        </a>
+      </div>
+
     </div>
+  </div>
 </section>
 {% endblock %}
 

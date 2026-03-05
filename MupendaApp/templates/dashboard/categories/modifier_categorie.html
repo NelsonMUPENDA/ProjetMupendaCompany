@@ -1,0 +1,96 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load dashboard_menu %}
+
+{% block dashboard_title %}Modifier la Catégorie{% endblock %}
+
+{% block page_title %}
+<i class="bi bi-pencil-square"></i>
+Modifier la Catégorie
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .form-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .form-title {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-label {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-control {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        color: var(--text-primary);
+        padding: 0.75rem 1rem;
+    }
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 0.2rem rgba(255, 103, 0, 0.25);
+        color: var(--text-primary);
+    }
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h2 class="form-title">Modifier la Catégorie</h2>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="bi bi-tag me-1"></i>
+                    Nom de la catégorie *
+                </label>
+                <input type="text" name="name" class="form-control" required 
+                       value="{{ categorie.name }}">
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'liste_categories' %}" class="btn btn-glass">
+                    <i class="bi bi-x-lg me-1"></i> Annuler
+                </a>
+                <button type="submit" class="btn btn-primary-orange">
+                    <i class="bi bi-check-lg me-1"></i> Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

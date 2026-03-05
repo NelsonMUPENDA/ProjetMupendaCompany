@@ -1,0 +1,888 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-content">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="bi bi-grid-1x2-fill me-3"></i>
+            Tableau de Bord Super Administrateur
+        </h1>
+        <p class="dashboard-description">
+            Vue d'ensemble complète du système mupenda.cd - Statistiques en temps réel
+        </p>
+    </div>
+
+    <!-- Statistiques Principales -->
+    <div class="stats-grid">
+        <!-- Utilisateurs -->
+        <div class="stat-card">
+            <div class="stat-icon users">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ total_users }}</div>
+                <div class="stat-label">Utilisateurs</div>
+                <div class="stat-growth positive">{{ user_growth }}</div>
+            </div>
+        </div>
+
+        <!-- Utilisateurs Actifs -->
+        <div class="stat-card">
+            <div class="stat-icon active-users">
+                <i class="bi bi-person-check"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ active_users }}</div>
+                <div class="stat-label">Actifs</div>
+                <div class="stat-detail">{{ banned_users }} bannis</div>
+            </div>
+        </div>
+
+        <!-- Rôles -->
+        <div class="stat-card">
+            <div class="stat-icon roles">
+                <i class="bi bi-shield"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ total_roles }}</div>
+                <div class="stat-label">Rôles</div>
+                <div class="stat-growth positive">{{ role_growth }}</div>
+            </div>
+        </div>
+
+        <!-- Permissions -->
+        <div class="stat-card">
+            <div class="stat-icon permissions">
+                <i class="bi bi-key"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ total_permissions }}</div>
+                <div class="stat-label">Permissions</div>
+                <div class="stat-growth positive">{{ permission_growth }}</div>
+            </div>
+        </div>
+
+        <!-- Départements -->
+        <div class="stat-card">
+            <div class="stat-icon departments">
+                <i class="bi bi-building"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ total_departements }}</div>
+                <div class="stat-label">Départements</div>
+                <div class="stat-detail">{{ active_departements }} actifs</div>
+            </div>
+        </div>
+
+        <!-- Projets -->
+        <div class="stat-card">
+            <div class="stat-icon projects">
+                <i class="bi bi-folder"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ total_projects }}</div>
+                <div class="stat-label">Projets</div>
+                <div class="stat-growth positive">{{ project_growth }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ligne 2: Sessions et Santé Système -->
+    <div class="stats-row">
+        <div class="stat-card wide">
+            <div class="stat-icon sessions">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ active_sessions }}</div>
+                <div class="stat-label">Sessions Actives</div>
+                <div class="stat-change {{ session_change_class }}">
+                    <i class="bi bi-arrow-{{ session_change_direction }}"></i>
+                    {{ session_change }}
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card wide">
+            <div class="system-health-indicator">
+                <div class="health-circle" style="--health-percentage: {{ system_health }}%;">
+                    <span class="health-value">{{ system_health }}%</span>
+                </div>
+                <div class="health-info">
+                    <div class="health-label">Santé du Système</div>
+                    <div class="health-status">{{ system_status }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenu Principal -->
+    <div class="dashboard-grid">
+        <!-- Colonne Gauche -->
+        <div class="dashboard-column left">
+            <!-- Projets Récents -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="bi bi-folder me-2"></i>Projets Récents</h3>
+                    <a href="{% url 'gestion_projets' %}" class="view-all">Voir tout</a>
+                </div>
+                <div class="card-body">
+                    <div class="recent-projects">
+                        {% for project in recent_projects %}
+                        <div class="project-item">
+                            <div class="project-icon">
+                                <i class="bi bi-folder-fill"></i>
+                            </div>
+                            <div class="project-details">
+                                <div class="project-name">{{ project.nom }}</div>
+                                <div class="project-meta">
+                                    <span class="project-dept">{{ project.departement.nom|default:"Sans département" }}</span>
+                                    <span class="project-status {{ project.statut|lower }}">{{ project.get_statut_display }}</span>
+                                </div>
+                            </div>
+                            <div class="project-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: {{ project.progression }}%"></div>
+                                </div>
+                                <span class="progress-text">{{ project.progression }}%</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <p>Aucun projet récent</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Départements -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="bi bi-building me-2"></i>Départements</h3>
+                    <a href="{% url 'admin:MupendaApp_departement_changelist' %}" class="view-all">Gérer</a>
+                </div>
+                <div class="card-body">
+                    <div class="departments-list">
+                        {% for dept in departments %}
+                        <div class="dept-item">
+                            <span class="dept-color" style="background-color: {{ dept.couleur|default:'#ff6700' }};"></span>
+                            <span class="dept-name">{{ dept.nom }}</span>
+                            <span class="dept-badge {% if dept.est_actif %}active{% else %}inactive{% endif %}">
+                                {% if dept.est_actif %}Actif{% else %}Inactif{% endif %}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <div class="empty-state">
+                            <i class="bi bi-building-slash"></i>
+                            <p>Aucun département</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne Droite -->
+        <div class="dashboard-column right">
+            <!-- Activité Récente -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="bi bi-activity me-2"></i>Activité Récente</h3>
+                    <a href="{% url 'audit_logs' %}" class="view-all">Logs</a>
+                </div>
+                <div class="card-body">
+                    <div class="activity-timeline">
+                        {% for log in recent_logs %}
+                        <div class="activity-item">
+                            <div class="activity-icon {{ log.action|lower }}">
+                                <i class="bi 
+                                    {% if log.action == 'CREATION' %}bi-plus-circle
+                                    {% elif log.action == 'MODIFICATION' %}bi-pencil
+                                    {% elif log.action == 'SUPPRESSION' %}bi-trash
+                                    {% elif log.action == 'CONNEXION' %}bi-box-arrow-in-right
+                                    {% elif log.action == 'DECONNEXION' %}bi-box-arrow-right
+                                    {% else %}bi-gear{% endif %}">
+                                </i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-action">{{ log.get_action_display }} - {{ log.modele }}</div>
+                                <div class="activity-user">par {{ log.utilisateur.username|default:"Système" }}</div>
+                                <div class="activity-time">{{ log.date_action|timesince }} ago</div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-state">
+                            <i class="bi bi-clock-history"></i>
+                            <p>Aucune activité récente</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="bi bi-bell me-2"></i>Notifications</h3>
+                    <span class="badge-count">{{ unread_notifications }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="notifications-list">
+                        {% if unread_notifications > 0 %}
+                        <div class="notification-item unread">
+                            <div class="notification-icon">
+                                <i class="bi bi-bell-fill"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">Notifications non lues</div>
+                                <div class="notification-desc">Vous avez {{ unread_notifications }} notification(s) en attente</div>
+                            </div>
+                            <a href="{% url 'notifications_center' %}" class="notification-action">
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="empty-state">
+                            <i class="bi bi-bell-slash"></i>
+                            <p>Aucune notification non lue</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rôles -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="bi bi-shield me-2"></i>Rôles Système</h3>
+                    <a href="{% url 'super_admin_manage_roles' %}" class="view-all">Gérer</a>
+                </div>
+                <div class="card-body">
+                    <div class="roles-list">
+                        {% for role in roles %}
+                        <div class="role-item">
+                            <div class="role-badge" style="background-color: {{ role.couleur|default:'#ff6700' }};">
+                                <i class="bi bi-shield-fill"></i>
+                            </div>
+                            <div class="role-info">
+                                <div class="role-name">{{ role.nom }}</div>
+                                <div class="role-level">Niveau {{ role.niveau_hierarchique }}</div>
+                            </div>
+                            <span class="role-status {% if role.est_actif %}active{% else %}inactive{% endif %}">
+                                {% if role.est_actif %}Actif{% else %}Inactif{% endif %}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <div class="empty-state">
+                            <i class="bi bi-shield-slash"></i>
+                            <p>Aucun rôle défini</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-content {
+        padding: 0;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .dashboard-description {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(255, 103, 0, 0.2);
+        border-color: var(--primary-orange);
+    }
+
+    .stat-card.wide {
+        justify-content: space-between;
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .stat-icon.users { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .stat-icon.active-users { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    .stat-icon.roles { background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%); }
+    .stat-icon.permissions { background: linear-gradient(135deg, #642b73 0%, #c6426e 100%); }
+    .stat-icon.departments { background: linear-gradient(135deg, #3a1c71 0%, #d76d77 50%, #ffaf7b 100%); }
+    .stat-icon.projects { background: linear-gradient(135deg, #f12711 0%, #f5af19 100%); }
+    .stat-icon.sessions { background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%); }
+
+    .stat-info {
+        flex: 1;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 0.25rem;
+    }
+
+    .stat-growth {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 0.25rem;
+    }
+
+    .stat-growth.positive { color: #28a745; }
+    .stat-growth.negative { color: #dc3545; }
+
+    .stat-detail {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+    }
+
+    .stat-change {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .stat-change.positive { color: #28a745; }
+    .stat-change.negative { color: #dc3545; }
+
+    /* System Health */
+    .system-health-indicator {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .health-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: conic-gradient(var(--primary-orange) calc(var(--health-percentage) * 3.6deg), rgba(255,255,255,0.1) 0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .health-circle::before {
+        content: '';
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        background: var(--glass-bg);
+        border-radius: 50%;
+    }
+
+    .health-value {
+        position: relative;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+    }
+
+    .health-info {
+        text-align: left;
+    }
+
+    .health-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .health-status {
+        color: var(--primary-orange);
+        font-weight: 600;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .dashboard-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .dashboard-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .card-header h3 {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .view-all {
+        color: var(--primary-orange);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .view-all:hover {
+        color: #ff8533;
+    }
+
+    .badge-count {
+        background: var(--primary-orange);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Projects */
+    .recent-projects {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .project-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .project-item:hover {
+        background: rgba(255, 103, 0, 0.05);
+    }
+
+    .project-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 103, 0, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-orange);
+        font-size: 1.2rem;
+    }
+
+    .project-details {
+        flex: 1;
+    }
+
+    .project-name {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .project-meta {
+        display: flex;
+        gap: 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .project-dept {
+        color: var(--text-secondary);
+    }
+
+    .project-status {
+        padding: 0.15rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .project-status.a_faire { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+    .project-status.en_cours { background: rgba(0, 123, 255, 0.2); color: #007bff; }
+    .project-status.termine { background: rgba(40, 167, 69, 0.2); color: #28a745; }
+    .project-status.annule { background: rgba(220, 53, 69, 0.2); color: #dc3545; }
+
+    .project-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .progress-bar {
+        width: 80px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-orange), #ff8533);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+
+    .progress-text {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        min-width: 35px;
+    }
+
+    /* Departments */
+    .departments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .dept-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+    }
+
+    .dept-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .dept-name {
+        flex: 1;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .dept-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .dept-badge.active { background: rgba(40, 167, 69, 0.2); color: #28a745; }
+    .dept-badge.inactive { background: rgba(108, 117, 125, 0.2); color: #6c757d; }
+
+    /* Activity Timeline */
+    .activity-timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .activity-item {
+        display: flex;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .activity-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .activity-icon.creation { background: linear-gradient(135deg, #11998e, #38ef7d); }
+    .activity-icon.modification { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .activity-icon.suppression { background: linear-gradient(135deg, #fc4a1a, #f7b733); }
+    .activity-icon.connexion { background: linear-gradient(135deg, #00b4db, #0083b0); }
+    .activity-icon.deconnexion { background: linear-gradient(135deg, #f12711, #f5af19); }
+    .activity-icon.autre { background: linear-gradient(135deg, #3a1c71, #d76d77); }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-action {
+        color: var(--text-primary);
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .activity-user {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+
+    .activity-time {
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Notifications */
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .notification-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .notification-item.unread {
+        background: rgba(255, 103, 0, 0.05);
+        border: 1px solid rgba(255, 103, 0, 0.2);
+    }
+
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-orange);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.1rem;
+    }
+
+    .notification-content {
+        flex: 1;
+    }
+
+    .notification-title {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .notification-desc {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .notification-action {
+        color: var(--primary-orange);
+        text-decoration: none;
+    }
+
+    /* Roles */
+    .roles-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .role-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+    }
+
+    .role-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    .role-info {
+        flex: 1;
+    }
+
+    .role-name {
+        color: var(--text-primary);
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .role-level {
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+    }
+
+    .role-status {
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .role-status.active { background: rgba(40, 167, 69, 0.2); color: #28a745; }
+    .role-status.inactive { background: rgba(108, 117, 125, 0.2); color: #6c757d; }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: block;
+        opacity: 0.5;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .dashboard-header {
+            padding: 1.5rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.5rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}

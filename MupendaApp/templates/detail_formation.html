@@ -1,48 +1,571 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ formation.nom }} - Mupenda Formation{% endblock %}
 
 {% block content %}
-<section class="bg-dark">
-    <div class="container text-center py-5">
-        <p class="btn fw-semibold">Accueil > Détails de la formation</p>
-        <h1 class="text-white">Nos Formations</h1>
-        <p class="text-white">Découvrer nos dernières formations mise en ligne!</p>
-    </div>
-</section>
+<style>
+  :root {
+    --formation-primary: #FF6700;
+    --formation-dark: #000000;
+    --formation-light: #ffffff;
+  }
 
-<section class="py-5">
-    <div class="container pb-4">
-        <div class="row">
-            <div class="col-md-8  left">
-                <h4>
-                    {% block title %}
-                        {{object.nom}}
-                    {% endblock title %}
-                </h4>
-            </div>
+  .formation-detail-section {
+    background: #000000;
+    padding: 0 0 4rem;
+  }
+
+  [data-bs-theme="light"] .formation-detail-section {
+    background: #ffffff;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb-nav {
+    background: #000000;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  [data-bs-theme="light"] .breadcrumb-nav {
+    background: #ffffff;
+    border-bottom-color: #000000;
+  }
+
+  .breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+  }
+
+  .breadcrumb-item a {
+    color: #FF6700;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .breadcrumb-item.active {
+    color: rgba(255,255,255,0.7);
+  }
+
+  [data-bs-theme="light"] .breadcrumb-item.active {
+    color: #000000;
+  }
+
+  /* Hero Formation Image */
+  .formation-hero {
+    position: relative;
+    height: 450px;
+    overflow: hidden;
+  }
+
+  .formation-hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .formation-hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+    padding: 3rem 0;
+  }
+
+  /* Formation Badge */
+  .formation-category-badge {
+    display: inline-block;
+    background: #FF6700;
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+  }
+
+  .formation-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 767px) {
+    .formation-title {
+      font-size: 1.5rem;
+    }
+    .formation-hero {
+      height: 300px;
+    }
+  }
+
+  .formation-meta-bar {
+    display: flex;
+    gap: 2rem;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.95rem;
+  }
+
+  .formation-meta-bar i {
+    color: #FF6700;
+    margin-right: 0.5rem;
+  }
+
+  /* Main Content */
+  .formation-content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 3rem;
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 991px) {
+    .formation-content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  /* Formation Body */
+  .formation-body {
+    background: #000000;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 2.5rem;
+  }
+
+  [data-bs-theme="light"] .formation-body {
+    background: #ffffff;
+    border-color: #000000;
+  }
+
+  .formation-text {
+    color: rgba(255,255,255,0.9);
+    font-size: 1.1rem;
+    line-height: 1.9;
+  }
+
+  [data-bs-theme="light"] .formation-text {
+    color: #000000;
+  }
+
+  .formation-text p {
+    margin-bottom: 1.5rem;
+  }
+
+  /* Info Cards */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  @media (max-width: 575px) {
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .info-card {
+    background: rgba(255, 103, 0, 0.1);
+    border: 1px solid rgba(255, 103, 0, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .info-icon {
+    width: 50px;
+    height: 50px;
+    background: #FF6700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    font-size: 1.25rem;
+  }
+
+  .info-label {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+  }
+
+  [data-bs-theme="light"] .info-label {
+    color: rgba(0,0,0,0.6);
+  }
+
+  .info-value {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  [data-bs-theme="light"] .info-value {
+    color: #000000;
+  }
+
+  /* Price Card */
+  .price-card {
+    background: #FF6700;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+  }
+
+  .price-label {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+  }
+
+  .price-value {
+    color: white;
+    font-size: 3rem;
+    font-weight: 800;
+  }
+
+  .price-currency {
+    font-size: 1.5rem;
+  }
+
+  /* Sidebar */
+  .sidebar-widget {
+    background: #000000;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  [data-bs-theme="light"] .sidebar-widget {
+    background: #ffffff;
+    border-color: #000000;
+  }
+
+  .widget-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid #FF6700;
+    display: inline-block;
+  }
+
+  [data-bs-theme="light"] .widget-title {
+    color: #000000;
+  }
+
+  /* CTA Buttons */
+  .btn-inscription {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: #FF6700;
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: none;
+    margin-bottom: 1rem;
+  }
+
+  .btn-inscription:hover {
+    background: white;
+    color: #FF6700;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(255, 103, 0, 0.3);
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: 2px solid #FF6700;
+    color: #FF6700;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-back:hover {
+    background: #FF6700;
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* Formateur Widget */
+  .formateur-widget {
+    text-align: center;
+  }
+
+  .formateur-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #FF6700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+    color: white;
+  }
+
+  .formateur-name {
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  [data-bs-theme="light"] .formateur-name {
+    color: #000000;
+  }
+
+  .formateur-role {
+    color: #FF6700;
+    font-size: 0.9rem;
+  }
+
+  /* Other Formations */
+  .other-formation-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  [data-bs-theme="light"] .other-formation-item {
+    border-bottom-color: rgba(0,0,0,0.1);
+  }
+
+  .other-formation-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .other-formation-thumb {
+    flex: 0 0 80px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .other-formation-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .other-formation-item:hover .other-formation-thumb img {
+    transform: scale(1.1);
+  }
+
+  .other-formation-content {
+    flex: 1;
+  }
+
+  .other-formation-title {
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 0.25rem;
+  }
+
+  [data-bs-theme="light"] .other-formation-title {
+    color: #000000;
+  }
+
+  .other-formation-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .other-formation-title a:hover {
+    color: #FF6700;
+  }
+
+  .other-formation-price {
+    font-size: 0.9rem;
+    color: #FF6700;
+    font-weight: 700;
+  }
+</style>
+
+<!-- Breadcrumb -->
+<nav class="breadcrumb-nav">
+  <div class="container">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'index' %}">Accueil</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'formation' %}">Formations</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ formation.nom|truncatewords:5 }}</li>
+    </ol>
+  </div>
+</nav>
+
+<!-- Formation Hero -->
+<section class="formation-detail-section">
+  {% if formation.image %}
+  <div class="formation-hero">
+    <img src="{{ formation.image.url }}" alt="{{ formation.nom }}" class="formation-hero-image">
+    <div class="formation-hero-overlay">
+      <div class="container">
+        <span class="formation-category-badge">{{ formation.categorie.name|default:"Formation" }}</span>
+        <h1 class="formation-title">{{ formation.nom }}</h1>
+        <div class="formation-meta-bar">
+          <span><i class="bi bi-calendar3"></i> Début : {{ formation.date_debut|date:"d M Y" }}</span>
+          <span><i class="bi bi-person"></i> Par {{ formation.formateur.get_full_name|default:"Expert" }}</span>
         </div>
+      </div>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card mb-3 shadow">
-                    {% if formation.image %}
-                    <img src="{{formation.image.url}}" class="card-img-top" alt="{{formation.nom}}">
-                    {% endif %}
-                    <div class="card-body">
-                      <h3 class="card-title fw-semibold">{{formation.nom}}</h3>
-                      <p class="card-text">{{formation.description|safe}}.</p>
-                      <p class="card-text"><small class="text-muted">Date de début : {{formation.date_debut}} | Date de Fin {{formation.date_fin}}</small></p>
-                      <p class="card-text">Heure de début : {{formation.heure_debut}} | Heure de fin : {{formation.heure_fin}}</p>
-                      <p class="card-text">Prix de la formation : <span class="text-success fw-semibold fs-4">{{formation.prix}}</span> $</p>
-                      <a href="{% url 'formation' %}" class="btn btn-primary fw-semibold">Retour</a>
-                    </div>
-                </div>
+  </div>
+  {% else %}
+  <div class="container pt-5">
+    <span class="formation-category-badge">{{ formation.categorie.name|default:"Formation" }}</span>
+    <h1 class="formation-title" style="color: white; margin-top: 1rem;">{{ formation.nom }}</h1>
+    <div class="formation-meta-bar">
+      <span><i class="bi bi-calendar3"></i> Début : {{ formation.date_debut|date:"d M Y" }}</span>
+      <span><i class="bi bi-person"></i> Par {{ formation.formateur.get_full_name|default:"Expert" }}</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Formation Content -->
+  <div class="container">
+    <div class="formation-content-wrapper">
+      <!-- Main Formation -->
+      <div class="formation-main">
+        <div class="formation-body">
+          <div class="formation-text">
+            {{ formation.description|safe }}
+          </div>
+
+          <!-- Info Grid -->
+          <div class="info-grid">
+            <div class="info-card">
+              <div class="info-icon"><i class="bi bi-calendar-event"></i></div>
+              <div class="info-label">Date de début</div>
+              <div class="info-value">{{ formation.date_debut|date:"d M Y"|default:"À définir" }}</div>
             </div>
-                    <!-- bloc barre latterale -->
-                    {% block sidebar %}
-                        {% include 'sidebar.html' %}
-                    {% endblock sidebar %}
+            <div class="info-card">
+              <div class="info-icon"><i class="bi bi-calendar-check"></i></div>
+              <div class="info-label">Date de fin</div>
+              <div class="info-value">{{ formation.date_fin|date:"d M Y"|default:"À définir" }}</div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon"><i class="bi bi-clock"></i></div>
+              <div class="info-label">Heure début</div>
+              <div class="info-value">{{ formation.heure_debut|time:"H:i"|default:"08:00" }}</div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon"><i class="bi bi-clock-history"></i></div>
+              <div class="info-label">Heure fin</div>
+              <div class="info-value">{{ formation.heure_fin|time:"H:i"|default:"17:00" }}</div>
+            </div>
+          </div>
+
+          <!-- Price Card -->
+          <div class="price-card">
+            <div class="price-label">Prix de la formation</div>
+            <div class="price-value">
+              <span class="price-currency">$</span>{{ formation.prix|default:"0" }}
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <a href="{% url 'contact' %}" class="btn-inscription">
+            <i class="bi bi-pencil-square"></i>
+            S'inscrire maintenant
+          </a>
+
+          <a href="{% url 'formation' %}" class="btn-back">
+            <i class="bi bi-arrow-left"></i>
+            Retour aux formations
+          </a>
         </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="formation-sidebar">
+        
+        <!-- Inscription Widget -->
+        <div class="sidebar-widget">
+          <h4 class="widget-title"><i class="bi bi-rocket-takeoff"></i> Inscription</h4>
+          <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 1.5rem;">
+            Réservez votre place dès maintenant. Les places sont limitées !
+          </p>
+          <a href="{% url 'contact' %}" class="btn-inscription" style="margin-bottom: 0;">
+            <i class="bi bi-pencil-square"></i>
+            S'inscrire
+          </a>
+        </div>
+
+        <!-- Formateur Widget -->
+        <div class="sidebar-widget formateur-widget">
+          <h4 class="widget-title"><i class="bi bi-person-badge"></i> Formateur</h4>
+          <div class="formateur-avatar">
+            <i class="bi bi-person"></i>
+          </div>
+          <h5 class="formateur-name">{{ formation.formateur.get_full_name|default:"Expert Mupenda" }}</h5>
+          <p class="formateur-role">Formateur Certifié</p>
+          <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">
+            Expert en {{ formation.categorie.name|default:"technologie" }} avec plusieurs années d'expérience.
+          </p>
+        </div>
+
+        <!-- Other Formations -->
+        <div class="sidebar-widget">
+          <h4 class="widget-title"><i class="bi bi-collection"></i> Autres formations</h4>
+          {% for other in other_formations %}
+          <div class="other-formation-item">
+            <div class="other-formation-thumb">
+              {% if other.image %}
+              <img src="{{ other.image.url }}" alt="{{ other.nom }}">
+              {% else %}
+              <img src="{% static 'images/default-formation.jpg' %}" alt="{{ other.nom }}">
+              {% endif %}
+            </div>
+            <div class="other-formation-content">
+              <h6 class="other-formation-title">
+                <a href="{% url 'detail_formation' other.slug %}">{{ other.nom }}</a>
+              </h6>
+              <div class="other-formation-price">${{ other.prix|default:"0" }}</div>
+            </div>
+          </div>
+          {% empty %}
+          <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">Aucune autre formation disponible.</p>
+          {% endfor %}
+        </div>
+
+      </div>
     </div>
+  </div>
 </section>
-{% endblock content %}
+{% endblock %}

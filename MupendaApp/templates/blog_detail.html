@@ -1,45 +1,734 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.titre }} - Mupenda News{% endblock %}
 
 {% block content %}
-<section class="pt-5">
-    <div class="container text-center py-5">
-        <h1 class="pt-5 display-5 fw-bold" style="color: #ff6700;">Actualités</h1>
-        <p class="text-white">Découvrer nos dernières actualités mise en ligne!</p>
-    </div>
-</section>
+<style>
+  :root {
+    --news-primary: #FF6700;
+    --news-dark: #000000;
+    --news-light: #ffffff;
+  }
 
-<section class="py-5">
-    <div class="container pb-4">
-        <div class="row g-4">
-            <div class="col-md-8  left">
-                <h4 class="text-white fw-bold">
-                    {% block title %}
-                        {{object.titre}}
-                    {% endblock title %}
-                </h4>
-            </div>
+  .article-detail-section {
+    background: #000000;
+    padding: 0 0 4rem;
+  }
+
+  [data-bs-theme="light"] .article-detail-section {
+    background: #ffffff;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb-nav {
+    background: #000000;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  [data-bs-theme="light"] .breadcrumb-nav {
+    background: #ffffff;
+    border-bottom-color: #000000;
+  }
+
+  .breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+  }
+
+  .breadcrumb-item a {
+    color: #FF6700;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .breadcrumb-item.active {
+    color: rgba(255,255,255,0.7);
+  }
+
+  [data-bs-theme="light"] .breadcrumb-item.active {
+    color: #000000;
+  }
+
+  /* Hero Article Image */
+  .article-hero {
+    position: relative;
+    height: 500px;
+    overflow: hidden;
+  }
+
+  .article-hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .article-hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+    padding: 3rem 0;
+  }
+
+  /* Article Meta */
+  .article-category-badge {
+    display: inline-block;
+    background: #FF6700;
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+  }
+
+  .article-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 767px) {
+    .article-title {
+      font-size: 1.5rem;
+    }
+    .article-hero {
+      height: 300px;
+    }
+  }
+
+  .article-meta-bar {
+    display: flex;
+    gap: 2rem;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.95rem;
+  }
+
+  .article-meta-bar i {
+    color: #FF6700;
+    margin-right: 0.5rem;
+  }
+
+  /* Main Content */
+  .article-content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 3rem;
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 991px) {
+    .article-content-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  /* Article Body */
+  .article-body {
+    background: #000000;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 2.5rem;
+  }
+
+  [data-bs-theme="light"] .article-body {
+    background: #ffffff;
+    border-color: #000000;
+  }
+
+  .article-text {
+    color: rgba(255,255,255,0.9);
+    font-size: 1.1rem;
+    line-height: 1.9;
+  }
+
+  [data-bs-theme="light"] .article-text {
+    color: #000000;
+  }
+
+  .article-text p {
+    margin-bottom: 1.5rem;
+  }
+
+  .article-text h2,
+  .article-text h3 {
+    color: white;
+    font-weight: 700;
+    margin: 2rem 0 1rem;
+  }
+
+  [data-bs-theme="light"] .article-text h2,
+  [data-bs-theme="light"] .article-text h3 {
+    color: #000000;
+  }
+
+  /* Share Buttons */
+  .share-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #FF6700;
+  }
+
+  .share-title {
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+  }
+
+  [data-bs-theme="light"] .share-title {
+    color: #000000;
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #FF6700;
+    color: #FF6700;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .share-btn:hover {
+    background: #FF6700;
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* Sidebar */
+  .sidebar-widget {
+    background: #000000;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  [data-bs-theme="light"] .sidebar-widget {
+    background: #ffffff;
+    border-color: #000000;
+  }
+
+  .widget-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid #FF6700;
+    display: inline-block;
+  }
+
+  [data-bs-theme="light"] .widget-title {
+    color: #000000;
+  }
+
+  /* Author Widget */
+  .author-widget {
+    text-align: center;
+  }
+
+  .author-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #FF6700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+    color: white;
+  }
+
+  .author-name {
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  [data-bs-theme="light"] .author-name {
+    color: #000000;
+  }
+
+  .author-role {
+    color: #FF6700;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Related Articles */
+  .related-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  [data-bs-theme="light"] .related-item {
+    border-bottom-color: rgba(0,0,0,0.1);
+  }
+
+  .related-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .related-thumb {
+    flex: 0 0 80px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .related-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .related-item:hover .related-thumb img {
+    transform: scale(1.1);
+  }
+
+  .related-content {
+    flex: 1;
+  }
+
+  .related-title {
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 0.25rem;
+  }
+
+  [data-bs-theme="light"] .related-title {
+    color: #000000;
+  }
+
+  .related-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .related-title a:hover {
+    color: #FF6700;
+  }
+
+  .related-date {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+  }
+
+  [data-bs-theme="light"] .related-date {
+    color: #000000;
+  }
+
+  /* Back Button */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: 2px solid #FF6700;
+    color: #FF6700;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 2rem;
+  }
+
+  .back-btn:hover {
+    background: #FF6700;
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* ===== RESPONSIVE DESIGN - MOBILE & TABLET ===== */
+  
+  /* Tablet (768px - 991px) */
+  @media (max-width: 991px) {
+    .article-content-wrapper {
+      flex-direction: column;
+      gap: 2rem;
+    }
+    
+    .article-main {
+      flex: 1;
+    }
+    
+    .article-sidebar {
+      flex: 1;
+      width: 100%;
+    }
+    
+    /* Sidebar widgets full width on tablet */
+    .sidebar-widget {
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Related items better spacing */
+    .related-item {
+      padding: 0.75rem;
+    }
+  }
+  
+  /* Mobile (< 768px) */
+  @media (max-width: 767px) {
+    /* Hero section adjustments */
+    .article-hero {
+      height: 250px;
+      min-height: auto;
+    }
+    
+    .article-hero-image {
+      height: 100%;
+    }
+    
+    .article-hero-overlay {
+      padding: 1rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 60%, transparent 100%);
+    }
+    
+    .article-title {
+      font-size: 1.4rem;
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+    }
+    
+    .article-category-badge {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    /* Meta bar - stack on mobile */
+    .article-meta-bar {
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+    
+    .article-meta-bar span {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    
+    /* Content wrapper */
+    .article-content-wrapper {
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 0;
+    }
+    
+    .article-body {
+      padding: 1rem;
+    }
+    
+    /* Share section - stack buttons */
+    .share-section {
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    
+    .share-title {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .share-buttons {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .share-btn {
+      width: 100%;
+      justify-content: center;
+      padding: 0.75rem;
+    }
+    
+    /* Sidebar adjustments */
+    .article-sidebar {
+      order: 2;
+    }
+    
+    .sidebar-widget {
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .widget-title {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    /* Author widget */
+    .author-widget {
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .author-avatar {
+      width: 60px;
+      height: 60px;
+      margin: 0;
+      flex-shrink: 0;
+    }
+    
+    .author-name {
+      margin-bottom: 0.25rem;
+    }
+    
+    .author-role {
+      margin-bottom: 0;
+    }
+    
+    /* Related articles - better mobile layout */
+    .related-item {
+      flex-direction: row;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+    }
+    
+    .related-thumb {
+      flex: 0 0 100px;
+      height: 70px;
+    }
+    
+    .related-title {
+      font-size: 0.9rem;
+      line-height: 1.3;
+    }
+    
+    /* Categories - better button sizing */
+    .article-sidebar .d-flex.flex-wrap.gap-2 {
+      gap: 0.5rem !important;
+    }
+    
+    .article-sidebar .btn-sm {
+      font-size: 0.8rem;
+      padding: 0.4rem 0.75rem;
+    }
+    
+    /* Back button full width on mobile */
+    .back-btn {
+      width: 100%;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    
+    /* Breadcrumb adjustments */
+    .breadcrumb-nav {
+      padding: 0.75rem 0;
+    }
+    
+    .breadcrumb {
+      font-size: 0.8rem;
+      flex-wrap: wrap;
+    }
+    
+    .breadcrumb-item {
+      white-space: nowrap;
+    }
+  }
+  
+  /* Small mobile (< 480px) */
+  @media (max-width: 479px) {
+    .article-hero {
+      height: 200px;
+    }
+    
+    .article-title {
+      font-size: 1.15rem;
+    }
+    
+    .article-text {
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+    
+    .article-text h2 {
+      font-size: 1.2rem;
+    }
+    
+    .article-text h3 {
+      font-size: 1.1rem;
+    }
+    
+    .related-thumb {
+      flex: 0 0 80px;
+      height: 60px;
+    }
+    
+    .related-title {
+      font-size: 0.85rem;
+    }
+    
+    .author-avatar {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .author-name {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<!-- Breadcrumb -->
+<nav class="breadcrumb-nav">
+  <div class="container">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'index' %}">Accueil</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'blog' %}">Actualités</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ post.titre|truncatewords:5 }}</li>
+    </ol>
+  </div>
+</nav>
+
+<!-- Article Hero -->
+<section class="article-detail-section">
+  {% if post.image %}
+  <div class="article-hero">
+    <img src="{{ post.image.url }}" alt="{{ post.titre }}" class="article-hero-image">
+    <div class="article-hero-overlay">
+      <div class="container">
+        <span class="article-category-badge">{{ post.category }}</span>
+        <h1 class="article-title">{{ post.titre }}</h1>
+        <div class="article-meta-bar">
+          <span><i class="bi bi-calendar3"></i> {{ post.created_on|date:"d M Y" }}</span>
+          <span><i class="bi bi-person"></i> Par {{ post.author.get_full_name|default:"Mupenda" }}</span>
+          <span><i class="bi bi-clock"></i> {{ post.created_on|timesince }} ago</span>
         </div>
+      </div>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card mb-3 shadow">
-                    {% if post.image %}
-                    <img src="{{post.image.url}}" class="card-img-top" alt="{{post.titre}}">
-                    {% endif %}
-                    <div class="card-body">
-                      <h3 class="card-title fw-semibold">{{post.titre}}.</h3>
-                      <p class="card-text">{{post.content|safe}}</p>
-                      <p class="card-text">Publié le {{post.created_on}} </p>
-                      <a href="{% url 'blog' %}" class="btn fw-semibold" style="background-color: black; color:#ff6700">Retour</a>
-                    </div>
-                </div>
+  </div>
+  {% else %}
+  <div class="container pt-5">
+    <span class="article-category-badge">{{ post.category }}</span>
+    <h1 class="article-title" style="color: white; margin-top: 1rem;">{{ post.titre }}</h1>
+    <div class="article-meta-bar">
+      <span><i class="bi bi-calendar3"></i> {{ post.created_on|date:"d M Y" }}</span>
+      <span><i class="bi bi-person"></i> Par {{ post.author.get_full_name|default:"Mupenda" }}</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Article Content -->
+  <div class="container">
+    <div class="article-content-wrapper">
+      <!-- Main Article -->
+      <div class="article-main">
+        <div class="article-body">
+          <div class="article-text">
+            {{ post.content|safe }}
+          </div>
+
+          <!-- Share Section -->
+          <div class="share-section">
+            <h4 class="share-title"><i class="bi bi-share-fill"></i> Partager cet article</h4>
+            <div class="share-buttons">
+              <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="share-btn">
+                <i class="bi bi-facebook"></i> Facebook
+              </a>
+              <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ post.titre|urlencode }}" target="_blank" class="share-btn">
+                <i class="bi bi-twitter-x"></i> Twitter
+              </a>
+              <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}" target="_blank" class="share-btn">
+                <i class="bi bi-linkedin"></i> LinkedIn
+              </a>
             </div>
-                    <!-- bloc barre latterale -->
-                    {% block sidebar %}
-                        {% include 'sidebar.html' %}
-                    {% endblock sidebar %}
+          </div>
         </div>
+
+        <!-- Back Button -->
+        <a href="{% url 'blog' %}" class="back-btn">
+          <i class="bi bi-arrow-left"></i>
+          Retour aux actualités
+        </a>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="article-sidebar">
+        
+        <!-- Author Widget -->
+        <div class="sidebar-widget author-widget">
+          <div class="author-avatar">
+            <i class="bi bi-person"></i>
+          </div>
+          <h5 class="author-name">{{ post.author.get_full_name|default:"Mupenda" }}</h5>
+          <p class="author-role">Rédacteur</p>
+          <p class="text-muted" style="font-size: 0.9rem;">Expert en technologie et innovation digitale.</p>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="sidebar-widget">
+          <h4 class="widget-title"><i class="bi bi-journal-text"></i> Articles similaires</h4>
+          {% for related in related_posts %}
+          <div class="related-item">
+            <div class="related-thumb">
+              {% if related.image %}
+              <img src="{{ related.image.url }}" alt="{{ related.titre }}">
+              {% else %}
+              <img src="{% static 'images/default-blog.jpg' %}" alt="{{ related.titre }}">
+              {% endif %}
+            </div>
+            <div class="related-content">
+              <h6 class="related-title">
+                <a href="{% url 'blog_detail' related.slug %}">{{ related.titre }}</a>
+              </h6>
+              <div class="related-date">
+                <i class="bi bi-calendar3"></i> {{ related.created_on|date:"d M Y" }}
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <p class="text-muted" style="font-size: 0.9rem;">Aucun article similaire.</p>
+          {% endfor %}
+        </div>
+
+        <!-- Categories Widget -->
+        <div class="sidebar-widget">
+          <h4 class="widget-title"><i class="bi bi-tags-fill"></i> Catégories</h4>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'blog' %}?category=Technologie" class="btn btn-sm" style="border: 1px solid #FF6700; color: #FF6700;">Technologie</a>
+            <a href="{% url 'blog' %}?category=Innovation" class="btn btn-sm" style="border: 1px solid #FF6700; color: #FF6700;">Innovation</a>
+            <a href="{% url 'blog' %}?category=Business" class="btn btn-sm" style="border: 1px solid #FF6700; color: #FF6700;">Business</a>
+            <a href="{% url 'blog' %}?category=Cybersécurité" class="btn btn-sm" style="border: 1px solid #FF6700; color: #FF6700;">Cybersécurité</a>
+          </div>
+        </div>
+
+      </div>
     </div>
+  </div>
 </section>
-{% endblock content %}
+{% endblock %}

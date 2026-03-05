@@ -1,131 +1,976 @@
 {% load static %}
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-bs-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="{% static 'images/Icone Mupenda.png' %}" type="image/x-icon">
-    <title>Mupenda | Acceuil</title>
+    <title>Mupenda | Solutions Technologiques</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-  </head>
-  <body style="font-family: 'Ubuntu', sans-serif; background-color: black;">
+    <script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
 
-    <!-- Menu  -->
+    <style>
+      :root {
+        --primary-orange: #ff6700;
+        --primary-orange-light: #ff8533;
+        --bg-dark: #0a0a0a;
+        --bg-light: #f8f9fa;
+        --text-dark: #ffffff;
+        --text-light: #212529;
+        --card-dark: rgba(255, 255, 255, 0.05);
+        --card-light: #ffffff;
+        --border-dark: rgba(255, 255, 255, 0.1);
+        --border-light: rgba(0, 0, 0, 0.1);
+        --glass-dark: rgba(255, 255, 255, 0.05);
+        --glass-light: rgba(255, 255, 255, 0.8);
+        --shadow-dark: 0 4px 30px rgba(0, 0, 0, 0.5);
+        --shadow-light: 0 4px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Dark Mode (Default) */
+      [data-bs-theme="dark"] {
+        --bg-body: var(--bg-dark);
+        --text-body: var(--text-dark);
+        --card-bg: var(--card-dark);
+        --border-color: var(--border-dark);
+        --glass-bg: var(--glass-dark);
+        --shadow-color: var(--shadow-dark);
+      }
+
+      /* Light Mode */
+      [data-bs-theme="light"] {
+        --bg-body: var(--bg-light);
+        --text-body: var(--text-light);
+        --card-bg: var(--card-light);
+        --border-color: var(--border-light);
+        --glass-bg: var(--glass-light);
+        --shadow-color: var(--shadow-light);
+      }
+
+      body {
+        font-family: 'Ubuntu', sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-body);
+        transition: background-color 0.3s ease, color 0.3s ease;
+        overflow-x: hidden;
+      }
+
+      /* Modern Navbar */
+      .modern-navbar {
+        background: rgba(10, 10, 10, 0.85) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 103, 0, 0.1);
+        padding: 0.75rem 0;
+        transition: all 0.3s ease;
+      }
+
+      [data-bs-theme="light"] .modern-navbar {
+        background: rgba(255, 255, 255, 0.9) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .modern-navbar.scrolled {
+        padding: 0.5rem 0;
+        background: rgba(10, 10, 10, 0.95) !important;
+      }
+
+      [data-bs-theme="light"] .modern-navbar.scrolled {
+        background: rgba(255, 255, 255, 0.98) !important;
+      }
+
+      .navbar-brand {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .navbar-brand img {
+        height: 45px;
+        transition: transform 0.3s ease;
+      }
+
+      .navbar-brand:hover img {
+        transform: scale(1.05);
+      }
+
+      .nav-link {
+        color: rgba(255, 255, 255, 0.8) !important;
+        font-weight: 500;
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem !important;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      [data-bs-theme="light"] .nav-link {
+        color: rgba(33, 37, 41, 0.8) !important;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: var(--primary-orange) !important;
+        background: rgba(255, 103, 0, 0.1);
+      }
+
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--primary-orange);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+      }
+
+      .nav-link:hover::after,
+      .nav-link.active::after {
+        width: 60%;
+      }
+
+      /* Dropdown Styling */
+      .dropdown-menu {
+        background: rgba(20, 20, 20, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 103, 0, 0.2);
+        border-radius: 12px;
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      [data-bs-theme="light"] .dropdown-menu {
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .dropdown-item {
+        color: rgba(255, 255, 255, 0.8);
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        transition: all 0.2s ease;
+      }
+
+      [data-bs-theme="light"] .dropdown-item {
+        color: rgba(33, 37, 41, 0.8);
+      }
+
+      .dropdown-item:hover {
+        background: rgba(255, 103, 0, 0.15);
+        color: var(--primary-orange);
+      }
+
+      /* Theme Toggle Button */
+      .theme-toggle {
+        background: transparent;
+        border: 2px solid rgba(255, 103, 0, 0.3);
+        color: var(--primary-orange);
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+        margin-right: 0.75rem;
+      }
+
+      .theme-toggle:hover {
+        background: rgba(255, 103, 0, 0.1);
+        border-color: var(--primary-orange);
+        transform: scale(1.1) rotate(15deg);
+      }
+
+      [data-bs-theme="light"] .theme-toggle {
+        border-color: rgba(255, 103, 0, 0.5);
+      }
+
+      /* CTA Button */
+      .btn-cta-nav {
+        background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-light) 100%);
+        color: white !important;
+        padding: 0.6rem 1.25rem !important;
+        border-radius: 50px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 103, 0, 0.3);
+      }
+
+      .btn-cta-nav:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 103, 0, 0.4);
+        color: white !important;
+      }
+
+      .btn-login-nav {
+        background: transparent;
+        border: 2px solid rgba(255, 103, 0, 0.5);
+        color: var(--primary-orange) !important;
+        padding: 0.6rem 1.25rem !important;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-login-nav:hover {
+        background: rgba(255, 103, 0, 0.1);
+        border-color: var(--primary-orange);
+        color: var(--primary-orange) !important;
+      }
+
+      /* Modern Footer */
+      .modern-footer {
+        background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+        border-top: 1px solid rgba(255, 103, 0, 0.15);
+        padding: 4rem 0 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      [data-bs-theme="light"] .modern-footer {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .modern-footer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--primary-orange), transparent);
+      }
+
+      .footer-brand {
+        margin-bottom: 1.5rem;
+      }
+
+      .footer-brand img {
+        height: 50px;
+        width: auto;
+        object-fit: contain;
+        transition: filter 0.3s ease;
+        display: inline-block;
+      }
+
+      [data-bs-theme="light"] .footer-brand img {
+        filter: none;
+      }
+
+      .footer-description {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+      }
+
+      [data-bs-theme="light"] .footer-description {
+        color: rgba(33, 37, 41, 0.7);
+      }
+
+      .social-links {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .social-link {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: rgba(255, 103, 0, 0.1);
+        border: 1px solid rgba(255, 103, 0, 0.2);
+        color: var(--primary-orange);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+      }
+
+      .social-link:hover {
+        background: var(--primary-orange);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 103, 0, 0.3);
+      }
+
+      .footer-title {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+        position: relative;
+        padding-bottom: 0.75rem;
+      }
+
+      [data-bs-theme="light"] .footer-title {
+        color: #212529;
+      }
+
+      .footer-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background: var(--primary-orange);
+        border-radius: 2px;
+      }
+
+      .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .footer-links li {
+        margin-bottom: 0.75rem;
+      }
+
+      .footer-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      [data-bs-theme="light"] .footer-links a {
+        color: rgba(33, 37, 41, 0.7);
+      }
+
+      .footer-links a:hover {
+        color: var(--primary-orange);
+        transform: translateX(5px);
+      }
+
+      .footer-contact-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+      }
+
+      [data-bs-theme="light"] .footer-contact-item {
+        color: rgba(33, 37, 41, 0.7);
+      }
+
+      .footer-contact-item i {
+        color: var(--primary-orange);
+        font-size: 1.1rem;
+      }
+
+      .newsletter-form {
+        position: relative;
+      }
+
+      .newsletter-input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 103, 0, 0.2);
+        border-radius: 50px;
+        padding: 0.75rem 1.25rem;
+        color: white;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+
+      [data-bs-theme="light"] .newsletter-input {
+        background: white;
+        border-color: rgba(0, 0, 0, 0.1);
+        color: #212529;
+      }
+
+      .newsletter-input:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 3px rgba(255, 103, 0, 0.1);
+      }
+
+      .newsletter-btn {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--primary-orange);
+        border: none;
+        color: white;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .newsletter-btn:hover {
+        background: var(--primary-orange-light);
+        transform: translateY(-50%) scale(1.1);
+      }
+
+      .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 3rem;
+        padding: 1.5rem 0;
+        text-align: center;
+      }
+
+      [data-bs-theme="light"] .footer-bottom {
+        border-top-color: rgba(0, 0, 0, 0.1);
+      }
+
+      .footer-bottom-text {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.9rem;
+      }
+
+          [data-bs-theme="light"] .footer-bottom-text {
+            color: rgba(33, 37, 41, 0.5);
+          }
+
+          /* Toggler Button */
+          .navbar-toggler {
+            border: 2px solid rgba(255, 103, 0, 0.3);
+            padding: 0.5rem;
+            border-radius: 8px;
+          }
+
+          .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(255, 103, 0, 0.2);
+          }
+
+          /* Nav Actions - Right side buttons */
+          .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          .auth-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          .auth-group .btn-login-nav {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.1rem;
+          }
+
+          .auth-group .btn-logout {
+            border-color: #dc3545 !important;
+            color: #dc3545 !important;
+          }
+
+          .auth-group .btn-logout:hover {
+            background: #dc3545 !important;
+            color: white !important;
+          }
+
+          /* Back to Top Button */
+          .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(255, 103, 0, 0.4);
+          }
+
+      .back-to-top.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .back-to-top:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(255, 103, 0, 0.5);
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 991px) {
+        .navbar-collapse {
+          background: rgba(10, 10, 10, 0.98);
+          padding: 1rem;
+          border-radius: 12px;
+          margin-top: 1rem;
+          border: 1px solid rgba(255, 103, 0, 0.2);
+        }
+
+        [data-bs-theme="light"] .navbar-collapse {
+          background: rgba(255, 255, 255, 0.98);
+        }
+
+        .nav-link {
+          padding: 0.75rem 1rem !important;
+        }
+
+        .theme-toggle {
+          margin-right: 0.5rem;
+        }
+      }
+    </style>
     <header>
-      <nav class="navbar navbar-expand-lg shadow fixed-top" style="background-color: black;">
-          <div class="container py-2">
-            <!-- logo du site  -->
-            <a class="navbar-brand" href="/"><img src="{% static 'images/White Mupenda Company.png' %}" alt="mupenda" width="150px"></a>
-            <!-- fin logo  -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" style="background-color: #ff6700;">
-              <span class="navbar-toggler-icon"></span>
+      <nav class="navbar navbar-expand-lg fixed-top modern-navbar">
+        <div class="container">
+          <!-- Logo -->
+          <a class="navbar-brand" href="/">
+            <img src="{% static 'images/White Mupenda Company.png' %}" alt="Mupenda Company" id="navbar-logo">
+          </a>
+
+          <!-- Mobile Controls -->
+          <div class="d-flex align-items-center d-lg-none">
+            <button class="theme-toggle" id="themeToggleMobile" type="button" aria-label="Toggle theme">
+              <i class="bi bi-sun-fill" id="themeIconMobile"></i>
             </button>
-            <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-              <ul class="navbar-nav mb-2 mb-lg-0 mx-auto">
-                <li class="nav-item">
-                  <a class="nav-link text-white" aria-current="page" href="/"> Accueil</a>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    A propos de nous
-                  </a>
-                  <ul class="dropdown-menu bg-white">
-                    <li><a class="dropdown-item text-dark" href="{% url 'apropos' %}">Qui sommes-nous ?</a></li>
-                    <li><a class="dropdown-item text-dark" href="{% url 'realisations' %}">Réalisations</a></li>
-                    <li><a class="dropdown-item text-dark" href="{% url 'blog' %}">Blog</a></li>
-                  </ul>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link text-white" href="{% url 'service' %}"> Services </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link text-white" href="{% url 'formation' %}">Formation</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link text-white" href="{% url 'contact' %}">Contact</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link text-white" href="{% url 'faq' %}">Faq</a>
-                </li>
-              </ul>
-              <div class="d-flex align-items-center">
-                <a class="btn me-3 text-white" id="btn" href="{% url 'connexion' %}" style="background-color: #ff6700; "><i class="bi bi-phone-fill"></i> Demander un devis</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <i class="bi bi-list" style="color: var(--primary-orange); font-size: 1.5rem;"></i>
+            </button>
+          </div>
+
+          <!-- Desktop Controls -->
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                  <i class="bi bi-house-door me-1"></i>Accueil
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <i class="bi bi-info-circle me-1"></i>À propos
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{% url 'apropos' %}">
+                    <i class="bi bi-building me-2"></i>Qui sommes-nous ?
+                  </a></li>
+                  <li><a class="dropdown-item" href="{% url 'realisations' %}">
+                    <i class="bi bi-briefcase me-2"></i>Nos Réalisations
+                  </a></li>
+                  <li><a class="dropdown-item" href="{% url 'blog' %}">
+                    <i class="bi bi-journal-text me-2"></i>Blog
+                  </a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if 'service' in request.path %}active{% endif %}" href="{% url 'service' %}">
+                  <i class="bi bi-grid me-1"></i>Services
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if 'formation' in request.path %}active{% endif %}" href="{% url 'formation' %}">
+                  <i class="bi bi-mortarboard me-1"></i>Formations
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if 'contact' in request.path %}active{% endif %}" href="{% url 'contact' %}">
+                  <i class="bi bi-envelope me-1"></i>Contact
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if 'faq' in request.path %}active{% endif %}" href="{% url 'faq' %}">
+                  <i class="bi bi-question-circle me-1"></i>FAQ
+                </a>
+              </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2 nav-actions">
+              <!-- Theme Toggle Desktop -->
+              <button class="theme-toggle d-none d-lg-flex" id="themeToggle" type="button" aria-label="Toggle theme">
+                <i class="bi bi-sun-fill" id="themeIcon"></i>
+              </button>
+
+              <!-- CTA Button -->
+              {% if user.is_authenticated %}
+              <a class="btn btn-cta-nav" href="{% url 'mon_profil_devis' %}">
+                <i class="bi bi-calculator me-1"></i><span class="d-none d-xl-inline">Devis</span>
+              </a>
+              {% else %}
+              <a class="btn btn-cta-nav" href="{% url 'connexion' %}?next={% url 'mon_profil_devis' %}">
+                <i class="bi bi-calculator me-1"></i><span class="d-none d-xl-inline">Devis</span>
+              </a>
+              {% endif %}
+
+              <!-- Auth Buttons Group -->
+              <div class="auth-group d-none d-lg-flex align-items-center gap-2">
                 {% if user.is_authenticated %}
-                  <a href="{% url 'profil' %}" class="btn fw-bold" style="background-color: #ff6700;"><i class="bi bi-person-circle"></i> Profil</a>
+                <a href="{% url 'profil' %}" class="btn btn-login-nav d-none d-lg-inline-flex" title="Profil">
+                  {% if user.profile and user.profile.photo %}
+                  <img src="{{ user.profile.photo.url }}" alt="{{ user.username }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
                   {% else %}
-                  <a class="btn me-3 text-white" id="btn" href="{% url 'connexion' %}" style="background-color: #ff6700;">Se connecter</a>
+                  <i class="bi bi-person-circle"></i>
+                  {% endif %}
+                </a>
+                <a href="{% url 'deconnexion' %}" class="btn btn-login-nav btn-logout d-none d-lg-inline-flex" title="Déconnexion">
+                  <i class="bi bi-box-arrow-right"></i>
+                </a>
+                {% else %}
+                <a href="{% url 'connexion' %}" class="btn btn-login-nav d-none d-lg-inline-flex" title="Connexion">
+                  <i class="bi bi-box-arrow-in-right"></i>
+                </a>
                 {% endif %}
               </div>
             </div>
-          </div>
-        </nav>
-    </header>
-<!-- Fin menu -->
 
-      {% block content %}
-
-      {% endblock %}
-
-<!-- Footer  -->
-      <footer style="background-color: black;">
-        <div class="container py-5">
-          <div class="row g-3">
-            <div class="col-md-3">
-              <h1 class="text-white"><img src="{% static 'images/White Mupenda Company.png' %}" alt="" width="200"></h1>
-              <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
-              <p class="text-white py-3">
-                Entreprise Congolaise spécialisée dans les réseaux informatiques, la cyber sécurité, le développement d’applications et logiciels, la conception des systèmes informatisés et embarqués des entreprises et la communication digitale.
-              </p>
-              <p>
-                <a class="btn text-white rounded-circle" href="#"><i class="bi bi-youtube"></i></a>
-                <a class="btn text-white rounded-circle" href="#"><i class="bi bi-facebook"></i></a>
-                <a class="btn text-white rounded-circle" href="#"><i class="bi bi-whatsapp"></i></a>
-                <a class="btn text-white rounded-circle" href="#"><i class="bi bi-twitter-x"></i></a>
-                <a class="btn text-white rounded-circle" href="#"><i class="bi bi-linkedin"></i></a>
-              </p>
-            </div>
-            <div class="col-md-3">
-              <h3 class="text-white pb-3">Accès Rapide</h3>
-              <hr class="text-white">
-              <a class="nav-link text-white" href="{% url 'apropos' %}"><i class="bi bi-caret-right-fill"></i> Apropos</a>
-              <a class="nav-link text-white" href="{% url 'realisations' %}"><i class="bi bi-caret-right-fill"></i> Réalisations</a>
-              <a class="nav-link text-white" href=""><i class="bi bi-caret-right-fill"></i> Services</a>
-              <a class="nav-link text-white" href="{% url 'formation' %}"><i class="bi bi-caret-right-fill"></i> Formations</a>
-              <a class="nav-link text-white" href="{% url 'contact' %}"><i class="bi bi-caret-right-fill"></i> Contacts</a>
-              <a class="nav-link text-white" href="{% url 'blog' %}"><i class="bi bi-caret-right-fill"></i> Blog</a>
-              <br>
-              <a class="nav-link text-secondary" href="{% url 'conditions_utilisations' %}">Conditions d'utilisations</a>
-              <a class="nav-link text-secondary" href="{% url 'politique' %}">Politique de confidentialité</a>
-            </div>
-            <div class="col-md-3">
-              <h3 class="text-white pb-3">Bureau</h3>
-              <hr class="text-white">
-              <p class="text-white"><i class="bi bi-house-fill"></i> Goma(Drc)</p>
-              <p class="text-white"><i class="bi bi-envelope-at-fill"></i> admin@gmail.com</p>
-              <p class="text-white"><i class="bi bi-telephone-outbound-fill"></i> (+243) 000 000 000</p>
-            </div>
-            <div class="col-md-3">
-              <h3 class="text-white pb-3">Newsletters</h3>
-              <hr class="text-white">
-              <p class="text-white">Recevez les dernières mises à jour et offre. Abonnez-vous aujourd’hui !</p>
-              <form class="d-flex" role="email">
-                <input class="form-control me-2" type="email" placeholder="Votre E-mail">
-                <button class="btn" id="btn" type="submit" style="background-color: #ff6700; color: black"><i class="bi bi-send-fill"></i></button>
-              </form>
+            <!-- Mobile Auth Button (shown only on mobile) -->
+            <div class="d-flex d-lg-none mt-3 gap-2 justify-content-center">
+              {% if user.is_authenticated %}
+              <a href="{% url 'profil' %}" class="btn btn-login-nav" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%;" title="Profil">
+                {% if user.profile and user.profile.photo %}
+                <img src="{{ user.profile.photo.url }}" alt="{{ user.username }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                <i class="bi bi-person-circle"></i>
+                {% endif %}
+              </a>
+              <a href="{% url 'deconnexion' %}" class="btn btn-login-nav btn-logout" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; border-color: #dc3545; color: #dc3545;" title="Déconnexion">
+                <i class="bi bi-box-arrow-right"></i>
+              </a>
+              {% else %}
+              <a href="{% url 'connexion' %}" class="btn btn-login-nav" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%;" title="Connexion">
+                <i class="bi bi-box-arrow-in-right"></i>
+              </a>
+              {% endif %}
             </div>
           </div>
         </div>
-        <hr class="text-white">
-        <p class="text-secondary text-center py-3">Copyright &copy; 2026 - mupenda, Tous droits reservés.</p>
-      </footer>
+      </nav>
+    </header>
 
-      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <!-- Main Content -->
+    <main style="padding-top: 76px;">
+      {% block content %}
+      {% endblock %}
+    </main>
+
+    <!-- Modern Footer -->
+    <footer class="modern-footer">
+      <div class="container">
+        <div class="row g-4">
+          <!-- Brand Column -->
+          <div class="col-lg-4 col-md-6">
+            <div class="footer-brand">
+              <img src="{% static 'images/White Mupenda Company.png' %}" alt="Mupenda Company" id="footer-logo" style="height: 50px; width: auto; object-fit: contain;">
+            </div>
+            <p class="footer-description">
+              Entreprise Congolaise spécialisée dans les réseaux informatiques, la cyber sécurité, 
+              le développement d'applications et logiciels, et la communication digitale.
+            </p>
+            <div class="social-links">
+              <a href="#" class="social-link" aria-label="YouTube">
+                <i class="bi bi-youtube"></i>
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=61583961959384" target="_blank" class="social-link" aria-label="Facebook">
+                <i class="bi bi-facebook"></i>
+              </a>
+              <a href="https://wa.me/message/NUIRR6EEJTT6J1" target="_blank" class="social-link" aria-label="WhatsApp">
+                <i class="bi bi-whatsapp"></i>
+              </a>
+              <a href="https://www.tiktok.com/@mupenda_company?_r=1&_t=ZS-94R76bL1LGu" target="_blank" class="social-link" aria-label="TikTok">
+                <i class="bi bi-tiktok"></i>
+              </a>
+              <a href="#" class="social-link" aria-label="LinkedIn">
+                <i class="bi bi-linkedin"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="col-lg-2 col-md-6">
+            <h5 class="footer-title">Liens Rapides</h5>
+            <ul class="footer-links">
+              <li><a href="{% url 'apropos' %}"><i class="bi bi-chevron-right"></i>À propos</a></li>
+              <li><a href="{% url 'realisations' %}"><i class="bi bi-chevron-right"></i>Réalisations</a></li>
+              <li><a href="{% url 'service' %}"><i class="bi bi-chevron-right"></i>Services</a></li>
+              <li><a href="{% url 'formation' %}"><i class="bi bi-chevron-right"></i>Formations</a></li>
+              <li><a href="{% url 'blog' %}"><i class="bi bi-chevron-right"></i>Blog</a></li>
+            </ul>
+          </div>
+
+          <!-- Contact Info -->
+          <div class="col-lg-3 col-md-6">
+            <h5 class="footer-title">Contact</h5>
+            <div class="footer-contact-item">
+              <i class="bi bi-geo-alt-fill"></i>
+              <span>Goma, République Démocratique du Congo</span>
+            </div>
+            <div class="footer-contact-item">
+              <i class="bi bi-envelope-fill"></i>
+              <span>contact@mupenda.cd</span>
+            </div>
+            <div class="footer-contact-item">
+              <i class="bi bi-telephone-fill"></i>
+              <span>+243 998 329 985</span>
+            </div>
+            <div class="footer-contact-item">
+              <i class="bi bi-clock-fill"></i>
+              <span>Lun - Ven: 8h00 - 17h00</span>
+            </div>
+          </div>
+
+          <!-- Newsletter -->
+          <div class="col-lg-3 col-md-6">
+            <h5 class="footer-title">Newsletter</h5>
+            <p class="footer-description" style="font-size: 0.9rem;">
+              Abonnez-vous pour recevoir nos dernières actualités et offres.
+            </p>
+            <form class="newsletter-form" id="newsletterForm" method="post" action="{% url 'newsletter_subscribe' %}">
+              {% csrf_token %}
+              <input type="email" name="email" id="newsletterEmail" class="newsletter-input" placeholder="Votre email" required>
+              <button type="submit" class="newsletter-btn" id="newsletterBtn">
+                <i class="bi bi-send-fill" id="newsletterIcon"></i>
+                <span class="spinner-border spinner-border-sm d-none" id="newsletterSpinner" role="status"></span>
+              </button>
+            </form>
+            <div class="mt-3">
+              <a href="{% url 'conditions_utilisations' %}" class="d-block text-decoration-none mb-2" style="color: rgba(255,103,0,0.7); font-size: 0.85rem;">
+                Conditions d'utilisation
+              </a>
+              <a href="{% url 'politique' %}" class="d-block text-decoration-none" style="color: rgba(255,103,0,0.7); font-size: 0.85rem;">
+                Politique de confidentialité
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+          <p class="footer-bottom-text">
+            &copy; 2026 Mupenda Company. Tous droits réservés. Made with 
+            <i class="bi bi-heart-fill" style="color: var(--primary-orange);"></i> in DRC
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+      <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <!-- Newsletter Popup Modal -->
+    <div class="modal fade" id="newsletterModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--bg-card); border: 1px solid rgba(255,103,0,0.3);">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title" id="newsletterModalTitle" style="color: var(--primary-orange);">
+              <i class="bi bi-envelope-check me-2"></i>Inscription Newsletter
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+          </div>
+          <div class="modal-body text-center py-4">
+            <div id="newsletterModalIcon" class="mb-3">
+              <i class="bi bi-check-circle-fill" style="font-size: 3rem; color: #28a745;"></i>
+            </div>
+            <p id="newsletterModalMessage" class="mb-0" style="font-size: 1.1rem;">
+              Merci pour votre inscription à notre newsletter !
+            </p>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="background: var(--primary-orange); border: none;">
+              Fermer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+      integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+      crossorigin="anonymous"></script>
+
+    <!-- Theme Toggle & Utilities Script -->
+    <script>
+      // Theme Toggle Functionality
+      const themeToggle = document.getElementById('themeToggle');
+      const themeToggleMobile = document.getElementById('themeToggleMobile');
+      const themeIcon = document.getElementById('themeIcon');
+      const themeIconMobile = document.getElementById('themeIconMobile');
+      const html = document.documentElement;
+
+      // Check for saved theme preference or default to dark
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-bs-theme', savedTheme);
+      updateThemeIcon(savedTheme);
+
+      function toggleTheme() {
+        const currentTheme = html.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        html.setAttribute('data-bs-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+      }
+
+      function updateThemeIcon(theme) {
+        const iconClass = theme === 'dark' ? 'bi-sun-fill' : 'bi-moon-fill';
+        if (themeIcon) themeIcon.className = `bi ${iconClass}`;
+        if (themeIconMobile) themeIconMobile.className = `bi ${iconClass}`;
+      }
+
+      if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+      if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme);
+
+      // Navbar scroll effect
+      const navbar = document.querySelector('.modern-navbar');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
+
+      // Back to Top Button
+      const backToTop = document.getElementById('backToTop');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 500) {
+          backToTop.classList.add('visible');
+        } else {
+          backToTop.classList.remove('visible');
+        }
+      });
+
+      backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // Logo change based on theme - switch image source
+      const navbarLogo = document.getElementById('navbar-logo');
+      const footerLogo = document.getElementById('footer-logo');
+
+      function updateLogos() {
+        const theme = html.getAttribute('data-bs-theme');
+        const baseUrl = '/static/images/';
+        const logoSrc = theme === 'light' 
+          ? baseUrl + "Mupenda%20Company.png"
+          : baseUrl + "White%20Mupenda%20Company.png";
+        
+        if (navbarLogo) {
+          navbarLogo.src = logoSrc;
+        }
+        if (footerLogo) {
+          footerLogo.src = logoSrc;
+        }
+      }
+
+      // Update logos on theme change
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === 'data-bs-theme') {
+            updateLogos();
+          }
+        });
+      });
+
+      observer.observe(html, { attributes: true });
+      updateLogos();
+
+      // Newsletter Form AJAX Submission
+      document.getElementById('newsletterForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const form = this;
+        const email = document.getElementById('newsletterEmail').value.trim();
+        const btn = document.getElementById('newsletterBtn');
+        const icon = document.getElementById('newsletterIcon');
+        const spinner = document.getElementById('newsletterSpinner');
+        
+        // Show loading
+        btn.disabled = true;
+        icon?.classList.add('d-none');
+        spinner?.classList.remove('d-none');
+        
+        fetch('/newsletter/subscribe/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value
+          },
+          body: 'email=' + encodeURIComponent(email)
+        })
+        .then(r => {
+          console.log('Response status:', r.status);
+          return r.text().then(text => {
+            console.log('Response text:', text);
+            try {
+              return JSON.parse(text);
+            } catch (e) {
+              console.error('JSON parse error:', e);
+              throw new Error('Invalid JSON response');
+            }
+          });
+        })
+        .then(data => {
+          console.log('Parsed data:', data);
+          const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('newsletterModal'));
+          document.getElementById('newsletterModalTitle').innerHTML = data.success 
+            ? '<i class="bi bi-envelope-check me-2"></i>Inscription réussie'
+            : '<i class="bi bi-exclamation-triangle-fill me-2"></i>Information';
+          document.getElementById('newsletterModalMessage').textContent = data.message || 'Message non disponible';
+          document.getElementById('newsletterModalIcon').innerHTML = data.success
+            ? '<i class="bi bi-check-circle-fill" style="font-size: 3rem; color: #28a745;"></i>'
+            : '<i class="bi bi-info-circle-fill" style="font-size: 3rem; color: #ffc107;"></i>';
+          
+          if (data.success) form.reset();
+          modal.show();
+        })
+        .catch((err) => {
+          console.error('Fetch error:', err);
+          const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('newsletterModal'));
+          document.getElementById('newsletterModalTitle').innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>Erreur';
+          document.getElementById('newsletterModalMessage').textContent = "Une erreur s'est produite. Veuillez réessayer.";
+          document.getElementById('newsletterModalIcon').innerHTML = '<i class="bi bi-x-circle-fill" style="font-size: 3rem; color: #dc3545;"></i>';
+          modal.show();
+        })
+        .finally(() => {
+          btn.disabled = false;
+          icon?.classList.remove('d-none');
+          spinner?.classList.add('d-none');
+        });
+      });
+    </script>
   </body>
 </html>

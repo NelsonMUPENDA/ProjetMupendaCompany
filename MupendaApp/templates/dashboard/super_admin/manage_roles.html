@@ -1,0 +1,317 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">Gestion des Rôles</h1>
+{% endblock %}
+
+{% block content %}
+<div class="roles-management-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="bi bi-shield"></i>
+            Gestion des Rôles
+        </h1>
+        <p class="dashboard-description">
+            Gérez les rôles et permissions du système
+        </p>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_roles }}</div>
+            <div class="stat-label">Total Rôles</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ active_roles }}</div>
+            <div class="stat-label">Rôles Actifs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_permissions }}</div>
+            <div class="stat-label">Permissions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ role_assignments }}</div>
+            <div class="stat-label">Assignations</div>
+        </div>
+    </div>
+
+    <!-- Liste des rôles -->
+    <div class="roles-table-container">
+        <div class="table-header">
+            <h2 class="table-title">
+                <i class="bi bi-list-ul"></i>
+                Liste des Rôles
+            </h2>
+        </div>
+
+        <div class="roles-grid">
+            {% for role in roles %}
+            <div class="role-card">
+                <div class="role-header">
+                    <div class="role-icon">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div class="role-info">
+                        <h3>{{ role.get_nom_display }}</h3>
+                        <span class="role-level">Niveau {{ role.niveau_hierarchique }}</span>
+                    </div>
+                    <div class="role-status {% if role.est_actif %}active{% else %}inactive{% endif %}">
+                        {% if role.est_actif %}Actif{% else %}Inactif{% endif %}
+                    </div>
+                </div>
+                <div class="role-body">
+                    <p class="role-description">{{ role.description|default:"Aucune description" }}</p>
+                    <div class="role-permissions">
+                        <span class="permission-count">
+                            <i class="bi bi-key"></i>
+                            {{ role.permissions.count }} permission(s)
+                        </span>
+                    </div>
+                </div>
+                <div class="role-footer">
+                    <span class="role-users">
+                        <i class="bi bi-people"></i>
+                        {{ role.role_users.filter.count }} utilisateur(s)
+                    </span>
+                    <span class="role-date">
+                        <i class="bi bi-calendar"></i>
+                        {{ role.date_creation|date:"d/m/Y" }}
+                    </span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>Aucun rôle trouvé</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .roles-management-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .dashboard-title i {
+        color: var(--primary-orange);
+    }
+
+    .dashboard-description {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .roles-table-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    .table-header {
+        margin-bottom: 2rem;
+    }
+
+    .table-title {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .roles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .role-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .role-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .role-header {
+        padding: 1.5rem;
+        background: rgba(255, 103, 0, 0.05);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .role-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .role-info {
+        flex: 1;
+    }
+
+    .role-info h3 {
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+        font-size: 1.1rem;
+    }
+
+    .role-level {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+    }
+
+    .role-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .role-status.active {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+
+    .role-status.inactive {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+    }
+
+    .role-body {
+        padding: 1.5rem;
+    }
+
+    .role-description {
+        color: var(--text-secondary);
+        margin: 0 0 1rem 0;
+        font-size: 0.9rem;
+    }
+
+    .role-permissions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .permission-count {
+        color: var(--primary-orange);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .role-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+    }
+
+    .role-footer i {
+        margin-right: 0.25rem;
+    }
+
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .roles-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

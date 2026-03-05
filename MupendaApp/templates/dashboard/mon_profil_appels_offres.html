@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+.appels-offres-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 40px 0;
+}
+
+.appels-offres-page::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: rgba(255, 103, 0, 0.1);
+    border-radius: 50%;
+    filter: blur(80px);
+    top: -200px;
+    right: -200px;
+    animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-30px, 30px) scale(1.1); }
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.glass-panel {
+    background: linear-gradient(135deg, rgba(255, 103, 0, 0.3) 0%, rgba(0, 0, 0, 0.8) 100%);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 103, 0, 0.2);
+    border-radius: 20px;
+}
+
+.ao-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.ao-card:hover {
+    background: rgba(255, 103, 0, 0.1);
+    border-color: rgba(255, 103, 0, 0.3);
+    transform: translateY(-5px);
+}
+
+.ao-badge {
+    display: inline-block;
+    background: rgba(255, 103, 0, 0.2);
+    color: #ff6700;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ao-title {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 15px 0 10px;
+}
+
+.ao-desc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.ao-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.ao-meta-item {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.ao-meta-item i {
+    color: #ff6700;
+}
+
+.btn-glass-primary {
+    background: linear-gradient(45deg, #ff6700, #ff8800);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 25px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-glass-primary:hover {
+    background: linear-gradient(45deg, #ff8800, #ff6700);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 103, 0, 0.4);
+    color: white;
+}
+
+.btn-glass-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 12px 25px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-glass-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    font-size: 80px;
+    color: rgba(255, 103, 0, 0.3);
+    margin-bottom: 20px;
+}
+
+.empty-title {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.empty-desc {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16px;
+}
+</style>
+
+<div class="appels-offres-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-panel p-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div>
+                            <h1 class="text-white mb-2">
+                                <i class="fas fa-bullhorn me-2" style="color: #ff6700;"></i>
+                                Appels d'Offres
+                            </h1>
+                            <p class="text-white-50 mb-0">Découvrez les opportunités disponibles et soumettez votre candidature</p>
+                        </div>
+                        <a href="{% url 'profil' %}" class="btn btn-glass-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour au profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appels d'offres list -->
+        <div class="row g-4">
+            {% if appels_offres %}
+                {% for ao in appels_offres %}
+                <div class="col-lg-6">
+                    <div class="ao-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="ao-badge">
+                                <i class="fas fa-tag me-1"></i>{{ ao.categorie|default:"Général" }}
+                            </span>
+                            {% if ao.date_limite %}
+                            <span class="{% if ao.jours_restants <= 3 %}text-danger{% else %}text-warning{% endif %}" style="font-size: 13px;">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ ao.jours_restants }} jour{{ ao.jours_restants|pluralize }} restant{{ ao.jours_restants|pluralize }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <h3 class="ao-title">{{ ao.titre }}</h3>
+                        <p class="ao-desc">{{ ao.description|truncatewords:30 }}</p>
+                        
+                        <div class="ao-meta">
+                            <div class="ao-meta-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Publié le {{ ao.date_publication|date:"d/m/Y" }}</span>
+                            </div>
+                            {% if ao.date_limite %}
+                            <div class="ao-meta-item">
+                                <i class="fas fa-hourglass-end"></i>
+                                <span>Date limite: {{ ao.date_limite|date:"d/m/Y" }}</span>
+                            </div>
+                            {% endif %}
+                            {% if ao.budget %}
+                            <div class="ao-meta-item">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span>Budget: {{ ao.budget }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'mon_profil_devis' %}?ao_id={{ ao.id }}" class="btn btn-glass-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Soumettre une offre
+                            </a>
+                            {% if ao.fichier %}
+                            <a href="{{ ao.fichier.url }}" class="btn btn-glass-secondary" target="_blank">
+                                <i class="fas fa-download me-2"></i>Télécharger
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="glass-card">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <h3 class="empty-title">Aucun appel d'offres disponible</h3>
+                            <p class="empty-desc">Il n'y a actuellement aucun appel d'offres actif.<br>Revenez plus tard ou contactez-nous pour plus d'informations.</p>
+                            <a href="{% url 'mon_profil_message' %}" class="btn btn-glass-primary mt-3">
+                                <i class="fas fa-envelope me-2"></i>Nous contacter
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Info section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="glass-panel p-4">
+                    <h4 class="text-white mb-3">
+                        <i class="fas fa-info-circle me-2" style="color: #ff6700;"></i>
+                        Comment soumettre une offre ?
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-primary rounded-circle p-3">1</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5 class="text-white mb-2">Choisissez un appel d'offres</h5>
+                                    <p class="text-white-50 mb-0">Parcourez la liste et sélectionnez l'opportunité qui correspond à vos compétences.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-primary rounded-circle p-3">2</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5 class="text-white mb-2">Préparez votre offre</h5>
+                                    <p class="text-white-50 mb-0">Rédigez un devis détaillé incluant votre proposition technique et financière.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-primary rounded-circle p-3">3</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5 class="text-white mb-2">Soumettez avant la date limite</h5>
+                                    <p class="text-white-50 mb-0">Envoyez votre offre via le formulaire de devis avant la date de clôture.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

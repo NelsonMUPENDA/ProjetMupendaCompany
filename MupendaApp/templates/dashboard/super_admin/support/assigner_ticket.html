@@ -1,0 +1,41 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}Assigner Ticket {{ ticket.numero }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Assigner le Ticket {{ ticket.numero }}</h1>
+        <a href="{% url 'fiche_ticket' ticket.id %}" class="btn btn-secondary">Retour</a>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Sélectionner un collaborateur</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="assigne_a" class="form-label">Assigner à</label>
+                            <select class="form-select" id="assigne_a" name="assigne_a" required>
+                                <option value="">Sélectionner...</option>
+                                {% for user in collaborateurs %}
+                                <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'fiche_ticket' ticket.id %}" class="btn btn-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-primary">Assigner</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

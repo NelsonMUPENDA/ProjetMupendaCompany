@@ -1,0 +1,95 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}Fiche Devis {{ devis.numero }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Devis {{ devis.numero }}</h1>
+        <div>
+            <a href="{% url 'liste_devis' %}" class="btn btn-secondary">Retour</a>
+            {% if peut_convertir %}
+            <a href="{% url 'convertir_devis_facture' devis.id %}" class="btn btn-success">Convertir en facture</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Détails du devis</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>Client:</strong></td>
+                            <td>{{ devis.client.nom }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Projet:</strong></td>
+                            <td>{{ devis.projet.nom|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date d'émission:</strong></td>
+                            <td>{{ devis.date_emission|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date de validité:</strong></td>
+                            <td>{{ devis.date_validite|date:"d/m/Y"|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Statut:</strong></td>
+                            <td>
+                                <span class="badge {% if devis.statut == 'ACCEPTE' %}bg-success{% elif devis.statut == 'ENVOYE' %}bg-info{% elif devis.statut == 'REFUSE' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                    {{ devis.get_statut_display|default:devis.statut }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Conditions:</strong></td>
+                            <td>{{ devis.conditions_paiement|default:"-" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            {% if devis.notes %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Notes</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ devis.notes }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Récapitulatif</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td>Montant HT:</td>
+                            <td class="text-end">{{ devis.montant_ht }} €</td>
+                        </tr>
+                        <tr>
+                            <td>TVA:</td>
+                            <td class="text-end">{{ devis.montant_tva }} €</td>
+                        </tr>
+                        <tr class="fw-bold">
+                            <td>Montant total:</td>
+                            <td class="text-end">{{ devis.montant_total }} €</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

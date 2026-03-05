@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+.devis-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 40px 0;
+}
+
+.devis-page::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: rgba(255, 103, 0, 0.1);
+    border-radius: 50%;
+    filter: blur(80px);
+    top: -200px;
+    right: -200px;
+    animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-30px, 30px) scale(1.1); }
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.glass-panel {
+    background: linear-gradient(135deg, rgba(255, 103, 0, 0.3) 0%, rgba(0, 0, 0, 0.8) 100%);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 103, 0, 0.2);
+    border-radius: 20px;
+}
+
+.form-control-glass {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: white;
+    padding: 15px;
+}
+
+.form-control-glass:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #ff6700;
+    box-shadow: 0 0 20px rgba(255, 103, 0, 0.3);
+    color: white;
+}
+
+.form-control-glass::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.form-text {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+}
+
+.btn-glass-primary {
+    background: linear-gradient(45deg, #ff6700, #ff8800);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 15px 40px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.btn-glass-primary:hover {
+    background: linear-gradient(45deg, #ff8800, #ff6700);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(255, 103, 0, 0.4);
+}
+
+.btn-glass-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-glass-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.ao-info-box {
+    background: rgba(255, 103, 0, 0.1);
+    border: 1px solid rgba(255, 103, 0, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.ao-info-title {
+    color: #ff6700;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.ao-info-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+}
+
+.select-glass {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px 12px;
+}
+
+.select-glass option {
+    background: #1a1a1a;
+    color: white;
+}
+</style>
+
+<div class="devis-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-panel p-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div>
+                            <h1 class="text-white mb-2">
+                                <i class="fas fa-file-invoice-dollar me-2" style="color: #ff6700;"></i>
+                                Demande de Devis
+                            </h1>
+                            <p class="text-white-50 mb-0">Soumettez votre proposition ou demandez un devis personnalisé</p>
+                        </div>
+                        <a href="{% url 'profil' %}" class="btn btn-glass-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour au profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-card">
+                    <div class="p-4 p-lg-5">
+                        <!-- Formulaire -->
+                        <form method="post" action="{% url 'mon_profil_devis' %}">
+                            {% csrf_token %}
+                            
+                            <!-- Si réponse à un appel d'offres -->
+                            {% if request.GET.ao_id %}
+                            <div class="ao-info-box">
+                                <div class="ao-info-title">
+                                    <i class="fas fa-bullhorn me-2"></i>Réponse à un appel d'offres
+                                </div>
+                                <div class="ao-info-text">
+                                    Vous répondez à l'appel d'offres #{{ request.GET.ao_id }}. 
+                                    Veuillez détailler votre proposition technique et financière ci-dessous.
+                                </div>
+                                <input type="hidden" name="ao_id" value="{{ request.GET.ao_id }}">
+                            </div>
+                            {% endif %}
+
+                            <!-- Type de demande -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-tag me-2" style="color: #ff6700;"></i>
+                                    Type de demande *
+                                </label>
+                                <select name="type_demande" class="form-control form-control-glass select-glass" required>
+                                    <option value="DEVIS_GENERAL">Demande de devis générale</option>
+                                    <option value="SITE_WEB">Création de site web</option>
+                                    <option value="APPLICATION">Développement d'application</option>
+                                    <option value="MARKETING">Marketing digital</option>
+                                    <option value="FORMATION">Formation</option>
+                                    <option value="CONSULTING">Consulting IT</option>
+                                    <option value="MAINTENANCE">Maintenance/Support</option>
+                                    <option value="AUTRE">Autre (préciser dans la description)</option>
+                                </select>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-align-left me-2" style="color: #ff6700;"></i>
+                                    Description du projet *
+                                </label>
+                                <textarea 
+                                    name="description" 
+                                    class="form-control form-control-glass" 
+                                    rows="6" 
+                                    placeholder="Décrivez votre projet en détail : objectifs, fonctionnalités souhaitées, contexte, contraintes particulières..."
+                                    required
+                                ></textarea>
+                                <div class="form-text">
+                                    Plus votre description est détaillée, plus notre devis sera précis.
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Budget -->
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">
+                                        <i class="fas fa-dollar-sign me-2" style="color: #ff6700;"></i>
+                                        Budget estimé
+                                    </label>
+                                    <select name="budget" class="form-control form-control-glass select-glass">
+                                        <option value="">Non précisé</option>
+                                        <option value="-1000">Moins de 1 000 $</option>
+                                        <option value="1000-5000">1 000 $ - 5 000 $</option>
+                                        <option value="5000-10000">5 000 $ - 10 000 $</option>
+                                        <option value="10000-50000">10 000 $ - 50 000 $</option>
+                                        <option value="50000+">Plus de 50 000 $</option>
+                                    </select>
+                                </div>
+
+                                <!-- Délai -->
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">
+                                        <i class="fas fa-clock me-2" style="color: #ff6700;"></i>
+                                        Délai souhaité
+                                    </label>
+                                    <select name="delai" class="form-control form-control-glass select-glass">
+                                        <option value="">Non précisé</option>
+                                        <option value="1-semaine">Dans 1 semaine</option>
+                                        <option value="2-semaines">Dans 2 semaines</option>
+                                        <option value="1-mois">Dans 1 mois</option>
+                                        <option value="2-mois">Dans 2 mois</option>
+                                        <option value="3-mois">Dans 3 mois</option>
+                                        <option value="6-mois">Dans 6 mois</option>
+                                        <option value="flexible">Flexible</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Fichiers joints -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-paperclip me-2" style="color: #ff6700;"></i>
+                                    Fichiers complémentaires
+                                </label>
+                                <input 
+                                    type="file" 
+                                    name="fichiers" 
+                                    class="form-control form-control-glass" 
+                                    multiple
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.jpg,.jpeg,.png"
+                                >
+                                <div class="form-text">
+                                    Formats acceptés : PDF, Word, Excel, PowerPoint, ZIP, images (max 10 Mo par fichier)
+                                </div>
+                            </div>
+
+                            <!-- Contact info (auto-filled) -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-address-card me-2" style="color: #ff6700;"></i>
+                                    Vos coordonnées
+                                </label>
+                                <div class="p-3" style="background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                    <div class="text-white mb-2">
+                                        <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                    </div>
+                                    <div class="text-white-50 mb-1">
+                                        <i class="fas fa-envelope me-2"></i>{{ user.email }}
+                                    </div>
+                                    {% if user.telephone %}
+                                    <div class="text-white-50">
+                                        <i class="fas fa-phone me-2"></i>{{ user.telephone }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-text">
+                                    Ces informations seront utilisées pour vous contacter. 
+                                    <a href="{% url 'profil' %}" style="color: #ff6700;">Modifier dans votre profil</a>
+                                </div>
+                            </div>
+
+                            <!-- Submit buttons -->
+                            <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mt-5">
+                                <a href="{% url 'mon_profil_appels_offres' %}" class="btn btn-glass-secondary">
+                                    <i class="fas fa-bullhorn me-2"></i>Voir les appels d'offres
+                                </a>
+                                <button type="submit" class="btn btn-glass-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>Envoyer ma demande
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,601 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Fiche Client - {{ client.nom }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10pt;
+            line-height: 1.3;
+            color: #333;
+        }
+
+        /* Header Section */
+        .header {
+            width: 100%;
+            background: linear-gradient(135deg, #FF6700 0%, #FF8533 100%);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .header-table {
+            width: 100%;
+        }
+
+        .header-left {
+            width: 55%;
+            vertical-align: middle;
+        }
+
+        .header-right {
+            width: 45%;
+            text-align: right;
+            vertical-align: middle;
+        }
+
+        .logo-container {
+            margin-bottom: 5px;
+        }
+
+        .logo {
+            max-width: 140px;
+            height: auto;
+            max-height: 50px;
+            filter: brightness(0) invert(1);
+        }
+
+        .company-name {
+            font-size: 11pt;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .company-details {
+            font-size: 7pt;
+            color: rgba(255,255,255,0.9);
+            line-height: 1.3;
+        }
+
+        .document-title {
+            font-size: 16pt;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .document-date {
+            font-size: 8pt;
+            color: rgba(255,255,255,0.9);
+            background: rgba(0,0,0,0.15);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Client Info Section */
+        .client-section {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-left: 4px solid #FF6700;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .client-header-table {
+            width: 100%;
+        }
+
+        .client-avatar {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #FF6700 0%, #FF8533 100%);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 55px;
+            color: white;
+            font-size: 22pt;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(255,103,0,0.3);
+        }
+
+        .client-info {
+            padding-left: 12px;
+        }
+
+        .client-name {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .client-badges {
+            margin-bottom: 4px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 7pt;
+            font-weight: bold;
+            margin-right: 4px;
+            border: 1px solid transparent;
+        }
+
+        .badge-type {
+            background: #fff3e0;
+            color: #FF6700;
+            border-color: #FF6700;
+        }
+
+        .badge-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-color: #4CAF50;
+        }
+
+        .badge-prospect {
+            background: #fff8e1;
+            color: #f57c00;
+            border-color: #FFC107;
+        }
+
+        .badge-inactive {
+            background: #ffebee;
+            color: #c62828;
+            border-color: #f44336;
+        }
+
+        .client-date {
+            font-size: 8pt;
+            color: #888;
+        }
+
+        /* Stats Section */
+        .section-title {
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            font-size: 10pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-table {
+            width: 100%;
+            margin-bottom: 15px;
+            border-collapse: separate;
+            border-spacing: 8px 0;
+        }
+
+        .stat-box {
+            width: 25%;
+            text-align: center;
+            padding: 12px 8px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-top: 3px solid #FF6700;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .stat-number {
+            font-size: 20pt;
+            font-weight: bold;
+            color: #FF6700;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 7pt;
+            color: #666;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Info Grid */
+        .info-table {
+            width: 100%;
+            margin-bottom: 15px;
+            border-collapse: separate;
+            border-spacing: 6px;
+        }
+
+        .info-cell {
+            width: 50%;
+            padding: 0;
+            vertical-align: top;
+        }
+
+        .info-item {
+            background: #fafafa;
+            padding: 10px 12px;
+            border-radius: 5px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .info-label {
+            font-size: 7pt;
+            color: #FF6700;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: bold;
+        }
+
+        .info-value {
+            font-size: 9pt;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Data Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8pt;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .data-table th {
+            background: #333;
+            color: white;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 8pt;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .data-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e8e8e8;
+            vertical-align: top;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-pill {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 6pt;
+            font-weight: bold;
+            white-space: nowrap;
+            border: 1px solid transparent;
+        }
+
+        .pill-active { background: #e3f2fd; color: #1565c0; border-color: #1976D2; }
+        .pill-success { background: #e8f5e9; color: #2e7d32; border-color: #388E3C; }
+        .pill-danger { background: #ffebee; color: #c62828; border-color: #d32f2f; }
+        .pill-warning { background: #fff3e0; color: #e65100; border-color: #f57c00; }
+        .pill-default { background: #f5f5f5; color: #424242; border-color: #9e9e9e; }
+
+        /* Notes Section */
+        .notes-box {
+            background: linear-gradient(135deg, #fff8e1 0%, #fff3e0 100%);
+            border-left: 3px solid #FF6700;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 9pt;
+            border-radius: 0 5px 5px 0;
+        }
+
+        /* Empty Message */
+        .empty-message {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            font-style: italic;
+            font-size: 8pt;
+            background: #fafafa;
+            border-radius: 5px;
+            border: 1px dashed #ddd;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 25px;
+            padding: 15px;
+            background: #333;
+            color: rgba(255,255,255,0.8);
+            border-radius: 5px;
+            text-align: center;
+            font-size: 7pt;
+        }
+
+        .footer-company {
+            font-weight: bold;
+            color: #FF6700;
+        }
+
+        .footer p {
+            margin: 3px 0;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            opacity: 0.06;
+            width: 350px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <table class="header-table">
+            <tr>
+                <td class="header-left">
+                    <div class="logo-container">
+                        <img src="{{ logo_url }}" alt="Mupenda Company" class="logo">
+                    </div>
+                    <div class="company-name">MUPENDA COMPANY</div>
+                    <div class="company-details">
+                        RDC, Nord-Kivu, Goma<br>
+                        Email: info@mupenda.com<br>
+                        Tél: +243 123 456 789
+                    </div>
+                </td>
+                <td class="header-right">
+                    <div class="document-title">FICHE CLIENT</div>
+                    <div class="document-date">
+                        Généré le {{ now|date:"d/m/Y à H:i" }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Client Header -->
+    <div class="client-section">
+        <table class="client-header-table">
+            <tr>
+                <td style="width: 70px;">
+                    <div class="client-avatar">
+                        {{ client.nom|first|upper }}
+                    </div>
+                </td>
+                <td class="client-info">
+                    <div class="client-name">{{ client.nom }}</div>
+                    <div class="client-badges">
+                        <span class="badge badge-type">{{ client.get_type_client_display }}</span>
+                        <span class="badge badge-{{ client.statut_client|lower }}">{{ client.get_statut_client_display }}</span>
+                    </div>
+                    <div class="client-date">Client depuis {{ client.date_creation|date:"F Y" }}</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Statistics -->
+    <div class="section-title">Statistiques</div>
+    <table class="stats-table">
+        <tr>
+            <td class="stat-box">
+                <div class="stat-number">{{ stats.total_projets }}</div>
+                <div class="stat-label">Projets</div>
+            </td>
+            <td class="stat-box">
+                <div class="stat-number">{{ stats.total_devis }}</div>
+                <div class="stat-label">Devis</div>
+            </td>
+            <td class="stat-box">
+                <div class="stat-number">{{ stats.total_factures }}</div>
+                <div class="stat-label">Factures</div>
+            </td>
+            <td class="stat-box">
+                <div class="stat-number">{{ stats.chiffre_affaires }}€</div>
+                <div class="stat-label">Chiffre d'affaires</div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Client Information -->
+    <div class="section-title">Informations du client</div>
+    <table class="info-table">
+        <tr>
+            <td class="info-cell">
+                <div class="info-item">
+                    <div class="info-label">Nom de l'entreprise</div>
+                    <div class="info-value">{{ client.nom|default:"-" }}</div>
+                </div>
+            </td>
+            <td class="info-cell">
+                <div class="info-item">
+                    <div class="info-label">Adresse email</div>
+                    <div class="info-value">{{ client.email|default:"-" }}</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="info-cell">
+                <div class="info-item">
+                    <div class="info-label">Téléphone</div>
+                    <div class="info-value">{{ client.telephone|default:"-" }}</div>
+                </div>
+            </td>
+            <td class="info-cell">
+                <div class="info-item">
+                    <div class="info-label">Adresse</div>
+                    <div class="info-value">{{ client.adresse|default:"-" }}</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="info-cell">
+                <div class="info-item">
+                    <div class="info-label">Site Web</div>
+                    <div class="info-value">{{ client.site_web|default:"-" }}</div>
+                </div>
+            </td>
+            <td class="info-cell">
+                <div class="info-item">
+                    <div class="info-label">Secteur d'activité</div>
+                    <div class="info-value">{{ client.secteur_activite|default:"-" }}</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="info-cell">
+                <div class="info-item">
+                    <div class="info-label">Numéro SIRET</div>
+                    <div class="info-value">{{ client.siret|default:"-" }}</div>
+                </div>
+            </td>
+            <td class="info-cell">
+                <div class="info-item">
+                    <div class="info-label">Type de client</div>
+                    <div class="info-value">{{ client.get_type_client_display|default:"-" }}</div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    {% if client.notes %}
+    <!-- Notes -->
+    <div class="section-title">Notes</div>
+    <div class="notes-box">
+        {{ client.notes|linebreaksbr }}
+    </div>
+    {% endif %}
+
+    <!-- Projects -->
+    <div class="section-title">Projets associés ({{ stats.total_projets }})</div>
+    {% if projets %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Nom du projet</th>
+                <th>Statut</th>
+                <th>Chef de projet</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for projet in projets %}
+            <tr>
+                <td>{{ projet.nom }}</td>
+                <td>
+                    <span class="status-pill pill-{{ projet.statut|lower }}">
+                        {{ projet.get_statut_display|default:projet.statut }}
+                    </span>
+                </td>
+                <td>{{ projet.chef_projet.get_full_name|default:"-" }}</td>
+                <td>{{ projet.date_debut|date:"d/m/Y"|default:"-" }}</td>
+                <td>{{ projet.date_fin|date:"d/m/Y"|default:"-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-message">Aucun projet associé</div>
+    {% endif %}
+
+    <!-- Devis -->
+    <div class="section-title">Devis ({{ stats.total_devis }})</div>
+    {% if devis %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Date</th>
+                <th>Montant</th>
+                <th>Statut</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in devis %}
+            <tr>
+                <td>{{ d.titre|default:"Devis sans titre" }}</td>
+                <td>{{ d.date_creation|date:"d/m/Y" }}</td>
+                <td>{{ d.montant|default:"-" }}€</td>
+                <td>
+                    <span class="status-pill pill-{{ d.statut|lower }}">
+                        {{ d.get_statut_display|default:d.statut }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-message">Aucun devis</div>
+    {% endif %}
+
+    <!-- Factures -->
+    <div class="section-title">Factures ({{ stats.total_factures }})</div>
+    {% if factures %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>N° Facture</th>
+                <th>Date</th>
+                <th>Montant</th>
+                <th>Statut</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for f in factures %}
+            <tr>
+                <td>#{{ f.id }}</td>
+                <td>{{ f.date_creation|date:"d/m/Y" }}</td>
+                <td>{{ f.montant|default:"-" }}€</td>
+                <td>
+                    <span class="status-pill pill-{{ f.statut|lower }}">
+                        {{ f.get_statut_display|default:f.statut }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-message">Aucune facture</div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><span class="footer-company">MUPENDA COMPANY</span> - Solutions technologiques innovantes</p>
+        <p>RDC, Nord-Kivu, Goma | Email: info@mupenda.com | Tél: +243 123 456 789</p>
+        <p>Ce document est confidentiel et destiné uniquement à l'usage interne.</p>
+    </div>
+</body>
+</html>

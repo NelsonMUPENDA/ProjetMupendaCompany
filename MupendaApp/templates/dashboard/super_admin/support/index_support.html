@@ -1,0 +1,116 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}Support Client{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Support Client</h1>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Retour</a>
+    </div>
+    
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.total_tickets }}</h3>
+                    <p class="mb-0">Total Tickets</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h3>{{ stats.tickets_ouverts }}</h3>
+                    <p class="mb-0">Ouverts</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.tickets_en_cours }}</h3>
+                    <p class="mb-0">En cours</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.tickets_resolus }}</h3>
+                    <p class="mb-0">Résolus</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.tickets_urgents }}</h3>
+                    <p class="mb-0">Urgents</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-body text-center">
+                    <a href="{% url 'liste_tickets' %}" class="btn btn-primary w-100">Voir tous</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tickets récents -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Tickets récents</h5>
+            <a href="{% url 'ajouter_ticket' %}" class="btn btn-primary btn-sm">+ Nouveau ticket</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Titre</th>
+                            <th>Client</th>
+                            <th>Statut</th>
+                            <th>Priorité</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in tickets_recents %}
+                        <tr>
+                            <td>{{ ticket.numero }}</td>
+                            <td>{{ ticket.titre }}</td>
+                            <td>{{ ticket.client.nom }}</td>
+                            <td>
+                                <span class="badge {% if ticket.statut == 'OUVERT' %}bg-warning{% elif ticket.statut == 'EN_COURS' %}bg-info{% elif ticket.statut == 'RESOLU' %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ ticket.get_statut_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if ticket.priorite == 'URGENTE' %}bg-danger{% elif ticket.priorite == 'HAUTE' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    {{ ticket.get_priorite_display }}
+                                </span>
+                            </td>
+                            <td>{{ ticket.date_creation|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                <a href="{% url 'fiche_ticket' ticket.id %}" class="btn btn-sm btn-info">Voir</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">Aucun ticket récent</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

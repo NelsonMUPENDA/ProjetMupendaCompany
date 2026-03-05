@@ -1,0 +1,632 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+/* Design Glassmorphism - Page Connexion */
+.login-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Cercles animés en arrière-plan */
+.login-page::before,
+.login-page::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: float 20s ease-in-out infinite;
+}
+
+.login-page::before {
+    width: 600px;
+    height: 600px;
+    background: rgba(255, 103, 0, 0.15);
+    top: -200px;
+    right: -200px;
+    animation-delay: 0s;
+}
+
+.login-page::after {
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 103, 0, 0.1);
+    bottom: -150px;
+    left: -150px;
+    animation-delay: -10s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -30px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+/* Carte Glassmorphism principale */
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 103, 0, 0.1) inset;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+    box-shadow: 
+        0 35px 60px -15px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 103, 0, 0.2) inset;
+    transform: translateY(-2px);
+}
+
+/* Panel info vitré */
+.glass-panel {
+    background: rgba(255, 103, 0, 0.08);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 103, 0, 0.2);
+    border-radius: 20px;
+    transition: all 0.4s ease;
+    background: linear-gradient(135deg, rgba(255, 103, 0, 0.3) 0%, rgba(0, 0, 0, 0.8) 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.floating-animation {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.8s ease-out;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.8s ease-out;
+}
+
+@keyframes slideInLeft {
+    0% { 
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    0% { 
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.form-control-glass {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    color: #000;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.form-control-glass:focus {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #ff6700;
+    box-shadow: 0 0 15px rgba(255, 103, 0, 0.3);
+    outline: none;
+}
+
+.btn-glass-primary {
+    background: linear-gradient(45deg, #000000, #333333);
+    color: #ff6700;
+    border: 1px solid rgba(255, 103, 0, 0.3);
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.btn-glass-primary:hover {
+    background: linear-gradient(45deg, #ff6700, #ff8800);
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 103, 0, 0.3);
+}
+
+.error-message {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 10px;
+    color: #d32f2f;
+    padding: 10px;
+    backdrop-filter: blur(5px);
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.role-select-container {
+    position: relative;
+}
+
+.role-select-glass {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    color: #000;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    appearance: none;
+    padding-right: 40px;
+}
+
+.role-select-glass:focus {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #ff6700;
+    box-shadow: 0 0 15px rgba(255, 103, 0, 0.3);
+    outline: none;
+}
+
+.role-select-arrow {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #ff6700;
+}
+
+.login-title {
+    background: linear-gradient(45deg, #000, #ff6700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+.link-glass {
+    color: #000;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.link-glass:hover {
+    color: #ff6700;
+}
+
+.link-glass::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #ff6700;
+    transition: width 0.3s ease;
+}
+
+.link-glass:hover::after {
+    width: 100%;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 103, 0, 0.3);
+    border-top: 3px solid #ff6700;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .glass-panel {
+        margin-bottom: 30px;
+        padding: 30px !important;
+    }
+    
+    .glass-card {
+        padding: 30px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .glass-card, .glass-panel {
+        border-radius: 16px;
+    }
+    
+    .btn-glass-primary {
+        padding: 14px 24px;
+        font-size: 15px;
+    }
+}
+
+</style>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+</div>
+
+<div class="login-page d-flex align-items-center justify-content-center p-3 p-md-4">
+    <div class="container">
+        <div class="row align-items-center justify-content-center g-4">
+            <!-- Panel Info -->
+            <div class="col-lg-5">
+                <div class="glass-panel p-4 p-lg-5 slide-up">
+                    <div class="text-center text-lg-start">
+                        <div class="mb-4">
+                            <i class="fas fa-shield-alt fa-4x icon-glow pulse-animation" style="color: #ff6700;"></i>
+                        </div>
+                        <h1 class="display-5 fw-bold text-white mb-3">
+                            Mupenda
+                            <span style="color: #ff6700;">Company</span>
+                        </h1>
+                        <p class="lead text-white-50 mb-4">Système de Gestion d'Entreprise</p>
+                        
+                        <div class="divider-glass"></div>
+                        
+                        <div class="row g-3">
+                            <div class="col-4 text-center">
+                                <div class="icon-float" style="animation-delay: 0s;">
+                                    <i class="fas fa-lock fa-2x mb-2" style="color: #ff6700;"></i>
+                                    <p class="small text-white-50 mb-0">Sécurité<br>Avancée</p>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="icon-float" style="animation-delay: 0.5s;">
+                                    <i class="fas fa-users-cog fa-2x mb-2" style="color: #ff6700;"></i>
+                                    <p class="small text-white-50 mb-0">Gestion des<br>Rôles</p>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="icon-float" style="animation-delay: 1s;">
+                                    <i class="fas fa-chart-line fa-2x mb-2" style="color: #ff6700;"></i>
+                                    <p class="small text-white-50 mb-0">Performance<br>Optimale</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formulaire de connexion -->
+            <div class="col-lg-5">
+                <div class="glass-card p-4 p-lg-5 slide-up slide-up-delay-1">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="fas fa-user-circle fa-3x" style="color: #ff6700;"></i>
+                        </div>
+                        <h2 class="login-title h3 mb-2">Connexion</h2>
+                        <p class="login-subtitle text-white-50">Accédez à votre espace sécurisé</p>
+                    </div>
+                    
+                    {% if erreur %}
+                        <div class="error-message mb-4">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            {{ erreur }}
+                        </div>
+                    {% endif %}
+                    
+                    <form id="loginForm" action="{% url 'connexion' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ next }}">
+                        
+                        <!-- Username/Email -->
+                        <div class="mb-3 slide-up slide-up-delay-2 text-white-50">
+                            <label class="form-label-glass" for="username">
+                                <i class="fas fa-user"></i>
+                                Nom d'utilisateur ou Email
+                            </label>
+                            <input 
+                                type="text" 
+                                name="username" 
+                                id="username"
+                                class="form-control form-control-glass {% if erreur %}is-invalid{% endif %}" 
+                                placeholder="Entrez votre identifiant"
+                                autocomplete="username"
+                                required
+                                value="{{ username|default:'' }}"
+                            >
+                        </div>
+                        
+                        <!-- Password -->
+                        <div class="mb-3 slide-up slide-up-delay-2 text-white-50">
+                            <label class="form-label-glass" for="password">
+                                <i class="fas fa-lock"></i>
+                                Mot de passe
+                            </label>
+                            <div class="input-group">
+                                <input 
+                                    type="password" 
+                                    name="password" 
+                                    id="password"
+                                    class="form-control form-control-glass" 
+                                    placeholder="Entrez votre mot de passe"
+                                    autocomplete="current-password"
+                                    required
+                                    style="border-right: none; border-radius: 12px 0 0 12px;"
+                                >
+                                <button type="button" class="btn-toggle-password" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Role -->
+                        <div class="mb-4 slide-up slide-up-delay-2 text-white-50" id="roleContainer">
+                            <label class="form-label-glass" for="role">
+                                <i class="fas fa-user-tag"></i>
+                                Rôle d'accès
+                            </label>
+                            <div class="role-select-container position-relative">
+                                <select 
+                                    name="role" 
+                                    id="role"
+                                    class="form-control role-select-glass w-100"
+                                >
+                                    <option value="">Sans rôle spécifique (accès profil)</option>
+                                </select>
+                                <i class="fas fa-chevron-down role-select-arrow"></i>
+                            </div>
+                            <div id="roleLoading" class="mt-2 small text-white-50 d-none">
+                                <i class="fas fa-spinner fa-spin me-1"></i> Chargement des rôles...
+                            </div>
+                            <div id="roleError" class="mt-2 small text-danger d-none"></div>
+                        </div>
+                        
+                        <!-- Remember Me -->
+                        <div class="mb-4 slide-up slide-up-delay-3">
+                            <label class="form-check-glass text-white-50">
+                                <input type="checkbox" name="remember_me" id="rememberMe" class="form-check-input-glass">
+                                <span class="form-check-label-glass text-white-50">Se souvenir de moi</span>
+                            </label>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="mb-4 slide-up slide-up-delay-3">
+                            <button type="submit" class="btn-glass-primary w-100" id="loginBtn">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Se connecter
+                            </button>
+                        </div>
+                        
+                        <!-- Links -->
+                        <div class="text-center slide-up slide-up-delay-3">
+                            <div class="d-flex flex-column gap-2">
+                                <a href="{% url 'inscription' %}" class="link-glass">
+                                    <i class="fas fa-user-plus me-1"></i>
+                                    Pas encore inscrit ? Créer un compte
+                                </a>
+                                <a href="{% url 'password_reset' %}" class="link-glass">
+                                    <i class="fas fa-key me-1"></i>
+                                    Mot de passe oublié ?
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <!-- Footer -->
+                    <div class="mt-4 pt-3 text-center" style="border-top: 1px solid rgba(255,255,255,0.1);">
+                        <small class="text-white-50">
+                            <i class="fas fa-shield-alt me-1" style="color: #ff6700;"></i>
+                            Connexion sécurisée SSL
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const usernameInput = document.getElementById('username');
+    const roleSelect = document.getElementById('role');
+    const roleLoading = document.getElementById('roleLoading');
+    const roleError = document.getElementById('roleError');
+    
+    let roleFetchTimeout = null;
+    
+    // If username is pre-filled (from error state), fetch roles automatically
+    if (usernameInput.value.trim()) {
+        fetchUserRoles(usernameInput.value.trim());
+    }
+    
+    // Toggle password visibility
+    // This function toggles the password input field between password and text types
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.children[0].className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    });
+    
+    // Fetch user roles when username/email is entered
+    usernameInput.addEventListener('blur', function() {
+        const username = this.value.trim();
+        if (username) {
+            fetchUserRoles(username);
+        }
+    });
+    
+    // Also fetch on Enter key in username field
+    usernameInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const username = this.value.trim();
+            if (username) {
+                fetchUserRoles(username);
+            }
+            passwordInput.focus();
+        }
+    });
+    
+    // Function to fetch user roles via AJAX
+    function fetchUserRoles(username) {
+        // Clear previous timeout
+        if (roleFetchTimeout) {
+            clearTimeout(roleFetchTimeout);
+        }
+        
+        // Show loading
+        roleLoading.classList.remove('d-none');
+        roleError.classList.add('d-none');
+        roleSelect.disabled = true;
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Fetch roles from server
+        fetch('{% url "get_user_roles_ajax" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrfToken
+            },
+            body: 'username=' + encodeURIComponent(username)
+        })
+        .then(response => response.json())
+        .then(data => {
+            roleLoading.classList.add('d-none');
+            
+            if (data.success && data.roles.length > 0) {
+                // Clear existing options
+                roleSelect.innerHTML = '<option value="">Sélectionnez votre rôle</option>';
+                
+                // Add role options
+                data.roles.forEach(role => {
+                    const option = document.createElement('option');
+                    option.value = role.nom;
+                    option.textContent = role.nom_display;
+                    roleSelect.appendChild(option);
+                });
+                
+                // Enable the select
+                roleSelect.disabled = false;
+                
+                // If only one role, auto-select it
+                if (data.roles.length === 1) {
+                    roleSelect.value = data.roles[0].nom;
+                }
+            } else {
+                roleSelect.innerHTML = '<option value="">' + (data.message || 'Aucun rôle disponible') + '</option>';
+                roleSelect.disabled = true;
+                
+                if (data.message) {
+                    roleError.textContent = data.message;
+                    roleError.classList.remove('d-none');
+                }
+            }
+        })
+        .catch(error => {
+            roleLoading.classList.add('d-none');
+            roleSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+            roleSelect.disabled = true;
+            console.error('Error fetching roles:', error);
+        });
+    }
+    
+    // Form submission with loading animation
+    loginForm.addEventListener('submit', function(e) {
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+        
+        if (!username || !password) {
+            e.preventDefault();
+            showError('Veuillez entrer votre identifiant et mot de passe');
+            return;
+        }
+        
+        // Show loading
+        loadingOverlay.classList.add('active');
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Connexion...';
+    });
+    
+    // Input focus effects
+    const inputs = document.querySelectorAll('.form-control-glass, .role-select-glass');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.closest('.mb-3, .mb-4')?.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.closest('.mb-3, .mb-4')?.classList.remove('focused');
+        });
+    });
+    
+    // Error display function
+    function showError(message) {
+        const existingError = document.querySelector('.error-message');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message mb-4';
+        errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i>${message}`;
+        
+        loginForm.insertBefore(errorDiv, loginForm.firstChild);
+        
+        setTimeout(() => {
+            errorDiv.style.opacity = '0';
+            errorDiv.style.transform = 'translateY(-10px)';
+            setTimeout(() => errorDiv.remove(), 300);
+        }, 5000);
+    }
+});
+</script>
+
+{% endblock %}

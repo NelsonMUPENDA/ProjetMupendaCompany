@@ -1,0 +1,261 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load dashboard_menu %}
+
+{% block dashboard_title %}Liste des Catégories{% endblock %}
+
+{% block page_title %}
+<i class="bi bi-tags"></i>
+Liste des Catégories
+{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'creer_categorie' %}" class="btn btn-primary-orange">
+    <i class="bi bi-plus-lg"></i>
+    Nouvelle Catégorie
+</a>
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .categories-content { padding: 0; }
+    .categories-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .categories-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+    }
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 0.5rem;
+    }
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    .filters-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    .categorie-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    .categorie-card:hover {
+        background: var(--glass-bg-hover);
+        transform: translateY(-3px);
+    }
+    .categorie-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+    .categorie-date {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+    .categorie-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid var(--glass-border);
+        background: var(--glass-bg);
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .action-btn:hover {
+        background: var(--glass-bg-hover);
+        color: var(--primary-orange);
+        border-color: var(--primary-orange);
+    }
+    .action-btn.delete:hover {
+        color: var(--danger);
+        border-color: var(--danger);
+    }
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+    .pagination {
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    .page-link {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        margin: 0 0.25rem;
+        border-radius: 8px;
+    }
+    .page-link:hover {
+        background: var(--glass-bg-hover);
+        border-color: var(--primary-orange);
+        color: var(--primary-orange);
+    }
+    .page-item.active .page-link {
+        background: var(--primary-orange);
+        border-color: var(--primary-orange);
+    }
+</style>
+
+<div class="categories-content">
+    <div class="categories-header">
+        <h1 class="categories-title">
+            <i class="bi bi-tags me-2"></i>
+            Gestion des Catégories
+        </h1>
+        <p class="text-secondary">Gérez les catégories pour les formations, réalisations et blog</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_categories }}</div>
+            <div class="stat-label">Total Catégories</div>
+        </div>
+    </div>
+
+    <div class="filters-section">
+        <form method="get" class="row g-3">
+            <div class="col-md-8">
+                <input type="text" name="search" class="form-control" 
+                       placeholder="Rechercher..." value="{{ search }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary-orange w-100">
+                    <i class="bi bi-funnel"></i>
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'liste_categories' %}" class="btn btn-glass w-100">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {% if categories %}
+    <div class="categories-grid">
+        {% for categorie in categories %}
+        <div class="categorie-card">
+            <div>
+                <div class="categorie-name">
+                    <i class="bi bi-tag me-2 text-orange"></i>
+                    {{ categorie.name }}
+                </div>
+                <div class="categorie-date">
+                    Créée le {{ categorie.created_on|date:"d/m/Y" }}
+                </div>
+            </div>
+            <div class="categorie-actions">
+                <a href="{% url 'modifier_categorie' categorie.pk %}" class="action-btn" title="Modifier">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <a href="{% url 'supprimer_categorie' categorie.pk %}" class="action-btn delete" title="Supprimer">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <nav aria-label="Pagination" class="mt-4">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-tags"></i>
+        <h3>Aucune catégorie</h3>
+        <p>Commencez par ajouter votre première catégorie</p>
+        <a href="{% url 'creer_categorie' %}" class="btn btn-primary-orange mt-3">
+            <i class="bi bi-plus-lg me-1"></i>
+            Ajouter une catégorie
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}Partenaires{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion des Partenaires</h1>
+        <div>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Retour</a>
+            <button class="btn btn-primary" onclick="alert('Fonctionnalité à implémenter')">Nouveau Partenaire</button>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Liste des partenaires</h5>
+                </div>
+                <div class="card-body">
+                    {% if partenaires %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Logo</th>
+                                    <th>Nom</th>
+                                    <th>Contact</th>
+                                    <th>Ordre</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for partenaire in partenaires %}
+                                <tr>
+                                    <td>
+                                        {% if partenaire.logo %}
+                                        <img src="{{ partenaire.logo.url }}" alt="{{ partenaire.nom }}" style="width: 50px; height: 50px; object-fit: contain;">
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <strong>{{ partenaire.nom }}</strong>
+                                        {% if partenaire.site_web %}
+                                        <br><small><a href="{{ partenaire.site_web }}" target="_blank">Site web</a></small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if partenaire.email_contact %}{{ partenaire.email_contact }}<br>{% endif %}
+                                        {% if partenaire.telephone %}{{ partenaire.telephone }}{% endif %}
+                                    </td>
+                                    <td>{{ partenaire.ordre_affichage }}</td>
+                                    <td>
+                                        <span class="badge {% if partenaire.est_actif %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {% if partenaire.est_actif %}Actif{% else %}Inactif{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="alert('À implémenter')">Modifier</button>
+                                        <button class="btn btn-sm btn-danger" onclick="alert('À implémenter')">Supprimer</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">Aucun partenaire enregistré. Le modèle est maintenant disponible !</p>
+                        <p class="mb-0 mt-2"><strong>Modèle Partenaire :</strong> nom, logo, site_web, description, email_contact, telephone, ordre_affichage, est_actif</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Les partenaires sont affichés sur le site public.</p>
+                    <ul class="list-unstyled">
+                        <li><strong>Logo :</strong> Image du partenaire</li>
+                        <li><strong>Ordre :</strong> Position d'affichage</li>
+                        <li><strong>Est actif :</strong> Visible sur le site</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

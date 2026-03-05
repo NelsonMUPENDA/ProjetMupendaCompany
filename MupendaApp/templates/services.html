@@ -2,40 +2,387 @@
 {% load static %}
 
 {% block content %}
+<style>
+  .page-header {
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.9) 100%),
+                url('{% static "images/bg_3.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    padding: 8rem 0 4rem;
+    text-align: center;
+  }
 
-<section class="my-5 py-5">
-    <div class="container">
-        <div class="row g-3 pt-3">
-            <div class="col-md-12 text-center">
-                <p class="text-white">Accueil > Services</p>
-                <h2 class="display-5 fw-bold" style="color: #ff6700;"><i class="bi bi-briefcase-fill"></i> Nos Services</h2>
-                <p class="text-white">Découvrez nos services professionnels</p>
+  .page-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .page-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .services-section {
+    background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+    padding: 5rem 0;
+  }
+
+  [data-bs-theme="light"] .services-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  }
+
+  .service-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 103, 0, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    height: 100%;
+  }
+
+  [data-bs-theme="light"] .service-card {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(255, 103, 0, 0.2);
+    border-color: rgba(255, 103, 0, 0.3);
+  }
+
+  .service-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .service-card:hover .service-image {
+    transform: scale(1.1);
+  }
+
+  .service-body {
+    padding: 1.75rem;
+  }
+
+  .service-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  .service-title {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  [data-bs-theme="light"] .service-title {
+    color: #212529;
+  }
+
+  .service-description {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  [data-bs-theme="light"] .service-description {
+    color: rgba(33, 37, 41, 0.7);
+  }
+
+  .service-link {
+    color: #ff6700;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .service-link:hover {
+    gap: 1rem;
+    color: #ff8533;
+  }
+
+  .why-us-section {
+    background: linear-gradient(135deg, #151515 0%, #0a0a0a 100%);
+    padding: 5rem 0;
+  }
+
+  [data-bs-theme="light"] .why-us-section {
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+  }
+
+  .why-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 103, 0, 0.15);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    height: 100%;
+    transition: all 0.4s ease;
+  }
+
+  [data-bs-theme="light"] .why-card {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .why-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 103, 0, 0.3);
+  }
+
+  .why-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+  }
+
+  .why-title {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  [data-bs-theme="light"] .why-title {
+    color: #212529;
+  }
+
+  .why-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  [data-bs-theme="light"] .why-text {
+    color: rgba(33, 37, 41, 0.7);
+  }
+
+  .cta-section {
+    background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%);
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .cta-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .cta-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-cta-white {
+    background: white;
+    color: #ff6700;
+    padding: 0.875rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-cta-white:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    color: #ff6700;
+  }
+
+  .section-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  [data-bs-theme="light"] .section-title {
+    color: #212529;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 103, 0, 0.05);
+    border-radius: 20px;
+    border: 2px dashed rgba(255, 103, 0, 0.3);
+  }
+
+  .empty-state i {
+    font-size: 4rem;
+    color: #ff6700;
+    margin-bottom: 1rem;
+  }
+
+  .empty-state h4 {
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  [data-bs-theme="light"] .empty-state h4 {
+    color: #212529;
+  }
+
+  .empty-state p {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  [data-bs-theme="light"] .empty-state p {
+    color: rgba(33, 37, 41, 0.7);
+  }
+</style>
+
+<!-- Page Header -->
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">Nos Services</h1>
+    <p class="page-subtitle">
+      Découvrez notre gamme complète de services informatiques et technologiques 
+      conçus pour propulser votre entreprise vers de nouveaux sommets.
+    </p>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section class="services-section">
+  <div class="container">
+    {% if service %}
+    <div class="row g-4">
+      {% for s in service %}
+      <div class="col-md-6 col-lg-4">
+        <div class="service-card">
+          <div style="overflow: hidden;">
+            {% if s.photo %}
+            <img src="{{ s.photo.url }}" alt="{{ s.nom }}" class="service-image">
+            {% else %}
+            <img src="{% static 'images/default-service.jpg' %}" alt="{{ s.nom }}" class="service-image">
+            {% endif %}
+          </div>
+          <div class="service-body">
+            <div class="service-icon">
+              <i class="bi bi-briefcase-fill"></i>
             </div>
-        </div> 
-    </div>
-    <div class="container py-5">
-        <div class="row g-3">
-            {% for service in service %}
-            <div class="col-md-4">
-                <div class="card h-100 shadow">
-                    {% if service.photo %}
-                    <img src="{{ service.photo.url }}" class="card-img-top" alt="{{ service.nom }}">
-                    {% else %}
-                    <p class="alert alert-danger">Aucune image disponible</p>
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ service.nom }}</h5>
-                        <p class="card-text">{{ service.description|safe }}</p>
-                    </div>
-                </div>
-            </div>
-            {% empty %}
-            <div class="col-md-12">
-                <p class="text-white">Aucun service disponible pour le moment. Veuillez revenir plus tard.</p>
-            </div>
-            {% endfor %}
+            <h5 class="service-title">{{ s.nom }}</h5>
+            <p class="service-description">{{ s.description|safe }}</p>
+            {% if s.slug %}
+            <a href="{% url 'service_detail' s.slug %}" class="service-link">
+              En savoir plus
+              <i class="bi bi-arrow-right"></i>
+            </a>
+            {% else %}
+            <a href="{% url 'contact' %}" class="service-link">
+              Demander un devis
+              <i class="bi bi-arrow-right"></i>
+            </a>
+            {% endif %}
+          </div>
         </div>
+      </div>
+      {% endfor %}
     </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="bi bi-briefcase"></i>
+      <h4>Aucun service disponible</h4>
+      <p>Les services seront bientôt disponibles.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-us-section">
+  <div class="container">
+    <h2 class="section-title">Pourquoi Nous Choisir ?</h2>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="why-card">
+          <div class="why-icon">
+            <i class="bi bi-award-fill"></i>
+          </div>
+          <h4 class="why-title">Expertise</h4>
+          <p class="why-text">Plus de 10 ans d'expérience dans le domaine des technologies de l'information.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="why-card">
+          <div class="why-icon">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <h4 class="why-title">Équipe Qualifiée</h4>
+          <p class="why-text">Une équipe d'experts passionnés et certifiés dans divers domaines technologiques.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="why-card">
+          <div class="why-icon">
+            <i class="bi bi-lightning-charge-fill"></i>
+          </div>
+          <h4 class="why-title">Rapidité</h4>
+          <p class="why-text">Livraison rapide et respect des délais pour tous vos projets.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="why-card">
+          <div class="why-icon">
+            <i class="bi bi-headset"></i>
+          </div>
+          <h4 class="why-title">Support 24/7</h4>
+          <p class="why-text">Un support technique disponible à tout moment pour vous accompagner.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="container">
+    <h2 class="cta-title">Besoin d'un service sur mesure ?</h2>
+    <p class="cta-text">
+      Contactez-nous pour discuter de vos besoins spécifiques et obtenir une solution personnalisée.
+    </p>
+    <a href="{% url 'contact' %}" class="btn-cta-white">
+      <i class="bi bi-envelope"></i>
+      Nous Contacter
+    </a>
+  </div>
 </section>
 
 {% endblock %}

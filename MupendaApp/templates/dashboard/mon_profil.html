@@ -1,0 +1,604 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+.profile-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 40px 0;
+}
+
+.profile-page::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: rgba(255, 103, 0, 0.1);
+    border-radius: 50%;
+    filter: blur(80px);
+    top: -200px;
+    right: -200px;
+    animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-30px, 30px) scale(1.1); }
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.glass-panel {
+    background: linear-gradient(135deg, rgba(255, 103, 0, 0.3) 0%, rgba(0, 0, 0, 0.8) 100%);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 103, 0, 0.2);
+    border-radius: 20px;
+}
+
+.profile-header {
+    background: linear-gradient(135deg, rgba(255, 103, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
+    border-radius: 20px 20px 0 0;
+    padding: 30px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 103, 0, 0.2);
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #ff6700, #ff8800);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 48px;
+    color: white;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(255, 103, 0, 0.3);
+}
+
+.profile-name {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.profile-role {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+}
+
+.profile-badge {
+    display: inline-block;
+    background: rgba(255, 103, 0, 0.2);
+    color: #ff6700;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-top: 10px;
+    border: 1px solid rgba(255, 103, 0, 0.3);
+}
+
+.nav-tabs-glass {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0 20px;
+}
+
+.nav-tabs-glass .nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    border: none;
+    padding: 15px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.nav-tabs-glass .nav-link:hover {
+    color: #ff6700;
+    background: rgba(255, 103, 0, 0.1);
+}
+
+.nav-tabs-glass .nav-link.active {
+    color: #ff6700;
+    border-bottom: 2px solid #ff6700;
+    background: rgba(255, 103, 0, 0.1);
+}
+
+.tab-content-glass {
+    padding: 30px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}
+
+.info-value {
+    color: white;
+    font-weight: 600;
+}
+
+.btn-glass-primary {
+    background: linear-gradient(45deg, #ff6700, #ff8800);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-glass-primary:hover {
+    background: linear-gradient(45deg, #ff8800, #ff6700);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 103, 0, 0.4);
+}
+
+.btn-glass-danger {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-glass-danger:hover {
+    background: rgba(255, 0, 0, 0.3);
+    color: white;
+}
+
+.btn-glass-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-glass-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.form-control-glass {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: white;
+    padding: 12px 15px;
+}
+
+.form-control-glass:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #ff6700;
+    box-shadow: 0 0 15px rgba(255, 103, 0, 0.3);
+    color: white;
+}
+
+.form-control-glass::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.action-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.action-card:hover {
+    background: rgba(255, 103, 0, 0.1);
+    border-color: rgba(255, 103, 0, 0.3);
+    transform: translateY(-5px);
+}
+
+.action-icon {
+    font-size: 40px;
+    color: #ff6700;
+    margin-bottom: 15px;
+}
+
+.action-title {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.action-desc {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+}
+
+.alert-glass {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    color: #ffc107;
+    border-radius: 10px;
+    padding: 15px 20px;
+}
+</style>
+
+<div class="profile-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-panel p-4 text-center">
+                    <h1 class="text-white mb-2">
+                        <i class="fas fa-user-circle me-2" style="color: #ff6700;"></i>
+                        Mon Espace Personnel
+                    </h1>
+                    <p class="text-white-50 mb-0">Gérez vos informations et accédez à nos services</p>
+                </div>
+            </div>
+        </div>
+
+        {% if not has_role %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert-glass">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Statut :</strong> Utilisateur standard. Vous n'avez pas encore de rôle attribué. 
+                    Contactez un administrateur pour accéder au dashboard complet.
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row g-4">
+            <!-- Profile Card -->
+            <div class="col-lg-4">
+                <div class="glass-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            {% if user.photo_profil %}
+                                <img src="{{ user.photo_profil.url }}" alt="Photo" class="w-100 h-100 rounded-circle object-fit-cover">
+                            {% else %}
+                                <i class="fas fa-user"></i>
+                            {% endif %}
+                        </div>
+                        <div class="profile-name">{{ user.get_full_name|default:user.username }}</div>
+                        <div class="profile-role">{{ user.email }}</div>
+                        <span class="profile-badge">
+                            <i class="fas fa-circle me-1" style="font-size: 8px;"></i>
+                            {% if has_role %}{{ active_role }}{% else %}Utilisateur Standard{% endif %}
+                        </span>
+                    </div>
+                    <div class="p-4">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-user me-2"></i>Nom d'utilisateur</span>
+                            <span class="info-value">{{ user.username }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-envelope me-2"></i>Email</span>
+                            <span class="info-value">{{ user.email }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-calendar me-2"></i>Inscrit le</span>
+                            <span class="info-value">{{ user.date_joined|date:"d/m/Y" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-clock me-2"></i>Dernière connexion</span>
+                            <span class="info-value">{{ user.last_login|date:"d/m/Y H:i"|default:"Jamais" }}</span>
+                        </div>
+                        {% if user.telephone %}
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-phone me-2"></i>Téléphone</span>
+                            <span class="info-value">{{ user.telephone }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <div class="glass-card">
+                    <ul class="nav nav-tabs-glass" id="profileTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="actions-tab" data-bs-toggle="tab" data-bs-target="#actions" type="button">
+                                <i class="fas fa-th-large me-2"></i>Actions
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="devis-tab" data-bs-toggle="tab" data-bs-target="#devis" type="button">
+                                <i class="fas fa-file-invoice-dollar me-2"></i>Mes Devis
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="edit-tab" data-bs-toggle="tab" data-bs-target="#edit" type="button">
+                                <i class="fas fa-edit me-2"></i>Modifier Profil
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#messages" type="button">
+                                <i class="fas fa-envelope me-2"></i>Messages
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button">
+                                <i class="fas fa-shield-alt me-2"></i>Sécurité
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content tab-content-glass" id="profileTabsContent">
+                        <!-- Actions Tab -->
+                        <div class="tab-pane fade show active" id="actions" role="tabpanel">
+                            <h4 class="text-white mb-4">Actions disponibles</h4>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <a href="{% url 'mon_profil_appels_offres' %}" class="text-decoration-none">
+                                        <div class="action-card">
+                                            <div class="action-icon">
+                                                <i class="fas fa-bullhorn"></i>
+                                            </div>
+                                            <div class="action-title">Appels d'offres</div>
+                                            <div class="action-desc">Consultez les opportunités disponibles</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{% url 'mon_profil_devis' %}" class="text-decoration-none">
+                                        <div class="action-card">
+                                            <div class="action-icon">
+                                                <i class="fas fa-file-invoice-dollar"></i>
+                                            </div>
+                                            <div class="action-title">Demander un devis</div>
+                                            <div class="action-desc">Rédigez et soumettez votre devis</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="#" class="text-decoration-none" onclick="document.getElementById('messages-tab').click(); return false;">
+                                        <div class="action-card">
+                                            <div class="action-icon">
+                                                <i class="fas fa-comment-dots"></i>
+                                            </div>
+                                            <div class="action-title">Envoyer un message</div>
+                                            <div class="action-desc">Contactez notre équipe</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{% url 'formation' %}" class="text-decoration-none">
+                                        <div class="action-card">
+                                            <div class="action-icon">
+                                                <i class="fas fa-graduation-cap"></i>
+                                            </div>
+                                            <div class="action-title">Formations</div>
+                                            <div class="action-desc">Découvrez nos formations</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Devis Tab -->
+                        <div class="tab-pane fade" id="devis" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="text-white mb-0">
+                                    <i class="fas fa-file-invoice-dollar me-2" style="color: #ff6700;"></i>Mes Devis
+                                </h4>
+                                <a href="{% url 'mon_profil_devis' %}" class="btn btn-glass-primary btn-sm">
+                                    <i class="fas fa-plus me-2"></i>Nouveau devis
+                                </a>
+                            </div>
+                            
+                            {% if user.devis.exists %}
+                                <div class="row g-3">
+                                    {% for devis in user.devis.all %}
+                                    <div class="col-md-6">
+                                        <div class="action-card" style="text-align: left;">
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <div>
+                                                    <h5 class="text-white mb-1">{{ devis.titre|default:"Devis #" }}</h5>
+                                                    <span class="badge 
+                                                        {% if devis.statut == 'EN_ATTENTE' %}bg-warning
+                                                        {% elif devis.statut == 'VALIDE' %}bg-success
+                                                        {% elif devis.statut == 'REFUSE' %}bg-danger
+                                                        {% else %}bg-secondary{% endif %}">
+                                                        {{ devis.get_statut_display|default:devis.statut }}
+                                                    </span>
+                                                </div>
+                                                <div class="text-end">
+                                                    <small class="text-white-50">{{ devis.date_creation|date:"d/m/Y" }}</small>
+                                                    <div class="text-white fw-bold mt-1">{{ devis.montant|default:"N/A" }}</div>
+                                                </div>
+                                            </div>
+                                            <p class="text-white-50 mb-3" style="font-size: 14px;">
+                                                {{ devis.description|truncatewords:20|default:"Aucune description" }}
+                                            </p>
+                                            <div class="d-flex gap-2">
+                                                <a href="{% url 'voir_devis' devis.id %}" class="btn btn-glass-secondary btn-sm flex-fill">
+                                                    <i class="fas fa-eye me-1"></i>Voir
+                                                </a>
+                                                {% if devis.statut == 'EN_ATTENTE' %}
+                                                <a href="{% url 'annuler_devis' devis.id %}" class="btn btn-glass-danger btn-sm flex-fill">
+                                                    <i class="fas fa-times me-1"></i>Annuler
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <div class="mb-4">
+                                        <i class="fas fa-file-invoice" style="font-size: 64px; color: rgba(255,103,0,0.3);"></i>
+                                    </div>
+                                    <h5 class="text-white mb-2">Aucun devis pour le moment</h5>
+                                    <p class="text-white-50 mb-4">Vous n'avez pas encore créé de demande de devis.</p>
+                                    <a href="{% url 'mon_profil_devis' %}" class="btn btn-glass-primary">
+                                        <i class="fas fa-plus me-2"></i>Créer mon premier devis
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Edit Profile Tab -->
+                        <div class="tab-pane fade" id="edit" role="tabpanel">
+                            <h4 class="text-white mb-4">Modifier mes informations</h4>
+                            <form method="post" action="{% url 'mon_profil_update' %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="text-white-50 mb-2">Prénom</label>
+                                        <input type="text" name="first_name" class="form-control form-control-glass" value="{{ user.first_name|default:'' }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-white-50 mb-2">Nom</label>
+                                        <input type="text" name="last_name" class="form-control form-control-glass" value="{{ user.last_name|default:'' }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-white-50 mb-2">Email</label>
+                                        <input type="email" name="email" class="form-control form-control-glass" value="{{ user.email }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-white-50 mb-2">Téléphone</label>
+                                        <input type="tel" name="telephone" class="form-control form-control-glass" value="{{ user.telephone|default:'' }}" placeholder="+243...">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="text-white-50 mb-2">Photo de profil</label>
+                                        <input type="file" name="photo_profil" class="form-control form-control-glass" accept="image/*">
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-glass-primary">
+                                        <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Messages Tab -->
+                        <div class="tab-pane fade" id="messages" role="tabpanel">
+                            <h4 class="text-white mb-4">Envoyer un message</h4>
+                            <form method="post" action="{% url 'mon_profil_message' %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="text-white-50 mb-2">Sujet</label>
+                                    <input type="text" name="sujet" class="form-control form-control-glass" placeholder="Objet de votre message" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-white-50 mb-2">Message</label>
+                                    <textarea name="message" class="form-control form-control-glass" rows="5" placeholder="Votre message..." required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-white-50 mb-2">Type de demande</label>
+                                    <select name="type_demande" class="form-control form-control-glass">
+                                        <option value="GENERAL">Demande générale</option>
+                                        <option value="SUPPORT">Support technique</option>
+                                        <option value="COMMERCIAL">Demande commerciale</option>
+                                        <option value="PARTENARIAT">Proposition de partenariat</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-glass-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>Envoyer le message
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Security Tab -->
+                        <div class="tab-pane fade" id="security" role="tabpanel">
+                            <h4 class="text-white mb-4">Sécurité du compte</h4>
+                            
+                            <div class="mb-4">
+                                <h5 class="text-white-50 mb-3">Changer le mot de passe</h5>
+                                <form method="post" action="{% url 'mon_profil_password' %}">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <input type="password" name="current_password" class="form-control form-control-glass" placeholder="Mot de passe actuel" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="password" name="new_password" class="form-control form-control-glass" placeholder="Nouveau mot de passe" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="password" name="confirm_password" class="form-control form-control-glass" placeholder="Confirmer le nouveau mot de passe" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-glass-primary">
+                                        <i class="fas fa-key me-2"></i>Mettre à jour
+                                    </button>
+                                </form>
+                            </div>
+
+                            <hr style="border-color: rgba(255,255,255,0.1);">
+
+                            <div class="mt-4">
+                                <h5 class="text-danger mb-3">Zone dangereuse</h5>
+                                <p class="text-white-50">La suppression de votre compte est irréversible. Toutes vos données seront perdues.</p>
+                                <button type="button" class="btn btn-glass-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                    <i class="fas fa-trash-alt me-2"></i>Supprimer mon compte
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: rgba(30,30,30,0.95); border: 1px solid rgba(255,103,0,0.3);">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h5 class="modal-title text-white">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                    Confirmer la suppression
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-white">Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est <strong class="text-danger">irrversible</strong>.</p>
+                <p class="text-white-50">Toutes vos données, messages et historiques seront définitivement supprimés.</p>
+                <form method="post" action="{% url 'mon_profil_delete' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="text-white-50">Tapez "SUPPRIMER" pour confirmer</label>
+                        <input type="text" name="confirmation" class="form-control form-control-glass" placeholder="SUPPRIMER" required pattern="SUPPRIMER">
+                    </div>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-glass-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-glass-danger">
+                            <i class="fas fa-trash-alt me-2"></i>Supprimer définitivement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

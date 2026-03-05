@@ -1,0 +1,423 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">Centre de Maintenance</h1>
+{% endblock %}
+
+{% block content %}
+<div class="maintenance-center-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="bi bi-tools"></i>
+            Centre de Maintenance
+        </h1>
+        <p class="dashboard-description">
+            Outils de maintenance et diagnostics système
+        </p>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.total_users }}</div>
+            <div class="stat-label">Utilisateurs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.active_users }}</div>
+            <div class="stat-label">Actifs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.total_notifications }}</div>
+            <div class="stat-label">Notifications</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.total_logs }}</div>
+            <div class="stat-label">Logs</div>
+        </div>
+    </div>
+
+    <!-- Actions de Maintenance -->
+    <div class="maintenance-grid">
+        <!-- Optimisation Base de Données -->
+        <div class="maintenance-card">
+            <div class="card-header">
+                <i class="bi bi-database"></i>
+                <h3>Base de Données</h3>
+            </div>
+            <div class="card-body">
+                <p>Optimisation et maintenance de la base de données</p>
+            </div>
+            <div class="card-footer">
+                <form method="post" action="{% url 'super_admin_maintenance_action' 'optimize_db' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-lightning"></i> Optimiser
+                    </button>
+                </form>
+                <form method="post" action="{% url 'super_admin_maintenance_action' 'vacuum_db' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary">
+                        <i class="bi bi-broom"></i> Nettoyer
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cache -->
+        <div class="maintenance-card">
+            <div class="card-header">
+                <i class="bi bi-speedometer2"></i>
+                <h3>Cache Système</h3>
+            </div>
+            <div class="card-body">
+                <p>Gestion du cache et optimisation des performances</p>
+            </div>
+            <div class="card-footer">
+                <form method="post" action="{% url 'super_admin_maintenance_action' 'clear_cache' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-trash"></i> Vider Cache
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sessions -->
+        <div class="maintenance-card">
+            <div class="card-header">
+                <i class="bi bi-globe"></i>
+                <h3>Sessions</h3>
+            </div>
+            <div class="card-body">
+                <p>Gestion des sessions utilisateurs actives</p>
+                <span class="stat-badge">{{ stats.active_sessions }} active(s)</span>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'sessions_management' %}" class="btn btn-primary">
+                    <i class="bi bi-list"></i> Voir les sessions
+                </a>
+            </div>
+        </div>
+
+        <!-- Logs -->
+        <div class="maintenance-card">
+            <div class="card-header">
+                <i class="bi bi-file-text"></i>
+                <h3>Journaux</h3>
+            </div>
+            <div class="card-body">
+                <p>Rotation et nettoyage des fichiers de log</p>
+                <span class="stat-badge">{{ stats.logs_7d }} cette semaine</span>
+            </div>
+            <div class="card-footer">
+                <form method="post" action="{% url 'super_admin_maintenance_action' 'rotate_logs' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Rotation
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="maintenance-card">
+            <div class="card-header">
+                <i class="bi bi-bell"></i>
+                <h3>Notifications</h3>
+            </div>
+            <div class="card-body">
+                <p>Gestion des notifications système</p>
+                <span class="stat-badge">{{ stats.unread_notifications }} non lue(s)</span>
+            </div>
+            <div class="card-footer">
+                <form method="post" action="{% url 'super_admin_notifications_mark_all_read' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-all"></i> Tout marquer lu
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Diagnostic -->
+        <div class="maintenance-card">
+            <div class="card-header">
+                <i class="bi bi-activity"></i>
+                <h3>Diagnostic</h3>
+            </div>
+            <div class="card-body">
+                <p>Exécuter un diagnostic complet du système</p>
+            </div>
+            <div class="card-footer">
+                <form method="post" action="{% url 'super_admin_maintenance_action' 'run_full_diagnostic' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-play-circle"></i> Lancer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations Système -->
+    <div class="system-info-section">
+        <h2><i class="bi bi-info-circle"></i> Informations Système</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Date et heure</span>
+                <span class="info-value">{{ now|date:"d/m/Y H:i:s" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Version Django</span>
+                <span class="info-value">6.0.1</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Environnement</span>
+                <span class="info-value">Production</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Base de données</span>
+                <span class="info-value">PostgreSQL</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .maintenance-center-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .dashboard-title i {
+        color: var(--primary-orange);
+    }
+
+    .dashboard-description {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .maintenance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .maintenance-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .maintenance-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .card-header {
+        padding: 1.5rem;
+        background: rgba(255, 103, 0, 0.05);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .card-header i {
+        font-size: 2rem;
+        color: var(--primary-orange);
+    }
+
+    .card-header h3 {
+        color: var(--text-primary);
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-body p {
+        color: var(--text-secondary);
+        margin: 0 0 1rem 0;
+    }
+
+    .stat-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(255, 103, 0, 0.1);
+        color: var(--primary-orange);
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .card-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--glass-border);
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.25rem;
+        border-radius: 10px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 103, 0, 0.3);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--primary-orange);
+    }
+
+    .system-info-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    .system-info-section h2 {
+        color: var(--text-primary);
+        font-size: 1.25rem;
+        margin: 0 0 1.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .system-info-section h2 i {
+        color: var(--primary-orange);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .info-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .info-value {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .maintenance-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card-footer {
+            flex-direction: column;
+        }
+
+        .card-footer .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}

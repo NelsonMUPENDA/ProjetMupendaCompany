@@ -1,0 +1,127 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load dashboard_menu %}
+
+{% block dashboard_title %}Supprimer l'Équipement{% endblock %}
+
+{% block page_title %}
+<i class="bi bi-trash"></i>
+Supprimer l'Équipement
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .delete-container {
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .delete-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .warning-icon {
+        font-size: 5rem;
+        color: var(--danger);
+        margin-bottom: 1.5rem;
+    }
+
+    .delete-title {
+        color: var(--text-primary);
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .delete-message {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .equipement-name {
+        color: var(--primary-orange);
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin: 1rem 0;
+        padding: 1rem;
+        background: rgba(255, 103, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    .warning-text {
+        color: var(--danger);
+        font-size: 0.9rem;
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background: rgba(220, 53, 69, 0.1);
+        border-radius: 10px;
+        border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .btn-danger-custom {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        color: white;
+    }
+</style>
+
+<div class="delete-container">
+    <div class="delete-card">
+        <i class="bi bi-exclamation-triangle-fill warning-icon"></i>
+        
+        <h2 class="delete-title">Confirmer la suppression</h2>
+        
+        <p class="delete-message">Vous êtes sur le point de supprimer l'équipement :</p>
+        
+        <div class="equipement-name">
+            <i class="bi bi-tools me-2"></i>
+            {{ equipement.name }}
+        </div>
+        
+        <div class="warning-text">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            Cette action est irréversible. L'équipement sera définitivement supprimé.
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions">
+                <a href="{% url 'liste_equipements' %}" class="btn btn-glass">
+                    <i class="bi bi-x-lg me-1"></i>
+                    Annuler
+                </a>
+                <button type="submit" class="btn btn-danger-custom">
+                    <i class="bi bi-trash me-1"></i>
+                    Confirmer la suppression
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,1573 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'images/Icone Mupenda.png' %}" type="image/x-icon">
+    <title>Administration Super Admin - Mupenda</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --primary-orange: #ff6700;
+            --dark-bg: #0a0a0a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+        }
+
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, rgba(255, 103, 0, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-logo {
+            width: 180px;
+            height: auto;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 4px 8px rgba(255, 103, 0, 0.3));
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0 25px 25px 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-menu-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary-orange);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-menu-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu-link:hover::before {
+            transform: translateX(0);
+        }
+
+        .sidebar-menu-link.active {
+            background: rgba(255, 103, 0, 0.15);
+            color: var(--primary-orange);
+            font-weight: 600;
+        }
+
+        .sidebar-menu-link.active::before {
+            transform: translateX(0);
+        }
+
+        .sidebar-menu-icon {
+            font-size: 1.2rem;
+            margin-right: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* User Profile Section */
+        .user-profile-section {
+            margin-top: auto;
+            padding: 1.5rem;
+            border-top: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-orange);
+            box-shadow: 0 4px 12px rgba(255, 103, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(255, 103, 0, 0.4);
+        }
+
+        .user-details h4 {
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-details p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        /* Profile Dropdown Menu */
+        .profile-dropdown {
+            position: absolute;
+            bottom: 100%;
+            left: 1.5rem;
+            right: 1.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 1001;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .profile-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .profile-dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            transform: translateX(3px);
+        }
+
+        .profile-dropdown-item i {
+            margin-right: 0.75rem;
+            font-size: 1rem;
+            width: 16px;
+            text-align: center;
+        }
+
+        .profile-dropdown-divider {
+            height: 1px;
+            background: var(--glass-border);
+            margin: 0.25rem 0;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 103, 0, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 103, 0, 0.4);
+            color: white;
+        }
+
+        /* Top Header Bar */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 280px;
+            right: 0;
+            height: 70px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+
+        .top-header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .top-header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Top Profile Section */
+        .top-profile-section {
+            position: relative;
+        }
+
+        .top-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--glass-border);
+        }
+
+        .top-profile:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 103, 0, 0.2);
+        }
+
+        .top-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-orange);
+            box-shadow: 0 2px 8px rgba(255, 103, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .top-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 103, 0, 0.4);
+        }
+
+        .top-user-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .top-user-name {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .top-user-role {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .top-chevron {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* Top Profile Dropdown */
+        .top-profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.5rem;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .top-profile-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .top-profile-dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .top-profile-dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            transform: translateX(3px);
+        }
+
+        .top-profile-dropdown-item i {
+            margin-right: 0.75rem;
+            font-size: 1rem;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Notification Dropdown Styles */
+        .notification-wrapper {
+            position: relative;
+        }
+
+        .notification-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .notification-btn:hover {
+            background: rgba(255, 103, 0, 0.1);
+            color: var(--primary-orange);
+            transform: translateY(-2px);
+        }
+
+        .notification-btn i {
+            font-size: 1.2rem;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, var(--primary-orange) 0%, #ff4444 100%);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            box-shadow: 0 2px 8px rgba(255, 103, 0, 0.4);
+            animation: pulse-badge 2s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            min-width: 350px;
+            max-height: 450px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .notification-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .notification-header h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notification-header h4 i {
+            color: var(--primary-orange);
+        }
+
+        .mark-all-read {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .mark-all-read:hover {
+            color: var(--primary-orange);
+            background: rgba(255, 103, 0, 0.1);
+        }
+
+        .notification-list {
+            padding: 0.5rem;
+        }
+
+        .notification-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .notification-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .notification-item.unread {
+            background: rgba(255, 103, 0, 0.05);
+            border-left: 3px solid var(--primary-orange);
+        }
+
+        .notification-item.unread:hover {
+            background: rgba(255, 103, 0, 0.1);
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.info { background: rgba(33, 150, 243, 0.2); color: #2196F3; }
+        .notification-icon.succes { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+        .notification-icon.avertissement { background: rgba(255, 152, 0, 0.2); color: #FF9800; }
+        .notification-icon.erreur { background: rgba(244, 67, 54, 0.2); color: #f44336; }
+        .notification-icon.tache { background: rgba(156, 39, 176, 0.2); color: #9C27B0; }
+        .notification-icon.projet { background: rgba(0, 150, 136, 0.2); color: #009688; }
+        .notification-icon.systeme { background: rgba(96, 125, 139, 0.2); color: #607D8B; }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 0.25rem 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .notification-message {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .notification-time {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .notification-empty {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .notification-empty i {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .notification-empty p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .notification-footer {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .notification-footer a {
+            color: var(--primary-orange);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .notification-footer a:hover {
+            color: #ff8533;
+        }
+
+        .notification-unread-dot {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            background: var(--primary-orange);
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Adjust main content for top header */
+        .main-content {
+            margin-top: 70px !important;
+        }
+
+        /* Custom Modal Styles */
+        .custom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .custom-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .custom-modal-content {
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .custom-modal.active .custom-modal-content {
+            transform: scale(1);
+        }
+
+        .custom-modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .custom-modal-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            box-shadow: 0 4px 15px rgba(255, 103, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .custom-modal-icon i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .custom-modal-title {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .custom-modal-body {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .custom-modal-warning {
+            background: rgba(255, 103, 0, 0.1);
+            border-left: 3px solid var(--primary-orange);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .custom-modal-warning i {
+            color: var(--primary-orange);
+            margin-right: 0.5rem;
+        }
+
+        .custom-modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .custom-modal-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .custom-modal-btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid var(--glass-border);
+        }
+
+        .custom-modal-btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .custom-modal-btn-confirm {
+            background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 103, 0, 0.3);
+        }
+
+        .custom-modal-btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 103, 0, 0.4);
+        }
+
+        .custom-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-secondary);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .custom-modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            transform: rotate(90deg);
+        }
+        @media (max-width: 768px) {
+            .top-header {
+                left: 0;
+                padding: 0 1rem;
+            }
+            
+            .top-user-details {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+                margin-top: 70px !important;
+            }
+        }
+        .menu-section {
+            margin-bottom: 2rem;
+        }
+
+        .menu-section-title {
+            padding: 0 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .menu-section-title i {
+            color: var(--primary-orange);
+        }
+
+        /* Super Admin Badge */
+        .super-admin-badge {
+            background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: auto;
+            box-shadow: 0 2px 8px rgba(255, 103, 0, 0.3);
+        }
+
+        /* Mobile Responsive */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: var(--primary-orange);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .mobile-toggle {
+                display: block;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="{% static 'images/White Mupenda Company.png' %}" alt="Mupenda Company" class="sidebar-logo">
+                <div class="super-admin-badge">Super Admin</div>
+            </div>
+
+            <nav>
+                <!-- Tableau de Bord Super Admin -->
+                <div class="menu-section">
+                    <div class="menu-section-title">
+                        <i class="bi bi-speedometer2"></i>
+                        Tableau de Bord
+                    </div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'super_admin_dashboard' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'super_admin_dashboard' %}active{% endif %}">
+                                <i class="bi bi-grid-1x2 sidebar-menu-icon"></i>
+                                Dashboard Principal
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'analytics_center' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'analytics_center' %}active{% endif %}">
+                                <i class="bi bi-graph-up sidebar-menu-icon"></i>
+                                Analytics & KPIs
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Gestion Utilisateurs -->
+                <div class="menu-section">
+                    <div class="menu-section-title">
+                        <i class="bi bi-people"></i>
+                        Gestion Utilisateurs
+                    </div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'super_admin_manage_users' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'super_admin_manage_users' %}active{% endif %}">
+                                <i class="bi bi-people sidebar-menu-icon"></i>
+                                Gestion des Utilisateurs
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'super_admin_manage_roles' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'super_admin_manage_roles' %}active{% endif %}">
+                                <i class="bi bi-shield-plus sidebar-menu-icon"></i>
+                                Rôles
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'super_admin_manage_permissions' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'super_admin_manage_permissions' %}active{% endif %}">
+                                <i class="bi bi-key sidebar-menu-icon"></i>
+                                Permissions
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'sessions_management' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'sessions_management' %}active{% endif %}">
+                                <i class="bi bi-clock-history sidebar-menu-icon"></i>
+                                Gestion des Sessions
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Sécurité -->
+                <div class="menu-section">
+                    <div class="menu-section-title">
+                        <i class="bi bi-shield-exclamation"></i>
+                        Sécurité
+                    </div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'security_dashboard' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'security_dashboard' %}active{% endif %}">
+                                <i class="bi bi-shield-check sidebar-menu-icon"></i>
+                                Sécurité
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'audit_logs' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'audit_logs' %}active{% endif %}">
+                                <i class="bi bi-file-text sidebar-menu-icon"></i>
+                                Logs d'Audit
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Administration Système -->
+                <div class="menu-section">
+                    <div class="menu-section-title">
+                        <i class="bi bi-gear"></i>
+                        Administration Système
+                    </div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'maintenance_center' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'maintenance_center' %}active{% endif %}">
+                                <i class="bi bi-tools sidebar-menu-icon"></i>
+                                Centre de Maintenance
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'notifications_center' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'notifications_center' %}active{% endif %}">
+                                <i class="bi bi-bell sidebar-menu-icon"></i>
+                                Centre de Notifications
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'system_parameters' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'system_parameters' %}active{% endif %}">
+                                <i class="bi bi-sliders sidebar-menu-icon"></i>
+                                Paramètres Système
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="#" class="sidebar-menu-link" onclick="showSystemBackup()">
+                                <i class="bi bi-cloud-download sidebar-menu-icon"></i>
+                                Sauvegarde Système
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Gestion Clients -->
+                <div class="menu-section">
+                    <div class="menu-section-title">
+                        <i class="bi bi-briefcase"></i>
+                        Gestion Clients
+                    </div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'clients' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'clients' %}active{% endif %}">
+                                <i class="bi bi-people sidebar-menu-icon"></i>
+                                Clients
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'facturation' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'facturation' %}active{% endif %}">
+                                <i class="bi bi-file-earmark-text sidebar-menu-icon"></i>
+                                Facturation
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'support' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'support' %}active{% endif %}">
+                                <i class="bi bi-headset sidebar-menu-icon"></i>
+                                Support Client
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Projets -->
+                <div class="menu-section">
+                    <div class="menu-section-title">
+                        <i class="bi bi-folder"></i>
+                        Projets
+                    </div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'gestion_projets' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'gestion_projets' %}active{% endif %}">
+                                <i class="bi bi-folder sidebar-menu-icon"></i>
+                                Projets
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'temps' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'temps' %}active{% endif %}">
+                                <i class="bi bi-clock sidebar-menu-icon"></i>
+                                Time Tracking
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'liste_collaborateurs' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'liste_collaborateurs' %}active{% endif %}">
+                                <i class="bi bi-people sidebar-menu-icon"></i>
+                                Collaborateurs
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contenu -->
+                <div class="menu-section">
+                    <div class="menu-section-title">
+                        <i class="bi bi-file-earmark"></i>
+                        Contenu
+                    </div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'AdminService' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'AdminService' %}active{% endif %}">
+                                <i class="bi bi-briefcase sidebar-menu-icon"></i>
+                                Services
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'AdminRealisation' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'AdminRealisation' %}active{% endif %}">
+                                <i class="bi bi-trophy sidebar-menu-icon"></i>
+                                Réalisations
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'AdminFormation' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'AdminFormation' %}active{% endif %}">
+                                <i class="bi bi-mortarboard sidebar-menu-icon"></i>
+                                Formations
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'AdminBlog' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'AdminBlog' %}active{% endif %}">
+                                <i class="bi bi-newspaper sidebar-menu-icon"></i>
+                                Blog
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Communication -->
+                <div class="menu-section">
+                    <div class="menu-section-title">
+                        <i class="bi bi-envelope"></i>
+                        Communication
+                    </div>
+                    <ul class="sidebar-menu">
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'AdminContact' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'AdminContact' %}active{% endif %}">
+                                <i class="bi bi-envelope sidebar-menu-icon"></i>
+                                Contacts
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'AdminFaq' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'AdminFaq' %}active{% endif %}">
+                                <i class="bi bi-question-circle sidebar-menu-icon"></i>
+                                FAQ
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'AdminTemoignage' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'AdminTemoignage' %}active{% endif %}">
+                                <i class="bi bi-star sidebar-menu-icon"></i>
+                                Témoignages
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item">
+                            <a href="{% url 'AdminPartenaire' %}" class="sidebar-menu-link {% if request.resolver_match.url_name == 'AdminPartenaire' %}active{% endif %}">
+                                <i class="bi bi-handshake sidebar-menu-icon"></i>
+                                Partenaires
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Top Header Bar -->
+        <header class="top-header">
+            <div class="top-header-left">
+                {% block page_title %}
+                <h1 class="page-title">Tableau de Bord Super Admin</h1>
+                {% endblock %}
+            </div>
+            
+            <div class="top-header-right">
+                <!-- Home Button -->
+                <a href="{% url 'index' %}" class="btn btn-outline-light me-3" title="Retour au site">
+                    <i class="bi bi-house-door"></i>
+                </a>
+                
+                <!-- Notification Section -->
+                <div class="notification-wrapper">
+                    <button class="notification-btn" id="notificationBtn" onclick="toggleNotificationDropdown(event)">
+                        <i class="bi bi-bell"></i>
+                        <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                    </button>
+                    
+                    <!-- Notification Dropdown -->
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <h4><i class="bi bi-bell"></i> Notifications</h4>
+                            <button class="mark-all-read" onclick="markAllNotificationsRead()">
+                                Tout marquer lu
+                            </button>
+                        </div>
+                        <div class="notification-list" id="notificationList">
+                            <!-- Notifications will be loaded here -->
+                            <div class="notification-empty">
+                                <i class="bi bi-bell-slash"></i>
+                                <p>Chargement des notifications...</p>
+                            </div>
+                        </div>
+                        <div class="notification-footer">
+                            <a href="{% url 'gestion_notifications' %}">
+                                <i class="bi bi-arrow-right-circle"></i> Voir toutes les notifications
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Profile Section -->
+                <div class="top-profile-section">
+                    <!-- Top Profile Dropdown -->
+                    <div class="top-profile-dropdown" id="topProfileDropdown">
+                        <a href="{% url 'super_admin_profile' %}" class="top-profile-dropdown-item">
+                            <i class="bi bi-person-gear"></i>
+                            Paramètres du profil
+                        </a>
+                        <a href="#" class="top-profile-dropdown-item" onclick="confirmLogout()">
+                            <i class="bi bi-box-arrow-right"></i>
+                            Déconnexion
+                        </a>
+                    </div>
+
+                    <!-- Top Profile -->
+                    <div class="top-profile" onclick="toggleTopProfileDropdown()">
+                        <img src="{% if user.photo_profil %}{{ user.photo_profil.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" alt="User Avatar" class="top-avatar" id="topAvatar">
+                        <div class="top-user-details">
+                            <h4 class="top-user-name">{{ user.get_full_name|default:user.username }}</h4>
+                            <p class="top-user-role">Super Administrateur</p>
+                        </div>
+                        <i class="bi bi-chevron-down top-chevron" id="topProfileDropdownIcon"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content" style="margin-left: 280px; flex: 1; padding: 2rem;">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <!-- Custom Logout Confirmation Modal -->
+    <div class="custom-modal" id="logoutModal">
+        <div class="custom-modal-content">
+            <button class="custom-modal-close" onclick="closeLogoutModal()">
+                <i class="bi bi-x"></i>
+            </button>
+            
+            <div class="custom-modal-header">
+                <div class="custom-modal-icon">
+                    <i class="bi bi-box-arrow-right"></i>
+                </div>
+                <h3 class="custom-modal-title">Confirmation de Déconnexion</h3>
+            </div>
+            
+            <div class="custom-modal-body">
+                <p>Êtes-vous sûr de vouloir vous déconnecter du tableau de bord Super Administrateur ?</p>
+                
+                <div class="custom-modal-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Attention :</strong> Toutes vos données non sauvegardées seront perdues et vous devrez vous reconnecter pour accéder à nouveau au système.
+                </div>
+            </div>
+            
+            <div class="custom-modal-footer">
+                <button class="custom-modal-btn custom-modal-btn-cancel" onclick="closeLogoutModal()">
+                    <i class="bi bi-x-circle"></i>
+                    Annuler
+                </button>
+                <button class="custom-modal-btn custom-modal-btn-confirm" onclick="confirmLogoutAction()">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Se Déconnecter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Notification System
+        let notificationCount = 0;
+
+        function toggleNotificationDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('active');
+            
+            if (dropdown.classList.contains('active')) {
+                loadNotifications();
+            }
+        }
+
+        async function loadNotifications() {
+            try {
+                const response = await fetch('{% url "api_notifications_recentes" %}?limit=5');
+                const data = await response.json();
+                
+                const listElement = document.getElementById('notificationList');
+                
+                if (data.notifications && data.notifications.length > 0) {
+                    listElement.innerHTML = data.notifications.map(notif => `
+                        <a href="${notif.lien}" class="notification-item ${notif.est_lue ? '' : 'unread'}" 
+                           data-notification-id="${notif.id}" onclick="markNotificationRead(${notif.id})">
+                            <div class="notification-icon ${notif.type.toLowerCase()}">
+                                <i class="bi ${getNotificationIcon(notif.type)}"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h5 class="notification-title">${escapeHtml(notif.titre)}</h5>
+                                <p class="notification-message">${escapeHtml(notif.message)}</p>
+                                <span class="notification-time">${notif.date}</span>
+                            </div>
+                            ${!notif.est_lue ? '<span class="notification-unread-dot"></span>' : ''}
+                        </a>
+                    `).join('');
+                } else {
+                    listElement.innerHTML = `
+                        <div class="notification-empty">
+                            <i class="bi bi-bell-slash"></i>
+                            <p>Aucune notification</p>
+                        </div>
+                    `;
+                }
+                
+                // Update badge count
+                updateNotificationBadge();
+            } catch (error) {
+                console.error('Erreur lors du chargement des notifications:', error);
+            }
+        }
+
+        function getNotificationIcon(type) {
+            const icons = {
+                'INFO': 'bi-info-circle',
+                'SUCCES': 'bi-check-circle',
+                'AVERTISSEMENT': 'bi-exclamation-triangle',
+                'ERREUR': 'bi-x-circle',
+                'TACHE': 'bi-list-check',
+                'PROJET': 'bi-folder',
+                'SYSTEME': 'bi-gear'
+            };
+            return icons[type] || 'bi-bell';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function updateNotificationBadge() {
+            try {
+                const response = await fetch('{% url "compter_notifications_non_lues" %}');
+                const data = await response.json();
+                
+                const badge = document.getElementById('notificationBadge');
+                notificationCount = data.count;
+                
+                if (notificationCount > 0) {
+                    badge.textContent = notificationCount > 99 ? '99+' : notificationCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour du badge:', error);
+            }
+        }
+
+        async function markNotificationRead(notificationId) {
+            try {
+                const response = await fetch(`/dashboard/notifications/${notificationId}/marquer_lue/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                
+                if (response.ok) {
+                    const item = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                    if (item) {
+                        item.classList.remove('unread');
+                        const dot = item.querySelector('.notification-unread-dot');
+                        if (dot) dot.remove();
+                    }
+                    updateNotificationBadge();
+                }
+            } catch (error) {
+                console.error('Erreur lors du marquage de la notification:', error);
+            }
+        }
+
+        async function markAllNotificationsRead() {
+            try {
+                const response = await fetch('{% url "marquer_toutes_notifications_lues" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                
+                if (response.ok) {
+                    loadNotifications();
+                }
+            } catch (error) {
+                console.error('Erreur lors du marquage de toutes les notifications:', error);
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Load notification count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNotificationBadge();
+            // Refresh badge every 30 seconds
+            setInterval(updateNotificationBadge, 30000);
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const icon = document.getElementById('profileDropdownIcon');
+            
+            dropdown.classList.toggle('active');
+            
+            // Rotate icon
+            if (dropdown.classList.contains('active')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function toggleTopProfileDropdown() {
+            const dropdown = document.getElementById('topProfileDropdown');
+            const icon = document.getElementById('topProfileDropdownIcon');
+            
+            dropdown.classList.toggle('active');
+            
+            // Rotate icon
+            if (dropdown.classList.contains('active')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            // Close notification dropdown when clicking outside
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            const notificationBtn = document.getElementById('notificationBtn');
+            
+            if (notificationDropdown && !notificationBtn.contains(event.target) && !notificationDropdown.contains(event.target)) {
+                notificationDropdown.classList.remove('active');
+            }
+
+            // Sidebar profile dropdown
+            const sidebarDropdown = document.getElementById('profileDropdown');
+            const sidebarProfile = document.querySelector('.user-profile');
+            
+            if (!sidebarProfile.contains(event.target) && !sidebarDropdown.contains(event.target)) {
+                sidebarDropdown.classList.remove('active');
+                document.getElementById('profileDropdownIcon').style.transform = 'rotate(0deg)';
+            }
+
+            // Top profile dropdown
+            const topDropdown = document.getElementById('topProfileDropdown');
+            const topProfile = document.querySelector('.top-profile');
+            
+            if (!topProfile.contains(event.target) && !topDropdown.contains(event.target)) {
+                topDropdown.classList.remove('active');
+                document.getElementById('topProfileDropdownIcon').style.transform = 'rotate(0deg)';
+            }
+        });
+
+        function showSystemSettings() {
+            alert('Paramètres système - Fonctionnalité en développement');
+        }
+
+        function showSystemBackup() {
+            if (confirm('Voulez-vous lancer une sauvegarde complète du système ?')) {
+                alert('Sauvegarde lancée avec succès');
+            }
+        }
+
+        function confirmLogout() {
+            // Ouvre le modal personnalisé au lieu de l'alerte
+            const modal = document.getElementById('logoutModal');
+            modal.classList.add('active');
+            
+            // Ferme le dropdown du profil
+            document.getElementById('topProfileDropdown').classList.remove('active');
+            document.getElementById('topProfileDropdownIcon').style.transform = 'rotate(0deg)';
+        }
+
+        function closeLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            modal.classList.remove('active');
+        }
+
+        function confirmLogoutAction() {
+            // Redirige vers la page de déconnexion
+            window.location.href = '{% url "deconnexion" %}';
+        }
+
+        // Fermer le modal avec la touche Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeLogoutModal();
+            }
+        });
+
+        // Fermer le modal en cliquant à l'extérieur
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('logoutModal');
+            if (event.target === modal) {
+                closeLogoutModal();
+            }
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !toggle.contains(event.target) && 
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

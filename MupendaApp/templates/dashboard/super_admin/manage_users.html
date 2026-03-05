@@ -1,0 +1,521 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">Gestion des Utilisateurs</h1>
+{% endblock %}
+
+{% block content %}
+<div class="users-management-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="bi bi-people-fill"></i>
+            Gestion des Utilisateurs - Super Admin
+        </h1>
+        <p class="dashboard-description">
+            Gérez tous les utilisateurs du système avec accès complet aux fonctionnalités avancées
+        </p>
+    </div>
+
+    <!-- Statistiques Super Admin -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_users }}</div>
+            <div class="stat-label">Total Utilisateurs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ active_users }}</div>
+            <div class="stat-label">Utilisateurs Actifs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ super_admins }}</div>
+            <div class="stat-label">Super Admins</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ new_users_today }}</div>
+            <div class="stat-label">Nouveaux Aujourd'hui</div>
+        </div>
+    </div>
+
+    <!-- Tableau des utilisateurs -->
+    <div class="users-table-container">
+        <div class="table-header">
+            <h2 class="table-title">
+                <i class="bi bi-list-ul"></i>
+                Liste des Utilisateurs
+            </h2>
+            <div class="action-buttons">
+                <a class="btn-secondary" href="{% url 'export_super_admin_users' %}{% if querystring %}?{{ querystring }}{% endif %}">
+                    <i class="bi bi-download"></i>
+                    Exporter
+                </a>
+                <a class="btn-primary" href="{% url 'creer_utilisateur' %}">
+                    <i class="bi bi-plus-circle"></i>
+                    Ajouter Utilisateur
+                </a>
+            </div>
+        </div>
+
+        <!-- Recherche et Filtres -->
+        <form method="get" class="search-filter-container">
+            <input type="text" class="search-input" placeholder="Rechercher un utilisateur..." name="q" value="{{ filters.q|default:'' }}">
+            <select class="filter-select" name="role" onchange="this.form.submit()">
+                <option value="" {% if not filters.role %}selected{% endif %}>Tous les rôles</option>
+                {% for r in roles %}
+                    <option value="{{ r.nom }}" {% if filters.role == r.nom %}selected{% endif %}>{{ r.get_nom_display }}</option>
+                {% endfor %}
+            </select>
+            <select class="filter-select" name="status" onchange="this.form.submit()">
+                <option value="" {% if not filters.status %}selected{% endif %}>Tous les statuts</option>
+                <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Actif</option>
+                <option value="inactive" {% if filters.status == 'inactive' %}selected{% endif %}>Inactif</option>
+                <option value="banned" {% if filters.status == 'banned' %}selected{% endif %}>Banni</option>
+            </select>
+            <button class="btn btn-outline-light btn-sm" type="submit">Filtrer</button>
+        </form>
+
+        <!-- Tableau -->
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Statut</th>
+                    <th>Date d'inscription</th>
+                    <th>Dernière connexion</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            {% if user.photo_profil %}
+                                <img src="{{ user.photo_profil.url }}" alt="{{ user.username }}" class="user-avatar">
+                            {% else %}
+                                <div class="user-avatar-placeholder">{{ user.username|first|upper }}</div>
+                            {% endif %}
+                            <div>
+                                <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+                                <small class="user-username">@{{ user.username }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.user_roles.first %}
+                            <span class="user-role-badge">{{ user.user_roles.first.role.get_nom_display }}</span>
+                        {% else %}
+                            <span class="user-role-badge no-role">Aucun rôle</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not user.est_actif or user.bloque_jusqua and user.bloque_jusqua > now %}
+                            <span class="status-badge status-inactive">Banni/Bloqué</span>
+                        {% else %}
+                            <span class="status-badge status-active">Actif</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.date_joined|date:"d/m/Y" }}</td>
+                    <td>{{ user.last_login|date:"d/m/Y H:i"|default:"Jamais" }}</td>
+                    <td>
+                        <div class="action-cell">
+                            <a class="action-btn" href="{% url 'modifier_utilisateur' user.id %}" title="Voir / Modifier">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a class="action-btn" href="{% url 'assigner_role_utilisateur' user.id %}" title="Rôles / Permissions">
+                                <i class="bi bi-shield-lock"></i>
+                            </a>
+                            {% if user != request.user %}
+                            <form method="post" action="{% url 'supprimer_utilisateur' user.id %}" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                                {% csrf_token %}
+                                <button class="action-btn" type="submit" title="Supprimer">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="empty-cell">
+                        <i class="bi bi-inbox"></i>
+                        Aucun utilisateur trouvé
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?{% if querystring %}{{ querystring }}&{% endif %}page=1" class="page-btn">
+                    <i class="bi bi-chevron-double-left"></i>
+                </a>
+                <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-btn">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="page-btn active">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ num }}" class="page-btn">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-btn">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+                <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.paginator.num_pages }}" class="page-btn">
+                    <i class="bi bi-chevron-double-right"></i>
+                </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .users-management-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .dashboard-title i {
+        color: var(--primary-orange);
+    }
+
+    .dashboard-description {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .users-table-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .table-title {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 103, 0, 0.3);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--primary-orange);
+    }
+
+    .search-filter-container {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .search-input, .filter-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+
+    .search-input {
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .search-input:focus, .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+    }
+
+    .users-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .users-table th {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .users-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+    }
+
+    .users-table tr:hover {
+        background: rgba(255, 103, 0, 0.05);
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .user-avatar, .user-avatar-placeholder {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .user-avatar {
+        border: 2px solid var(--primary-orange);
+    }
+
+    .user-avatar-placeholder {
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+    }
+
+    .user-name {
+        font-weight: 600;
+    }
+
+    .user-username {
+        color: var(--text-secondary);
+    }
+
+    .user-role-badge {
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .user-role-badge.no-role {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-secondary);
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+
+    .status-inactive {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+    }
+
+    .action-cell {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        background: rgba(255, 103, 0, 0.1);
+        border-color: var(--primary-orange);
+        color: var(--primary-orange);
+    }
+
+    .empty-cell {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-cell i {
+        display: block;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+    }
+
+    .page-btn {
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .page-btn:hover, .page-btn.active {
+        background: var(--primary-orange);
+        border-color: var(--primary-orange);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .table-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        
+        .action-buttons {
+            width: 100%;
+        }
+        
+        .search-filter-container {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}

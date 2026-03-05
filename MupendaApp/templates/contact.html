@@ -1,52 +1,404 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+<style>
+  .page-header {
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.9) 100%),
+                url('{% static "images/bg_3.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    padding: 8rem 0 4rem;
+    text-align: center;
+  }
 
-<section class="py-5">
-    <div class="container text-center py-5">
-        <h1 class="fw-bold display-5 mt-5" style="color: #ff6700;">Contactez - nous!</h1>
-    </div>
+  .page-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .page-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .contact-section {
+    background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+    padding: 5rem 0;
+  }
+
+  [data-bs-theme="light"] .contact-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  }
+
+  .contact-info-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 103, 0, 0.15);
+    border-radius: 20px;
+    padding: 2rem;
+    height: 100%;
+  }
+
+  [data-bs-theme="light"] .contact-info-card {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .contact-title {
+    color: white;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  [data-bs-theme="light"] .contact-title {
+    color: #212529;
+  }
+
+  .contact-text {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  [data-bs-theme="light"] .contact-text {
+    color: rgba(33, 37, 41, 0.7);
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 103, 0, 0.1);
+  }
+
+  .contact-item:last-child {
+    border-bottom: none;
+  }
+
+  .contact-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .contact-label {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.25rem;
+  }
+
+  [data-bs-theme="light"] .contact-label {
+    color: rgba(33, 37, 41, 0.5);
+  }
+
+  .contact-value {
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  [data-bs-theme="light"] .contact-value {
+    color: #212529;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .social-link {
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 103, 0, 0.1);
+    border: 1px solid rgba(255, 103, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff6700;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .social-link:hover {
+    background: #ff6700;
+    color: white;
+    transform: translateY(-5px);
+  }
+
+  .whatsapp-btn {
+    background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+    margin-top: 1.5rem;
+    width: 100%;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+
+  .whatsapp-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4);
+    color: white;
+  }
+
+  .whatsapp-btn i {
+    font-size: 1.5rem;
+  }
+
+  .contact-form-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 103, 0, 0.15);
+    border-radius: 20px;
+    padding: 2rem;
+  }
+
+  [data-bs-theme="light"] .contact-form-card {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-control {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 103, 0, 0.2);
+    border-radius: 12px;
+    padding: 0.875rem 1rem;
+    color: white;
+    transition: all 0.3s ease;
+  }
+
+  [data-bs-theme="light"] .form-control {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #212529;
+  }
+
+  .form-control:focus {
+    background: rgba(255, 103, 0, 0.05);
+    border-color: #ff6700;
+    box-shadow: 0 0 0 0.2rem rgba(255, 103, 0, 0.25);
+    color: white;
+  }
+
+  [data-bs-theme="light"] .form-control:focus {
+    background: white;
+    color: #212529;
+  }
+
+  .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  [data-bs-theme="light"] .form-control::placeholder {
+    color: rgba(33, 37, 41, 0.5);
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    border: none;
+    width: 100%;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 103, 0, 0.3);
+    color: white;
+  }
+
+  .map-section {
+    background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+    padding: 4rem 0;
+  }
+
+  [data-bs-theme="light"] .map-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  }
+
+  .map-container {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 103, 0, 0.2);
+  }
+</style>
+
+<!-- Page Header -->
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">Contactez-nous</h1>
+    <p class="page-subtitle">
+      Nous sommes à votre disposition pour répondre à toutes vos questions et vous accompagner dans vos projets.
+    </p>
+  </div>
 </section>
-<section>
-    <div class="container">
-        <div class="row g-3 text-white">
-            <div class="col-md-6">
-                <h1 class="fw-semibold">Contact Infos</h1>
-                <p>N'hésitez pas à nous contacter, nous sommes disponible pour répondre à toutes vos question et réaccueillir toute suggestion.</p>
-                <div class="pt-3">
-                    <p><i class="bi bi-house-fill"></i> Goma(Drc)</p>
-                    <hr>
-                    <p><i class="bi bi-envelope-at-fill"></i> admin@gmail.com</p>
-                    <hr>
-                    <p><i class="bi bi-telephone-outbound-fill"></i> (+243) 000 000 000</p>
-                    <hr>
-                    <p><i class="bi bi-door-open-fill"></i> Lundi - Samedi 08:00 - 16:00</p>
-                    <hr>
-                    <p>Suivez - nous sur tous nos réseaux sociaux!</p>
-                    <p class="fs-4 d-flex">
-                        <a class="nav-link pe-3" href=""><i class="bi bi-youtube"></i></a>
-                        <a class="nav-link pe-3" href=""><i class="bi bi-facebook"></i></a>
-                        <a class="nav-link pe-3" href=""><i class="bi bi-whatsapp"></i></a>
-                        <a class="nav-link pe-3" href=""><i class="bi bi-twitter-x"></i></a>
-                        <a class="nav-link pe-3" href=""><i class="bi bi-linkedin"></i></a>
-                      </p>
-                </div>
+
+<!-- Contact Section -->
+<section class="contact-section">
+  <div class="container">
+    <div class="row g-4">
+      <!-- Contact Info -->
+      <div class="col-lg-5">
+        <div class="contact-info-card">
+          <h3 class="contact-title">Informations de Contact</h3>
+          <p class="contact-text">
+            N'hésitez pas à nous contacter par téléphone, email, WhatsApp ou en nous envoyant un message via le formulaire. Notre équipe vous répondra dans les plus brefs délais.
+          </p>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="bi bi-geo-alt-fill"></i>
             </div>
-            <div class="col-md-6 mb-5">
-                <h1 class="fw-semibold">Laissez un Message</h1>
-                <p>Veuillez nous appeler directement ou sur WhatsApp, soit laissez-nous un message, notre service client prendra soin de vous.</p>
-                <form action="" method="POST">
-                    {% csrf_token %}
-                    <input class="form-control my-3" type="text" name="nom" placeholder="Nom">
-                    <input class="form-control" type="text" name="prenom" placeholder="Prénom">
-                    <input class="form-control my-3" type="text" name="phone" placeholder="Phone">
-                    <input class="form-control" type="email" name="email" placeholder="Email">
-                    <textarea class="form-control my-3" name="message" placeholder="Message"></textarea>
-                    <button style="background-color: #ff6700; color: black;" class="btn fw-semibold form-control" type="submit" name="envoyer">Envoyer Message</button>
-                </form>
+            <div>
+              <div class="contact-label">Adresse</div>
+              <div class="contact-value">{% if site_contact %}{{ site_contact.adresse_complete }}{% else %}Goma, République Démocratique du Congo{% endif %}</div>
             </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="bi bi-envelope-fill"></i>
+            </div>
+            <div>
+              <div class="contact-label">Email</div>
+              <div class="contact-value">{% if site_contact %}{{ site_contact.email_principal }}{% else %}contact@mupenda.cd{% endif %}</div>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="bi bi-telephone-fill"></i>
+            </div>
+            <div>
+              <div class="contact-label">Téléphone</div>
+              <div class="contact-value">{% if site_contact %}{{ site_contact.telephone_principal }}{% else %}(+243) 000 000 000{% endif %}</div>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="bi bi-clock-fill"></i>
+            </div>
+            <div>
+              <div class="contact-label">Horaires</div>
+              <div class="contact-value">{% if site_contact %}{{ site_contact.horaires_ouverture }}{% else %}Lundi - Samedi : 08h00 - 16h00{% endif %}</div>
+            </div>
+          </div>
+
+          <!-- WhatsApp Button -->
+          <a href="https://wa.me/{% if site_contact %}{{ site_contact.telephone_principal|cut:' '|cut:'('|cut:')'|cut:'+' }}{% else %}243000000000{% endif %}?text=Bonjour%20Mupenda%20Company%2C%20je%20souhaite%20discuter%20avec%20vous" target="_blank" class="whatsapp-btn">
+            <i class="bi bi-whatsapp"></i>
+            Discuter sur WhatsApp
+          </a>
+
+          <!-- Social Links -->
+          <div class="social-links">
+            {% if site_contact and site_contact.facebook_url %}
+            <a href="{{ site_contact.facebook_url }}" target="_blank" class="social-link"><i class="bi bi-facebook"></i></a>
+            {% endif %}
+            {% if site_contact and site_contact.twitter_url %}
+            <a href="{{ site_contact.twitter_url }}" target="_blank" class="social-link"><i class="bi bi-twitter-x"></i></a>
+            {% endif %}
+            {% if site_contact and site_contact.linkedin_url %}
+            <a href="{{ site_contact.linkedin_url }}" target="_blank" class="social-link"><i class="bi bi-linkedin"></i></a>
+            {% endif %}
+            {% if site_contact and site_contact.instagram_url %}
+            <a href="{{ site_contact.instagram_url }}" target="_blank" class="social-link"><i class="bi bi-instagram"></i></a>
+            {% endif %}
+          </div>
         </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="col-lg-7">
+        <div class="contact-form-card">
+          <h3 class="contact-title">Envoyez-nous un Message</h3>
+          <p class="contact-text">Remplissez le formulaire ci-dessous et nous vous répondrons dans les 24 heures.</p>
+
+          <form action="" method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <input type="text" class="form-control" name="nom" placeholder="Votre Nom" required>
+              </div>
+              <div class="col-md-6">
+                <input type="text" class="form-control" name="prenom" placeholder="Votre Prénom" required>
+              </div>
+              <div class="col-md-6">
+                <input type="email" class="form-control" name="email" placeholder="Votre Email" required>
+              </div>
+              <div class="col-md-6">
+                <input type="tel" class="form-control" name="phone" placeholder="Votre Téléphone">
+              </div>
+              <div class="col-12">
+                <input type="text" class="form-control" name="sujet" placeholder="Sujet du message">
+              </div>
+              <div class="col-12">
+                <textarea class="form-control" name="message" rows="5" placeholder="Votre message..." required></textarea>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn-submit">
+                  <i class="bi bi-send-fill"></i>
+                  Envoyer le Message
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
+<!-- Map Section -->
+<section class="map-section">
+  <div class="container">
+    <div class="map-container">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15952.50406664286!2d29.2200!3d-1.6585!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19c0c5e0e3a5e1c1%3A0x3f3f3f3f3f3f3f3f!2sGoma%2C%20R%C3%A9publique%20d%C3%A9mocratique%20du%20Congo!5e0!3m2!1sfr!2scd!4v1234567890"
+        width="100%" 
+        height="400" 
+        style="border:0;" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </div>
+</section>
 {% endblock %}

@@ -1,44 +1,358 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
+<style>
+  .page-header {
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.9) 100%),
+                url('{% static "images/bg_3.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    padding: 8rem 0 4rem;
+    text-align: center;
+  }
 
-<section class="py-5">
-    <div class="container text-center py-5 text-white">
-        <p class="btn fw-semibold text-white">Accueil > Formation</p>
-        <h1 class="fw-bold display-5" style="color: #ff7600;">Nos Formations</h1>
-        <p class="text-white">Découvrer nos dernières formations mise en ligne!</p>
-    </div>
+  .page-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .page-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .formations-section {
+    background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+    padding: 5rem 0;
+  }
+
+  [data-bs-theme="light"] .formations-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  }
+
+  .formation-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 103, 0, 0.15);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    height: 100%;
+  }
+
+  [data-bs-theme="light"] .formation-card {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .formation-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(255, 103, 0, 0.2);
+    border-color: rgba(255, 103, 0, 0.3);
+  }
+
+  .formation-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .formation-card:hover .formation-image {
+    transform: scale(1.1);
+  }
+
+  .formation-body {
+    padding: 1.5rem;
+  }
+
+  .formation-badge {
+    display: inline-block;
+    background: rgba(255, 103, 0, 0.15);
+    color: #ff6700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .formation-title {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  [data-bs-theme="light"] .formation-title {
+    color: #212529;
+  }
+
+  .formation-description {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  [data-bs-theme="light"] .formation-description {
+    color: rgba(33, 37, 41, 0.7);
+  }
+
+  .formation-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  [data-bs-theme="light"] .formation-meta {
+    color: rgba(33, 37, 41, 0.6);
+  }
+
+  .formation-meta i {
+    color: #ff6700;
+    margin-right: 0.25rem;
+  }
+
+  .formation-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ff6700;
+    margin-bottom: 1rem;
+  }
+
+  .btn-formation {
+    background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-formation:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 103, 0, 0.3);
+    color: white;
+  }
+
+  .cta-section {
+    background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%);
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .cta-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .cta-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-cta-white {
+    background: white;
+    color: #ff6700;
+    padding: 0.875rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-cta-white:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    color: #ff6700;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .feature-box {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 103, 0, 0.05);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 103, 0, 0.1);
+  }
+
+  .feature-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  .feature-title {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  [data-bs-theme="light"] .feature-title {
+    color: #212529;
+  }
+
+  .feature-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+  }
+
+  [data-bs-theme="light"] .feature-text {
+    color: rgba(33, 37, 41, 0.7);
+  }
+</style>
+
+<!-- Page Header -->
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">Nos Formations</h1>
+    <p class="page-subtitle">
+      Développez vos compétences avec nos formations professionnelles dans le domaine des technologies.
+    </p>
+  </div>
 </section>
 
-<section>
-    <div class="container">
-        <div class="row g-4 mb-5">
-            <div class="col-md-8 left">
-                {% for formation in object_list %}
-                <div class="card mb-3 shadow">
-                    {% if formation.image %}
-                    <img src="{{formation.image.url}}" class="card-img-top" alt="{{formation.nom}}">
-                    {% endif %}
-                    <div class="card-body">
-                      <h1 class="card-title fw-semibold"><a class="text-dark nav-link" href="{% url 'detail_formation' formation.slug %}"> {{formation.nom}}</a></h1>
-                      <!-- <script>
-                        CKEDITOR.replace('description'); // Remplacez par l'ID de votre champ
-                    </script> -->
-                      <p class="card-text">Date de début : {{formation.date_debut}} | Date de Fin : {{formation.date_fin}}</p>
-                      <p class="card-text">Heure de début : {{formation.heure_debut}} | Heure de fin : {{formation.heure_fin}}</p>
-                      <p class="card-text">Prix de la formation : <span class="fw-bold fs-4">{{formation.prix}}$</span></p>
-                      <a href="{% url 'detail_formation' formation.slug %}" class="btn fw-semibold" style="background-color: #ff7600; color: black;">Lire la suite ></a>
-                    </div>
-                </div>
-                {% empty %}
-                    <p class="alert alert-danger">Aucune formation pour le moment!</p>
-                {% endfor %}
-            </div>
-            <!-- bloc barre latterale -->
-            {% block sidebar %}
-                {% include 'sidebar.html' %}
-            {% endblock sidebar %}
+<!-- Features Section -->
+<section class="formations-section">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-box">
+        <div class="feature-icon">
+          <i class="bi bi-laptop"></i>
         </div>
+        <h4 class="feature-title">Formation en ligne</h4>
+        <p class="feature-text">Apprenez à votre rythme avec nos cours en ligne interactifs et accessibles 24/7.</p>
+      </div>
+      <div class="feature-box">
+        <div class="feature-icon">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <h4 class="feature-title">Formateurs Experts</h4>
+        <p class="feature-text">Bénéficiez de l'expérience de nos formateurs professionnels et certifiés.</p>
+      </div>
+      <div class="feature-box">
+        <div class="feature-icon">
+          <i class="bi bi-award-fill"></i>
+        </div>
+        <h4 class="feature-title">Certification</h4>
+        <p class="feature-text">Obtenez une certification reconnue à la fin de chaque formation.</p>
+      </div>
+      <div class="feature-box">
+        <div class="feature-icon">
+          <i class="bi bi-headset"></i>
+        </div>
+        <h4 class="feature-title">Support Continu</h4>
+        <p class="feature-text">Bénéficiez d'un accompagnement personnalisé tout au long de votre parcours.</p>
+      </div>
     </div>
+
+    <!-- Formations Grid -->
+    <div class="row g-4">
+      {% for formation in object_list %}
+      <div class="col-md-6 col-lg-4">
+        <div class="formation-card">
+          <div style="overflow: hidden;">
+            {% if formation.image %}
+            <img src="{{ formation.image.url }}" alt="{{ formation.nom }}" class="formation-image">
+            {% else %}
+            <img src="{% static 'images/default-formation.jpg' %}" alt="{{ formation.nom }}" class="formation-image">
+            {% endif %}
+          </div>
+          <div class="formation-body">
+            <span class="formation-badge">{{ formation.categorie.name|default:"Formation" }}</span>
+            <h5 class="formation-title">{{ formation.nom }}</h5>
+            <p class="formation-description">
+              {{ formation.description|striptags|truncatewords:20 }}
+            </p>
+            <div class="formation-meta">
+              <span><i class="bi bi-calendar"></i> {{ formation.date_debut|date:"d M Y" }}</span>
+              <span><i class="bi bi-person"></i> {{ formation.formateur.get_full_name|default:"Expert" }}</span>
+            </div>
+            <div class="formation-price">${{ formation.prix|default:"0" }}</div>
+            <a href="{% url 'detail_formation' formation.slug %}" class="btn-formation">
+              <i class="bi bi-info-circle"></i>
+              Détails
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <!-- Static formations as fallback -->
+      <div class="col-md-6 col-lg-4">
+        <div class="formation-card">
+          <div style="overflow: hidden;">
+            <img src="{% static 'images/default-formation.jpg' %}" alt="Développement Web" class="formation-image">
+          </div>
+          <div class="formation-body">
+            <span class="formation-badge">Développement</span>
+            <h5 class="formation-title">Développement Web Full-Stack</h5>
+            <p class="formation-description">
+              Maîtrisez les technologies web modernes : HTML, CSS, JavaScript, Python/Django, et bases de données.
+            </p>
+            <div class="formation-meta">
+              <span><i class="bi bi-clock"></i> 12 semaines</span>
+              <span><i class="bi bi-people"></i> Débutant</span>
+            </div>
+            <div class="formation-price">$500</div>
+            <a href="{% url 'contact' %}" class="btn-formation">
+              <i class="bi bi-pencil-square"></i>
+              S'inscrire
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </section>
 
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="container">
+    <h2 class="cta-title">Vous avez des questions sur nos formations ?</h2>
+    <p class="cta-text">
+      Contactez-nous pour plus d'informations sur nos programmes et modalités d'inscription.
+    </p>
+    <a href="{% url 'contact' %}" class="btn-cta-white">
+      <i class="bi bi-envelope"></i>
+      Nous Contacter
+    </a>
+  </div>
+</section>
 {% endblock %}

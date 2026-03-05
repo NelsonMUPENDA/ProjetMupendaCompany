@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ realisation.titre }} - Réalisation Mupenda{% endblock %}
+
+{% block content %}
+<style>
+  .realisation-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 4rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .realisation-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255, 103, 0, 0.15) 0%, transparent 70%);
+  }
+
+  .category-badge-detail {
+    background: linear-gradient(135deg, #FF6700 0%, #ff8533 100%);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+
+  .realisation-title-detail {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .realisation-meta-detail {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .realisation-meta-detail span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .realisation-image-main {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    margin-top: 2rem;
+  }
+
+  .realisation-content {
+    padding: 4rem 0;
+  }
+
+  .content-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  [data-bs-theme="light"] .content-text {
+    color: #333;
+  }
+
+  .realisation-sidebar {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 103, 0, 0.2);
+  }
+
+  [data-bs-theme="light"] .realisation-sidebar {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+  }
+
+  .sidebar-title {
+    color: #FF6700;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .sidebar-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  [data-bs-theme="light"] .sidebar-item {
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .sidebar-item:last-child {
+    border-bottom: none;
+  }
+
+  .sidebar-label {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  [data-bs-theme="light"] .sidebar-label {
+    color: #666;
+  }
+
+  .sidebar-value {
+    color: white;
+    font-weight: 500;
+  }
+
+  [data-bs-theme="light"] .sidebar-value {
+    color: #333;
+  }
+
+  .btn-action {
+    background: linear-gradient(135deg, #FF6700 0%, #ff8533 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    border: none;
+    margin-top: 1.5rem;
+  }
+
+  .btn-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(255, 103, 0, 0.4);
+    color: white;
+  }
+
+  .related-section {
+    padding: 4rem 0;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .related-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  [data-bs-theme="light"] .related-title {
+    color: #1a1a2e;
+  }
+
+  .related-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 103, 0, 0.2);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: block;
+  }
+
+  .related-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(255, 103, 0, 0.2);
+  }
+
+  [data-bs-theme="light"] .related-card {
+    background: white;
+    border: 1px solid #e9ecef;
+  }
+
+  .related-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .related-content {
+    padding: 1.5rem;
+  }
+
+  .related-title-card {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  [data-bs-theme="light"] .related-title-card {
+    color: #1a1a2e;
+  }
+
+  .related-category {
+    color: #FF6700;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+</style>
+
+<!-- Header Section -->
+<section class="realisation-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <span class="category-badge-detail">{{ realisation.category|default:"Projet" }}</span>
+        <h1 class="realisation-title-detail">{{ realisation.titre }}</h1>
+        <div class="realisation-meta-detail">
+          <span>
+            <i class="bi bi-calendar3"></i>
+            {{ realisation.created_on|date:"F Y"|default:"2024" }}
+          </span>
+          <span>
+            <i class="bi bi-person"></i>
+            {% if realisation.auteur %}{{ realisation.auteur.get_full_name|default:realisation.auteur.username }}{% else %}Mupenda{% endif %}
+          </span>
+          <span>
+            <i class="bi bi-folder"></i>
+            {{ realisation.category|default:"Non classé" }}
+          </span>
+        </div>
+      </div>
+    </div>
+    {% if realisation.image %}
+    <img src="{{ realisation.image.url }}" alt="{{ realisation.titre }}" class="realisation-image-main">
+    {% else %}
+    <img src="{% static 'images/default-project.jpg' %}" alt="{{ realisation.titre }}" class="realisation-image-main">
+    {% endif %}
+  </div>
+</section>
+
+<!-- Content Section -->
+<section class="realisation-content">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="content-text">
+          {% if realisation.description %}
+            {{ realisation.description|safe }}
+          {% else %}
+            <p>Aucune description disponible pour ce projet.</p>
+          {% endif %}
+        </div>
+        
+        <a href="{% url 'contact' %}" class="btn-action">
+          <i class="bi bi-chat-dots"></i>
+          Discuter de ce projet
+        </a>
+      </div>
+      
+      <div class="col-lg-4">
+        <div class="realisation-sidebar">
+          <h3 class="sidebar-title">Informations du projet</h3>
+          
+          <div class="sidebar-item">
+            <span class="sidebar-label">Date de création</span>
+            <span class="sidebar-value">{{ realisation.created_on|date:"d/m/Y"|default:"-" }}</span>
+          </div>
+          
+          <div class="sidebar-item">
+            <span class="sidebar-label">Dernière mise à jour</span>
+            <span class="sidebar-value">{{ realisation.update_on|date:"d/m/Y"|default:"-" }}</span>
+          </div>
+          
+          <div class="sidebar-item">
+            <span class="sidebar-label">Catégorie</span>
+            <span class="sidebar-value">{{ realisation.category|default:"-" }}</span>
+          </div>
+          
+          <a href="{% url 'realisations' %}" class="btn-action w-100 justify-content-center mt-4">
+            <i class="bi bi-arrow-left"></i>
+            Retour aux réalisations
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Related Projects Section -->
+{% if related_realisations %}
+<section class="related-section">
+  <div class="container">
+    <h2 class="related-title">Projets similaires</h2>
+    <div class="row g-4">
+      {% for related in related_realisations %}
+      {% if related.slug %}
+      <div class="col-md-6 col-lg-3">
+        <a href="{% url 'realisation_detail' related.slug %}" class="related-card">
+          {% if related.image %}
+          <img src="{{ related.image.url }}" alt="{{ related.titre }}" class="related-image">
+          {% else %}
+          <img src="{% static 'images/default-project.jpg' %}" alt="{{ related.titre }}" class="related-image">
+          {% endif %}
+          <div class="related-content">
+            <span class="related-category">{{ related.category|default:"Projet" }}</span>
+            <h4 class="related-title-card">{{ related.titre }}</h4>
+          </div>
+        </a>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

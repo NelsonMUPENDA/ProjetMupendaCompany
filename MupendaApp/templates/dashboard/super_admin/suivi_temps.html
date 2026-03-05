@@ -1,0 +1,317 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">Suivi du Temps</h1>
+{% endblock %}
+
+{% block content %}
+<div class="time-tracking-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="bi bi-clock-history"></i>
+            Suivi du Temps
+        </h1>
+        <p class="dashboard-description">
+            Gestion et suivi des heures de travail
+        </p>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Heures cette semaine</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Heures ce mois</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Projets actifs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Collaborateurs</div>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters-container">
+        <form method="get" class="filters-form">
+            <input type="text" name="search" class="filter-input" placeholder="Rechercher...">
+            <select name="projet" class="filter-select">
+                <option value="">Tous les projets</option>
+            </select>
+            <select name="collaborateur" class="filter-select">
+                <option value="">Tous les collaborateurs</option>
+            </select>
+            <input type="date" name="date_debut" class="filter-input" placeholder="Date début">
+            <input type="date" name="date_fin" class="filter-input" placeholder="Date fin">
+            <button type="submit" class="btn btn-outline-light btn-sm">Filtrer</button>
+        </form>
+    </div>
+
+    <!-- Message informatif -->
+    <div class="info-section">
+        <div class="info-card">
+            <i class="bi bi-info-circle"></i>
+            <div>
+                <h4>Fonctionnalité en cours de développement</h4>
+                <p>Le module de suivi du temps sera bientôt disponible avec les fonctionnalités suivantes :</p>
+                <ul>
+                    <li>Saisie des heures par projet et par tâche</li>
+                    <li>Rapports de temps par collaborateur</li>
+                    <li>Export des feuilles de temps</li>
+                    <li>Alertes de dépassement de budget temps</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des temps -->
+    <div class="time-table-container">
+        <table class="time-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Collaborateur</th>
+                    <th>Projet</th>
+                    <th>Tâche</th>
+                    <th>Heures</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="7" class="empty-cell">
+                        <i class="bi bi-inbox"></i>
+                        <p>Aucune entrée de temps trouvée</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .time-tracking-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .dashboard-title i {
+        color: var(--primary-orange);
+    }
+
+    .dashboard-description {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .filters-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .filters-form {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .filter-input, .filter-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .filter-input {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+    }
+
+    .btn-outline-light {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-outline-light:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--primary-orange);
+    }
+
+    .info-section {
+        margin-bottom: 2rem;
+    }
+
+    .info-card {
+        background: rgba(33, 150, 243, 0.1);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(33, 150, 243, 0.3);
+        border-radius: 15px;
+        padding: 1.5rem;
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .info-card i {
+        font-size: 2rem;
+        color: #2196f3;
+        flex-shrink: 0;
+    }
+
+    .info-card h4 {
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .info-card p {
+        color: var(--text-secondary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .info-card ul {
+        color: var(--text-secondary);
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+
+    .info-card li {
+        margin-bottom: 0.25rem;
+    }
+
+    .time-table-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    .time-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .time-table th {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .time-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+    }
+
+    .empty-cell {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-cell i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .filters-form {
+            flex-direction: column;
+        }
+
+        .filter-input, .filter-select {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

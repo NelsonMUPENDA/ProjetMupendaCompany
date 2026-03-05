@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+.register-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%);
+    position: relative;
+    overflow: hidden;
+}
+.register-page::before, .register-page::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: float 20s ease-in-out infinite;
+}
+.register-page::before {
+    width: 600px; height: 600px;
+    background: rgba(255, 103, 0, 0.15);
+    top: -200px; right: -200px;
+}
+.register-page::after {
+    width: 500px; height: 500px;
+    background: rgba(255, 103, 0, 0.1);
+    bottom: -150px; left: -150px;
+    animation-delay: -10s;
+}
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -30px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 103, 0, 0.1) inset;
+}
+.glass-panel {
+    background: linear-gradient(135deg, rgba(255, 103, 0, 0.3) 0%, rgba(0, 0, 0, 0.8) 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 103, 0, 0.2);
+    border-radius: 20px;
+}
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.form-control-glass {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    color: white;
+    transition: all 0.3s ease;
+}
+.form-control-glass:focus {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #ff6700;
+    box-shadow: 0 0 15px rgba(255, 103, 0, 0.3);
+    color: white;
+}
+.btn-glass-primary {
+    background: linear-gradient(45deg, #ff6700, #ff8800);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+.btn-glass-primary:hover {
+    background: linear-gradient(45deg, #ff8800, #ff6700);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 103, 0, 0.4);
+}
+.register-title {
+    background: linear-gradient(45deg, #fff, #ff6700);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+}
+.link-glass {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.link-glass:hover {
+    color: #ff6700;
+}
+</style>
+
+<div class="register-page d-flex align-items-center justify-content-center p-3 p-md-4">
+    <div class="container">
+        <div class="row align-items-center justify-content-center g-4">
+            <div class="col-lg-5">
+                <div class="glass-panel p-4 p-lg-5">
+                    <div class="text-center text-lg-start">
+                        <div class="mb-4">
+                            <i class="fas fa-user-plus fa-4x" style="color: #ff6700;"></i>
+                        </div>
+                        <h1 class="display-5 fw-bold text-white mb-3">
+                            Rejoignez <span style="color: #ff6700;">Mupenda</span>
+                        </h1>
+                        <p class="lead text-white-50 mb-4">Créez votre compte et accédez à nos services</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="glass-card p-4 p-lg-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle fa-3x mb-3" style="color: #ff6700;"></i>
+                        <h2 class="register-title h3 mb-2">Créer un compte</h2>
+                        <p class="text-white-50">Remplissez le formulaire pour vous inscrire</p>
+                    </div>
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger" style="background: rgba(255,0,0,0.1); border-color: rgba(255,0,0,0.3); color: #ff6b6b;">
+                        Veuillez corriger les erreurs ci-dessous.
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post" action="{% url 'inscription' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="text-white-50"><i class="fas fa-user me-2"></i>Nom d'utilisateur</label>
+                            <input type="text" name="username" class="form-control form-control-glass {% if form.username.errors %}is-invalid{% endif %}" placeholder="Nom d'utilisateur" required value="{{ form.username.value|default:'' }}">
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-white-50"><i class="fas fa-envelope me-2"></i>Email</label>
+                            <input type="email" name="email" class="form-control form-control-glass {% if form.email.errors %}is-invalid{% endif %}" placeholder="votre@email.com" required value="{{ form.email.value|default:'' }}">
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="text-white-50">Prénom *</label>
+                                <input type="text" name="first_name" class="form-control form-control-glass {% if form.first_name.errors %}is-invalid{% endif %}" value="{{ form.first_name.value|default:'' }}" required>
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-white-50">Nom *</label>
+                                <input type="text" name="last_name" class="form-control form-control-glass {% if form.last_name.errors %}is-invalid{% endif %}" value="{{ form.last_name.value|default:'' }}" required>
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-white-50"><i class="fas fa-lock me-2"></i>Mot de passe</label>
+                            <input type="password" name="password1" class="form-control form-control-glass {% if form.password1.errors %}is-invalid{% endif %}" placeholder="Mot de passe" required>
+                            {% if form.password1.errors %}
+                                <div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-white-50"><i class="fas fa-lock me-2"></i>Confirmer</label>
+                            <input type="password" name="password2" class="form-control form-control-glass {% if form.password2.errors %}is-invalid{% endif %}" placeholder="Confirmer le mot de passe" required>
+                            {% if form.password2.errors %}
+                                <div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-4">
+                            <label class="text-white-50" style="cursor: pointer;">
+                                <input type="checkbox" name="terms" required class="me-2">
+                                J'accepte les <a href="{% url 'conditions_utilisations' %}" style="color: #ff6700;">conditions</a>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-glass-primary w-100">
+                            <i class="fas fa-user-plus me-2"></i>Créer mon compte
+                        </button>
+                        <p class="text-center mt-3 text-white-50">
+                            Déjà un compte ? <a href="{% url 'connexion' %}" class="link-glass fw-bold" style="color: #ff6700;">Se connecter</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

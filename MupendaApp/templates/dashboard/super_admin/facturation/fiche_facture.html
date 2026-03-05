@@ -1,0 +1,106 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}Fiche Facture {{ facture.numero }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Facture {{ facture.numero }}</h1>
+        <div>
+            <a href="{% url 'liste_factures' %}" class="btn btn-secondary">Retour</a>
+            <a href="{% url 'export_pdf_facture' facture.id %}" class="btn btn-primary">Exporter PDF</a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Détails de la facture</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>Client:</strong></td>
+                            <td>{{ facture.client.nom }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Projet:</strong></td>
+                            <td>{{ facture.projet.nom|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date d'émission:</strong></td>
+                            <td>{{ facture.date_emission|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date d'échéance:</strong></td>
+                            <td>{{ facture.date_echeance|date:"d/m/Y"|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Statut:</strong></td>
+                            <td>
+                                <span class="badge {% if facture.statut == 'PAYEE' %}bg-success{% elif facture.statut == 'ENVOYEE' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    {{ facture.get_statut_display }}
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Lignes de facture</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Quantité</th>
+                                <th>Prix unitaire</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ligne in lignes %}
+                            <tr>
+                                <td>{{ ligne.description }}</td>
+                                <td>{{ ligne.quantite }}</td>
+                                <td>{{ ligne.prix_unitaire }} €</td>
+                                <td>{{ ligne.total }} €</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Récapitulatif</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td>Total HT:</td>
+                            <td class="text-end">{{ facture.montant_ht }} €</td>
+                        </tr>
+                        <tr>
+                            <td>TVA ({{ facture.taux_tva }}%):</td>
+                            <td class="text-end">{{ facture.montant_tva }} €</td>
+                        </tr>
+                        <tr class="fw-bold">
+                            <td>Total TTC:</td>
+                            <td class="text-end">{{ facture.montant_ttc }} €</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

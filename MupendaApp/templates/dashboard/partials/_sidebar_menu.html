@@ -1,0 +1,32 @@
+{% load static %}
+{# Partial template pour le menu sidebar dynamique #}
+{% for section in sections %}
+<div class="menu-section" data-aos="fade-right" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+    <div class="menu-section-title">
+        <i class="bi {{ section.icon }}"></i>
+        {{ section.title }}
+    </div>
+    <ul class="sidebar-menu">
+        {% for item in section.items %}
+        <li class="sidebar-menu-item">
+            <a href="{{ item.resolved_url }}" 
+               class="sidebar-menu-link {% if item.is_active %}active{% endif %}"
+               data-turbo-preload>
+                <i class="bi {{ item.icon }} sidebar-menu-icon"></i>
+                {{ item.name }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% empty %}
+<div class="menu-section">
+    <div class="menu-section-title">
+        <i class="bi bi-exclamation-triangle"></i>
+        Aucun accès
+    </div>
+    <p style="padding: 0 1.5rem; color: var(--text-secondary); font-size: 0.85rem;">
+        Veuillez contacter un administrateur pour obtenir des accès.
+    </p>
+</div>
+{% endfor %}

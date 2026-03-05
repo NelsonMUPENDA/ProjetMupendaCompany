@@ -1,0 +1,206 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">Administration - Projets</h1>
+{% endblock %}
+
+{% block content %}
+<div class="admin-projects-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="bi bi-kanban"></i>
+            Gestion des Projets
+        </h1>
+        <p class="dashboard-description">
+            Vue d'ensemble et administration des projets
+        </p>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="quick-actions">
+        <a href="{% url 'gestion_projets' %}" class="action-card">
+            <i class="bi bi-list-ul"></i>
+            <span>Voir tous les projets</span>
+        </a>
+        <a href="{% url 'creer_projet' %}" class="action-card">
+            <i class="bi bi-plus-circle"></i>
+            <span>Nouveau projet</span>
+        </a>
+        <a href="{% url 'gestion_taches' %}" class="action-card">
+            <i class="bi bi-list-task"></i>
+            <span>Gérer les tâches</span>
+        </a>
+    </div>
+
+    <!-- Navigation Administration -->
+    <div class="admin-nav">
+        <h3><i class="bi bi-grid-3x3-gap"></i> Navigation Administration</h3>
+        <div class="nav-grid">
+            <a href="{% url 'administration_dashboard' %}" class="nav-item">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{% url 'AdminService' %}" class="nav-item">
+                <i class="bi bi-briefcase"></i>
+                <span>Services</span>
+            </a>
+            <a href="{% url 'AdminRealisation' %}" class="nav-item">
+                <i class="bi bi-trophy"></i>
+                <span>Réalisations</span>
+            </a>
+            <a href="{% url 'AdminFormation' %}" class="nav-item">
+                <i class="bi bi-mortarboard"></i>
+                <span>Formations</span>
+            </a>
+            <a href="{% url 'AdminBlog' %}" class="nav-item">
+                <i class="bi bi-journal-text"></i>
+                <span>Blog</span>
+            </a>
+            <a href="{% url 'AdminFaq' %}" class="nav-item">
+                <i class="bi bi-question-circle"></i>
+                <span>FAQ</span>
+            </a>
+            <a href="{% url 'AdminContact' %}" class="nav-item">
+                <i class="bi bi-envelope"></i>
+                <span>Messages</span>
+            </a>
+            <a href="{% url 'AdminPartenaire' %}" class="nav-item">
+                <i class="bi bi-people"></i>
+                <span>Partenaires</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-projects-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .dashboard-title i {
+        color: var(--primary-orange);
+    }
+
+    .dashboard-description {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .action-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+        color: var(--primary-orange);
+    }
+
+    .action-card i {
+        font-size: 2rem;
+        color: var(--primary-orange);
+    }
+
+    .admin-nav {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    .admin-nav h3 {
+        color: var(--text-primary);
+        font-size: 1.25rem;
+        margin: 0 0 1.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .admin-nav h3 i {
+        color: var(--primary-orange);
+    }
+
+    .nav-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+    }
+
+    .nav-item:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+        color: var(--primary-orange);
+    }
+
+    .nav-item i {
+        font-size: 2rem;
+        color: var(--primary-orange);
+    }
+
+    @media (max-width: 768px) {
+        .quick-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .nav-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+{% endblock %}

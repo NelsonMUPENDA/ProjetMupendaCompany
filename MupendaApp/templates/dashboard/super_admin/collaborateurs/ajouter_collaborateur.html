@@ -1,0 +1,81 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}Ajouter Collaborateur{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Ajouter un Collaborateur</h1>
+        <a href="{% url 'liste_collaborateurs' %}" class="btn btn-secondary">Retour</a>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Utilisateur *</label>
+                            <select class="form-select" id="username" name="username" required>
+                                <option value="">Sélectionner un utilisateur existant</option>
+                                {% for user in users %}
+                                <option value="{{ user.username }}">{{ user.get_full_name|default:user.username }} ({{ user.email }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="poste" class="form-label">Poste</label>
+                            <select class="form-select" id="poste" name="poste">
+                                <option value="">Sélectionner...</option>
+                                {% for value, label in poste_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="tjm" class="form-label">TJM (€)</label>
+                                <input type="number" step="0.01" class="form-control" id="tjm" name="tjm">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="cout_horaire" class="form-label">Coût horaire (€)</label>
+                                <input type="number" step="0.01" class="form-control" id="cout_horaire" name="cout_horaire">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="disponibilite" class="form-label">Disponibilité</label>
+                            <select class="form-select" id="disponibilite" name="disponibilite">
+                                {% for value, label in dispo_choices %}
+                                <option value="{{ value }}" {% if value == 'DISPONIBLE' %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="competences" class="form-label">Compétences</label>
+                            <textarea class="form-control" id="competences" name="competences" rows="3" placeholder="Séparées par des virgules..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="date_embauche" class="form-label">Date d'embauche</label>
+                            <input type="date" class="form-control" id="date_embauche" name="date_embauche">
+                        </div>
+                        <div class="mb-3">
+                            <label for="telephone" class="form-label">Téléphone</label>
+                            <input type="tel" class="form-control" id="telephone" name="telephone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="linkedin" class="form-label">LinkedIn</label>
+                            <input type="url" class="form-control" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/...">
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'liste_collaborateurs' %}" class="btn btn-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

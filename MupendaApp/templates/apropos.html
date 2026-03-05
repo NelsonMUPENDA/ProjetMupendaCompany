@@ -1,58 +1,333 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+<style>
+  .page-header {
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.9) 100%),
+                url('{% static "images/bg_3.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    padding: 8rem 0 4rem;
+    text-align: center;
+  }
 
-<section class="py-5">
-    <div class="container py-5">
-        <h1 class="pt-5 display-5 fw-bold" style="color: #ff6700;">Qui sommes - nous?</h1>
-    </div>
+  .page-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .page-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .about-section {
+    background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+    padding: 5rem 0;
+  }
+
+  [data-bs-theme="light"] .about-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  }
+
+  .about-image {
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(255, 103, 0, 0.2);
+    overflow: hidden;
+  }
+
+  .about-image img {
+    width: 100%;
+    border-radius: 20px;
+    transition: transform 0.5s ease;
+  }
+
+  .about-image:hover img {
+    transform: scale(1.05);
+  }
+
+  .about-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+
+  [data-bs-theme="light"] .about-title {
+    color: #212529;
+  }
+
+  .about-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    line-height: 1.9;
+    margin-bottom: 2rem;
+  }
+
+  [data-bs-theme="light"] .about-text {
+    color: rgba(33, 37, 41, 0.8);
+  }
+
+  .stats-row {
+    background: rgba(255, 103, 0, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 103, 0, 0.15);
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ff6700;
+    display: block;
+  }
+
+  .stat-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+  }
+
+  [data-bs-theme="light"] .stat-label {
+    color: rgba(33, 37, 41, 0.7);
+  }
+
+  .values-section {
+    background: linear-gradient(135deg, #151515 0%, #0a0a0a 100%);
+    padding: 5rem 0;
+  }
+
+  [data-bs-theme="light"] .values-section {
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+  }
+
+  .value-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 103, 0, 0.15);
+    border-radius: 20px;
+    padding: 2rem;
+    height: 100%;
+    transition: all 0.4s ease;
+  }
+
+  [data-bs-theme="light"] .value-card {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .value-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(255, 103, 0, 0.2);
+    border-color: rgba(255, 103, 0, 0.3);
+  }
+
+  .value-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: white;
+    font-size: 2rem;
+  }
+
+  .value-title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  [data-bs-theme="light"] .value-title {
+    color: #212529;
+  }
+
+  .value-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .value-list li {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  [data-bs-theme="light"] .value-list li {
+    color: rgba(33, 37, 41, 0.8);
+  }
+
+  .value-list li i {
+    color: #ff6700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+  }
+
+  .section-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  [data-bs-theme="light"] .section-title {
+    color: #212529;
+  }
+</style>
+
+<!-- Page Header -->
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">{{ apropos.titre_page|default:"Qui sommes-nous ?" }}</h1>
+    <p class="page-subtitle">
+      {{ apropos.sous_titre_page|default:"Découvrez Mupenda Company, votre partenaire technologique de confiance en RDC et en Afrique." }}
+    </p>
+  </div>
 </section>
-{% for apropos in apropos %}
-<section>
-    <div class="container">
-        <div class="row g-4 p-2">
-            <div class="col-md-6">
-                <img class="img-fluid shadow rounded-4" src="{{ apropos.photo.url }}" alt="Image mupenda" width="100%">
-            </div>
-            <div class="col-md-6 d-flex align-items-center">
-                <h1 class="fw-bold text-white">{{ apropos.nom }}</h1>
-            </div>
+
+<!-- About Section -->
+<section class="about-section">
+  <div class="container">
+    <div class="row g-5 align-items-center mb-5">
+      <div class="col-lg-6">
+        <div class="about-image">
+          {% if apropos and apropos.photo_principale %}
+          <img src="{{ apropos.photo_principale.url }}" alt="{{ apropos.nom_entreprise|default:"Mupenda Company" }}" class="img-fluid">
+          {% else %}
+          <img src="{% static 'images/default-about.jpg' %}" alt="Mupenda Company" class="img-fluid">
+          {% endif %}
         </div>
-        <div class="row g-3 py-5">
-            <div class="col-md-12 text-white">
-                <p>{{apropos.contenus|safe}}</p>
-            </div>
+      </div>
+      <div class="col-lg-6">
+        <h2 class="about-title">{{ apropos.nom_entreprise|default:"Mupenda Company" }}</h2>
+        <div class="about-text">
+          {% if apropos and apropos.description_entreprise %}
+            {{ apropos.description_entreprise|safe }}
+          {% else %}
+            <p>Mupenda Company est une entreprise technologique basée en République Démocratique du Congo, spécialisée dans les solutions informatiques innovantes.</p>
+            <p>Nous accompagnons les entreprises dans leur transformation digitale en proposant des services de qualité dans les domaines du développement web, des réseaux informatiques, de la cybersécurité, et bien plus encore.</p>
+            <p>Notre mission est de contribuer au développement technologique de l'Afrique en offrant des solutions adaptées aux besoins locaux.</p>
+          {% endif %}
         </div>
+        <div class="stats-row row g-4">
+          <div class="col-4">
+            <div class="stat-item">
+              <span class="stat-number">{{ apropos.annee_experience|default:"10" }}+</span>
+              <span class="stat-label">{{ apropos.label_annee_experience|default:"Années d'expérience" }}</span>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="stat-item">
+              <span class="stat-number">{{ apropos.nombre_projets|default:"500" }}+</span>
+              <span class="stat-label">{{ apropos.label_projets|default:"Projets réalisés" }}</span>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="stat-item">
+              <span class="stat-number">{{ apropos.nombre_clients|default:"200" }}+</span>
+              <span class="stat-label">{{ apropos.label_clients|default:"Clients satisfaits" }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
-{% endfor %}
 
-<!-- <section class="bg-secondary bg-opacity-10">
-    <div class="container pb-5">
-        <div class="row pt-5 g-3">
-            <div class="col-md-4 border-start border-4 border-dark shadow p-3 bg-white">
-                <h2 class="fw-semibold"> NOS OBJECTIFS</h2>
-                <hr>
-                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Créer une stratégie marketing basée sur les objectifs et les cibles du client;</p>
-                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Créer et offrir les emplois partout en RDC, en Afrique et dans le monde entier ;
-                </p>
-                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Etre une société au cœur de l’innovation congolaise et africaine ;</p>
-                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Promouvoir la technologie congolaise et africaine.</p>
-            </div>
-            <div class="col-md-4 border-start border-4 border-dark shadow p-3 bg-white">
-                <h2 class="fw-semibold"> NOS VALEURS</h2>
-                <hr>
-                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Respect de la vie privée et dignité à nos clients;</p>
-                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Motivation, Créativité et innovation.</p>
-            </div>
-            <div class="col-md-4 border-start border-4 border-dark shadow p-3 bg-white">
-                <h2 class="fw-semibold">  NOTRE MISSION</h2>
-                <hr>
-                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Apporter une assistance technologique et informatique au cœur des sociétés et entreprises congolaises;</p>
-                <p class="fs-5"><i class="bi bi-check-circle-fill"></i> Encadrement et formation de jeunes ambitieux et dotés d’un esprit d’innovation et de la créativité.</p>
-            </div>
+<!-- Values Section -->
+<section class="values-section">
+  <div class="container">
+    <h2 class="section-title">{{ apropos.titre_section_valeurs|default:"Nos Valeurs & Objectifs" }}</h2>
+    <div class="row g-4">
+      <!-- Objectifs -->
+      <div class="col-md-4">
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="bi {{ apropos.icon_objectifs|default:"bi-bullseye" }}"></i>
+          </div>
+          <h3 class="value-title">{{ apropos.titre_objectifs|default:"Nos Objectifs" }}</h3>
+          <ul class="value-list">
+            {% if apropos %}
+              {% for objectif in apropos.get_objectifs_list %}
+                {% if objectif %}
+                <li><i class="bi bi-check-circle-fill"></i> {{ objectif }}</li>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <li><i class="bi bi-check-circle-fill"></i> Créer une stratégie marketing basée sur les objectifs et les cibles du client</li>
+              <li><i class="bi bi-check-circle-fill"></i> Créer et offrir des emplois partout en RDC et en Afrique</li>
+              <li><i class="bi bi-check-circle-fill"></i> Etre une société au cœur de l'innovation congolaise et africaine</li>
+              <li><i class="bi bi-check-circle-fill"></i> Promouvoir la technologie congolaise et africaine</li>
+            {% endif %}
+          </ul>
         </div>
-    </div>
-</section> -->
+      </div>
 
+      <!-- Valeurs -->
+      <div class="col-md-4">
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="bi {{ apropos.icon_valeurs|default:"bi-heart-fill" }}"></i>
+          </div>
+          <h3 class="value-title">{{ apropos.titre_valeurs|default:"Nos Valeurs" }}</h3>
+          <ul class="value-list">
+            {% if apropos %}
+              {% for valeur in apropos.get_valeurs_list %}
+                {% if valeur %}
+                <li><i class="bi bi-check-circle-fill"></i> {{ valeur }}</li>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <li><i class="bi bi-check-circle-fill"></i> Respect de la vie privée et dignité de nos clients</li>
+              <li><i class="bi bi-check-circle-fill"></i> Motivation et engagement dans chaque projet</li>
+              <li><i class="bi bi-check-circle-fill"></i> Créativité et innovation continue</li>
+              <li><i class="bi bi-check-circle-fill"></i> Excellence et qualité dans nos livrables</li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Mission -->
+      <div class="col-md-4">
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="bi {{ apropos.icon_mission|default:"bi-rocket-takeoff-fill" }}"></i>
+          </div>
+          <h3 class="value-title">{{ apropos.titre_mission|default:"Notre Mission" }}</h3>
+          <ul class="value-list">
+            {% if apropos %}
+              {% for mission in apropos.get_mission_list %}
+                {% if mission %}
+                <li><i class="bi bi-check-circle-fill"></i> {{ mission }}</li>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <li><i class="bi bi-check-circle-fill"></i> Apporter une assistance technologique et informatique aux entreprises congolaises</li>
+              <li><i class="bi bi-check-circle-fill"></i> Encadrer et former les jeunes ambitieux dotés d'un esprit d'innovation</li>
+              <li><i class="bi bi-check-circle-fill"></i> Contribuer à la digitalisation de l'Afrique</li>
+              <li><i class="bi bi-check-circle-fill"></i> Offrir des solutions technologiques accessibles à tous</li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}Facturation{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Facturation</h1>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Retour</a>
+    </div>
+    
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.total_factures|default:"0" }}</h3>
+                    <p class="mb-0">Total Factures</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.factures_payees|default:"0" }}</h3>
+                    <p class="mb-0">Payées</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h3>{{ stats.factures_impayees|default:"0" }}</h3>
+                    <p class="mb-0">Impayées</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.chiffre_affaires|default:"0" }} €</h3>
+                    <p class="mb-0">Chiffre d'affaires</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions rapides -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <a href="{% url 'liste_devis' %}" class="btn btn-outline-primary me-2">Voir les devis</a>
+                    <a href="{% url 'ajouter_devis' %}" class="btn btn-outline-success me-2">+ Nouveau devis</a>
+                    <a href="{% url 'liste_factures' %}" class="btn btn-outline-info">Voir les factures</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Devis récents -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Devis récents</h5>
+            <a href="{% url 'liste_devis' %}" class="btn btn-sm btn-primary">Voir tout</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Client</th>
+                            <th>Date</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for devis in devis_recents %}
+                        <tr>
+                            <td>{{ devis.numero }}</td>
+                            <td>{{ devis.client.nom }}</td>
+                            <td>{{ devis.date_emission|date:"d/m/Y" }}</td>
+                            <td>{{ devis.montant_total }} €</td>
+                            <td>
+                                <span class="badge {% if devis.statut == 'ACCEPTE' %}bg-success{% elif devis.statut == 'ENVOYE' %}bg-info{% else %}bg-secondary{% endif %}">
+                                    {{ devis.get_statut_display|default:devis.statut }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Aucun devis récent</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Factures récentes -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Factures récentes</h5>
+            <a href="{% url 'liste_factures' %}" class="btn btn-sm btn-primary">Voir tout</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Client</th>
+                            <th>Date</th>
+                            <th>Montant TTC</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for facture in factures_recentes %}
+                        <tr>
+                            <td>{{ facture.numero }}</td>
+                            <td>{{ facture.client.nom }}</td>
+                            <td>{{ facture.date_emission|date:"d/m/Y" }}</td>
+                            <td>{{ facture.montant_ttc }} €</td>
+                            <td>
+                                <span class="badge {% if facture.statut == 'PAYEE' %}bg-success{% elif facture.statut == 'ENVOYEE' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    {{ facture.get_statut_display|default:facture.statut }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Aucune facture récente</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

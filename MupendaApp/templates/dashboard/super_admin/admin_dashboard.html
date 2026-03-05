@@ -1,0 +1,534 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">Tableau de Bord Administrateur</h1>
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="bi bi-speedometer2"></i>
+            Tableau de Bord Administrateur
+        </h1>
+        <p class="dashboard-description">
+            Vue d'ensemble des activités et statistiques du système
+        </p>
+    </div>
+
+    <!-- Statistiques Principales -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon stat-blue">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ total_users|default:"0" }}</div>
+                <div class="stat-label">Utilisateurs</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon stat-green">
+                <i class="bi bi-folder"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ total_projects|default:"0" }}</div>
+                <div class="stat-label">Projets</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon stat-orange">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ completed_projects|default:"0" }}</div>
+                <div class="stat-label">Projets Terminés</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon stat-purple">
+                <i class="bi bi-list-task"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ total_tasks|default:"0" }}</div>
+                <div class="stat-label">Tâches</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sections -->
+    <div class="dashboard-sections">
+        <!-- Projets Récents -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2><i class="bi bi-folder"></i> Projets Récents</h2>
+                <a href="#" class="btn-link">Voir tout</a>
+            </div>
+            <div class="section-body">
+                {% if recent_projects %}
+                <div class="project-list">
+                    {% for project in recent_projects %}
+                    <div class="project-item">
+                        <div class="project-info">
+                            <h4>{{ project.nom }}</h4>
+                            <span class="project-status status-{{ project.statut|lower }}">{{ project.get_statut_display }}</span>
+                        </div>
+                        <div class="project-meta">
+                            <span><i class="bi bi-calendar"></i> {{ project.date_debut|date:"d/m/Y" }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>Aucun projet récent</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Tâches en Cours -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2><i class="bi bi-list-task"></i> Tâches en Cours</h2>
+                <a href="#" class="btn-link">Voir tout</a>
+            </div>
+            <div class="section-body">
+                {% if pending_tasks %}
+                <div class="task-list">
+                    {% for task in pending_tasks %}
+                    <div class="task-item">
+                        <div class="task-checkbox">
+                            <i class="bi bi-circle"></i>
+                        </div>
+                        <div class="task-info">
+                            <h4>{{ task.titre }}</h4>
+                            <span class="task-priority priority-{{ task.priorite|lower }}">{{ task.get_priorite_display }}</span>
+                        </div>
+                        <div class="task-meta">
+                            <span><i class="bi bi-calendar"></i> {{ task.date_echeance|date:"d/m/Y"|default:"-" }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>Aucune tâche en cours</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Activité Récente -->
+    <div class="activity-section">
+        <div class="section-header">
+            <h2><i class="bi bi-activity"></i> Activité Récente</h2>
+        </div>
+        <div class="activity-list">
+            {% for activity in recent_activity %}
+            <div class="activity-item">
+                <div class="activity-icon activity-{{ activity.action|lower }}">
+                    {% if activity.action == 'CONNEXION' %}
+                        <i class="bi bi-box-arrow-in-right"></i>
+                    {% elif activity.action == 'CREATION' %}
+                        <i class="bi bi-plus-circle"></i>
+                    {% elif activity.action == 'MODIFICATION' %}
+                        <i class="bi bi-pencil"></i>
+                    {% elif activity.action == 'SUPPRESSION' %}
+                        <i class="bi bi-trash"></i>
+                    {% else %}
+                        <i class="bi bi-clock"></i>
+                    {% endif %}
+                </div>
+                <div class="activity-content">
+                    <p class="activity-text">{{ activity.description|truncatechars:60 }}</p>
+                    <span class="activity-time">{{ activity.date_action|date:"d/m/Y H:i" }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>Aucune activité récente</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Accès Rapide -->
+    <div class="quick-access">
+        <h3><i class="bi bi-lightning"></i> Accès Rapide</h3>
+        <div class="quick-links">
+            <a href="{% url 'gestion_utilisateurs' %}" class="quick-link">
+                <i class="bi bi-people"></i>
+                <span>Utilisateurs</span>
+            </a>
+            <a href="#" class="quick-link">
+                <i class="bi bi-folder"></i>
+                <span>Projets</span>
+            </a>
+            <a href="#" class="quick-link">
+                <i class="bi bi-list-task"></i>
+                <span>Tâches</span>
+            </a>
+            <a href="{% url 'clients' %}" class="quick-link">
+                <i class="bi bi-person-badge"></i>
+                <span>Clients</span>
+            </a>
+            <a href="{% url 'audit_logs' %}" class="quick-link">
+                <i class="bi bi-file-text"></i>
+                <span>Logs</span>
+            </a>
+            <a href="{% url 'notifications_center' %}" class="quick-link">
+                <i class="bi bi-bell"></i>
+                <span>Notifications</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-dashboard-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .dashboard-title i {
+        color: var(--primary-orange);
+    }
+
+    .dashboard-description {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-blue { background: rgba(33, 150, 243, 0.2); color: #2196f3; }
+    .stat-green { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
+    .stat-orange { background: rgba(255, 103, 0, 0.2); color: var(--primary-orange); }
+    .stat-purple { background: rgba(156, 39, 176, 0.2); color: #9c27b0; }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .dashboard-sections {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .section-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .section-header h2 {
+        color: var(--text-primary);
+        font-size: 1.25rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-header h2 i {
+        color: var(--primary-orange);
+    }
+
+    .btn-link {
+        color: var(--primary-orange);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-link:hover {
+        text-decoration: underline;
+    }
+
+    .section-body {
+        padding: 1rem;
+    }
+
+    .project-list, .task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .project-item, .task-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .project-item:hover, .task-item:hover {
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .project-info h4, .task-info h4 {
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+    }
+
+    .project-status, .task-priority {
+        padding: 0.2rem 0.6rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .status-en_cours { background: rgba(33, 150, 243, 0.2); color: #2196f3; }
+    .status-termine { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
+    .status-en_attente { background: rgba(255, 152, 0, 0.2); color: #ff9800; }
+
+    .priority-haute { background: rgba(244, 67, 54, 0.2); color: #f44336; }
+    .priority-moyenne { background: rgba(255, 152, 0, 0.2); color: #ff9800; }
+    .priority-basse { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
+
+    .task-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .task-checkbox {
+        color: var(--text-secondary);
+        font-size: 1.25rem;
+    }
+
+    .task-info {
+        flex: 1;
+    }
+
+    .project-meta, .task-meta {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+    }
+
+    .project-meta i, .task-meta i {
+        margin-right: 0.25rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-state i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.5;
+    }
+
+    .activity-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .activity-item:hover {
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .activity-connexion { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
+    .activity-creation { background: rgba(33, 150, 243, 0.2); color: #2196f3; }
+    .activity-modification { background: rgba(255, 152, 0, 0.2); color: #ff9800; }
+    .activity-suppression { background: rgba(244, 67, 54, 0.2); color: #f44336; }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-text {
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+        font-size: 0.9rem;
+    }
+
+    .activity-time {
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+    }
+
+    .quick-access {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 1.5rem;
+    }
+
+    .quick-access h3 {
+        color: var(--text-primary);
+        font-size: 1.25rem;
+        margin: 0 0 1.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quick-access h3 i {
+        color: var(--primary-orange);
+    }
+
+    .quick-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .quick-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+    }
+
+    .quick-link:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+        color: var(--primary-orange);
+    }
+
+    .quick-link i {
+        font-size: 2rem;
+        color: var(--primary-orange);
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .dashboard-sections {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-links {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+{% endblock %}

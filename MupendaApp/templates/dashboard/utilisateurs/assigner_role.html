@@ -1,0 +1,806 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">
+    <i class="bi bi-shield-check"></i>
+    Gestion des rôles
+</h1>
+{% endblock %}
+
+{% block content %}
+<div class="role-management-wrapper">
+    <!-- En-tête avec profil utilisateur -->
+    <div class="user-profile-header">
+        <div class="user-avatar-section">
+            <div class="avatar-wrapper">
+                {% if utilisateur.photo_profil %}
+                    <img src="{{ utilisateur.photo_profil.url }}" alt="{{ utilisateur.username }}">
+                {% else %}
+                    <div class="avatar-initials">{{ utilisateur.username|first|upper }}</div>
+                {% endif %}
+                <div class="status-indicator {% if utilisateur.is_active %}online{% else %}offline{% endif %}"></div>
+            </div>
+            <div class="user-info">
+                <h2 class="user-name">{{ utilisateur.get_full_name|default:utilisateur.username }}</h2>
+                <p class="user-meta">
+                    <span class="user-tag">@{{ utilisateur.username }}</span>
+                    <span class="separator">•</span>
+                    <span class="user-email">{{ utilisateur.email }}</span>
+                </p>
+                <div class="user-badges">
+                    {% for user_role in utilisateur.user_roles.all|slice:":3" %}
+                    <span class="role-badge {% if user_role.est_actif %}active{% else %}inactive{% endif %}">
+                        {{ user_role.role.get_nom_display }}
+                    </span>
+                    {% empty %}
+                    <span class="role-badge no-role">Aucun rôle</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <a href="{% url 'super_admin_manage_users' %}" class="btn-back">
+            <i class="bi bi-arrow-left-circle"></i>
+            Retour aux utilisateurs
+        </a>
+    </div>
+
+    <div class="role-dashboard">
+        <!-- Colonne gauche: Rôles actuels et assignation -->
+        <div class="dashboard-column">
+            <!-- Section Rôles actuels -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="header-title">
+                        <i class="bi bi-person-badge-fill"></i>
+                        <h3>Rôles assignés</h3>
+                    </div>
+                    <span class="role-count">{{ utilisateur.user_roles.count }} rôle{{ utilisateur.user_roles.count|pluralize }}</span>
+                </div>
+                
+                <div class="roles-list">
+                    {% for user_role in utilisateur.user_roles.all %}
+                    <div class="role-item {% if not user_role.est_actif %}disabled{% endif %}">
+                        <div class="role-icon">
+                            <i class="bi bi-shield-fill"></i>
+                        </div>
+                        <div class="role-content">
+                            <div class="role-title-row">
+                                <span class="role-title">{{ user_role.role.get_nom_display }}</span>
+                                <span class="role-status-badge {% if user_role.est_actif %}active{% else %}inactive{% endif %}">
+                                    {% if user_role.est_actif %}Actif{% else %}Inactif{% endif %}
+                                </span>
+                            </div>
+                            <p class="role-meta">
+                                Assigné le {{ user_role.date_attribution|date:"d/m/Y" }}
+                                {% if user_role.attribue_par %}
+                                par {{ user_role.attribue_par.username }}
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="role-actions">
+                            <form method="post" action="{% url 'toggle_role_status' utilisateur.id user_role.id %}" class="action-form">
+                                {% csrf_token %}
+                                <button type="submit" class="action-btn toggle-btn" title="{% if user_role.est_actif %}Désactiver{% else %}Activer{% endif %}">
+                                    <i class="bi bi-{% if user_role.est_actif %}pause{% else %}play{% endif %}-fill"></i>
+                                </button>
+                            </form>
+                            <form method="post" action="{% url 'revoquer_role_utilisateur' utilisateur.id user_role.id %}" class="action-form" onsubmit="return confirm('Êtes-vous sûr de vouloir révoquer ce rôle ?');">
+                                {% csrf_token %}
+                                <button type="submit" class="action-btn revoke-btn" title="Révoquer">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="bi bi-shield-slash"></i>
+                        <p>Aucun rôle assigné</p>
+                        <span>Utilisez le formulaire ci-dessous pour ajouter un rôle</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Section Assigner un nouveau rôle -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="header-title">
+                        <i class="bi bi-plus-circle-fill"></i>
+                        <h3>Assigner un rôle</h3>
+                    </div>
+                </div>
+                
+                <form method="post" class="assign-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="assign">
+                    
+                    <div class="form-row">
+                        <div class="select-wrapper">
+                            <label for="role">Sélectionner un rôle</label>
+                            <select name="role" id="role" class="form-control" required>
+                                <option value="">Choisir un rôle...</option>
+                                {% for role in roles %}
+                                <option value="{{ role.id }}">{{ role.get_nom_display }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="checkbox-wrapper">
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="est_actif" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label">Actif</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-assign">
+                        <i class="bi bi-plus-lg"></i>
+                        Assigner le rôle
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Colonne droite: Permissions -->
+        <div class="dashboard-column">
+            <div class="dashboard-card permissions-card">
+                <div class="card-header">
+                    <div class="header-title">
+                        <i class="bi bi-key-fill"></i>
+                        <h3>Permissions</h3>
+                    </div>
+                    <span class="permission-count">{{ utilisateur_permissions.count }} permission{{ utilisateur_permissions.count|pluralize }}</span>
+                </div>
+                
+                <div class="permissions-list">
+                    {% for permission in permissions %}
+                    <div class="permission-row">
+                        <label class="permission-checkbox">
+                            <input type="checkbox" name="permissions" value="{{ permission.id }}"
+                                {% if permission in utilisateur_permissions %}checked{% endif %}>
+                            <span class="check-indicator">
+                                <i class="bi bi-check"></i>
+                            </span>
+                        </label>
+                        <div class="permission-details">
+                            <span class="permission-title">{{ permission.nom }}</span>
+                            <span class="permission-code">{{ permission.code }}</span>
+                        </div>
+                        <span class="permission-category">{{ permission.get_categorie_display }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="bi bi-lock"></i>
+                        <p>Aucune permission disponible</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="card-footer">
+                    <button type="submit" class="btn-save" form="permissions-form">
+                        <i class="bi bi-check2"></i>
+                        Enregistrer les permissions
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-orange: #FF6700;
+        --primary-orange-light: #ff8533;
+        --primary-orange-dark: #e55c00;
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --text-muted: rgba(255, 255, 255, 0.5);
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+    }
+
+    .role-management-wrapper {
+        padding: 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Header avec profil */
+    .user-profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        background: linear-gradient(135deg, rgba(255, 103, 0, 0.15) 0%, rgba(255, 103, 0, 0.05) 100%);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .user-avatar-section {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+    }
+
+    .avatar-wrapper {
+        position: relative;
+        width: 70px;
+        height: 70px;
+    }
+
+    .avatar-wrapper img, .avatar-initials {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .avatar-initials {
+        background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-light) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+
+    .status-indicator {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 3px solid #1a1a2e;
+    }
+
+    .status-indicator.online {
+        background: var(--success);
+    }
+
+    .status-indicator.offline {
+        background: var(--text-muted);
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .user-name {
+        color: var(--text-primary);
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .user-meta {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .separator {
+        color: var(--text-muted);
+    }
+
+    .user-badges {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .role-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .role-badge.active {
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--success);
+    }
+
+    .role-badge.inactive {
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+    }
+
+    .role-badge.no-role {
+        background: var(--glass-bg);
+        color: var(--text-muted);
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+        background: var(--glass-bg);
+        color: var(--text-primary);
+        border-color: var(--primary-orange);
+    }
+
+    /* Dashboard layout */
+    .role-dashboard {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 992px) {
+        .role-dashboard {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Cards */
+    .dashboard-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .header-title i {
+        color: var(--primary-orange);
+        font-size: 1.25rem;
+    }
+
+    .header-title h3 {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .role-count, .permission-count {
+        padding: 0.35rem 0.75rem;
+        background: var(--glass-bg);
+        border-radius: 20px;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    /* Roles list */
+    .roles-list {
+        padding: 1rem;
+    }
+
+    .role-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        margin-bottom: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .role-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .role-item.disabled {
+        opacity: 0.6;
+    }
+
+    .role-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: rgba(255, 103, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .role-icon i {
+        color: var(--primary-orange);
+        font-size: 1.1rem;
+    }
+
+    .role-content {
+        flex: 1;
+    }
+
+    .role-title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .role-title {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .role-status-badge {
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .role-status-badge.active {
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--success);
+    }
+
+    .role-status-badge.inactive {
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+    }
+
+    .role-meta {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        margin: 0;
+    }
+
+    .role-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-form {
+        margin: 0;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .toggle-btn {
+        background: rgba(255, 193, 7, 0.15);
+        color: var(--warning);
+    }
+
+    .toggle-btn:hover {
+        background: rgba(255, 193, 7, 0.25);
+        transform: scale(1.05);
+    }
+
+    .revoke-btn {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+    }
+
+    .revoke-btn:hover {
+        background: rgba(239, 68, 68, 0.25);
+        transform: scale(1.05);
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1.5rem;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state p {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-state span {
+        font-size: 0.85rem;
+    }
+
+    /* Assign form */
+    .assign-form {
+        padding: 1.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .select-wrapper label {
+        display: block;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 3px rgba(255, 103, 0, 0.1);
+    }
+
+    /* Toggle switch */
+    .toggle-switch {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        gap: 0.5rem;
+    }
+
+    .toggle-switch input {
+        display: none;
+    }
+
+    .toggle-slider {
+        width: 50px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-slider::before {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 22px;
+        height: 22px;
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+        background: var(--success);
+    }
+
+    .toggle-switch input:checked + .toggle-slider::before {
+        transform: translateX(22px);
+    }
+
+    .toggle-label {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .btn-assign {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-light) 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-assign:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 103, 0, 0.3);
+    }
+
+    /* Permissions card */
+    .permissions-card {
+        max-height: 600px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .permissions-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.5rem 1rem;
+        max-height: 450px;
+    }
+
+    .permission-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--glass-border);
+        transition: all 0.2s ease;
+    }
+
+    .permission-row:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .permission-checkbox {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .permission-checkbox input {
+        display: none;
+    }
+
+    .check-indicator {
+        width: 22px;
+        height: 22px;
+        border: 2px solid var(--glass-border);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        color: white;
+    }
+
+    .check-indicator i {
+        font-size: 14px;
+        opacity: 0;
+        transform: scale(0);
+        transition: all 0.2s ease;
+    }
+
+    .permission-checkbox input:checked + .check-indicator {
+        background: var(--primary-orange);
+        border-color: var(--primary-orange);
+    }
+
+    .permission-checkbox input:checked + .check-indicator i {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .permission-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .permission-title {
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .permission-code {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-family: monospace;
+    }
+
+    .permission-category {
+        padding: 0.25rem 0.6rem;
+        background: var(--glass-bg);
+        border-radius: 4px;
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .card-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .btn-save {
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+        background: var(--primary-orange);
+        border-color: var(--primary-orange);
+        color: white;
+    }
+
+    /* Scrollbar styling */
+    .permissions-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .permissions-list::-webkit-scrollbar-track {
+        background: var(--glass-bg);
+        border-radius: 3px;
+    }
+
+    .permissions-list::-webkit-scrollbar-thumb {
+        background: var(--glass-border);
+        border-radius: 3px;
+    }
+
+    .permissions-list::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 103, 0, 0.5);
+    }
+</style>
+{% endblock %}

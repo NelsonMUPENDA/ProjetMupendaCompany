@@ -1,11 +1,265 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Conditions Générales d'Utilisation - Mupenda{% endblock %}
 
 {% block content %}
-<section class="bg-dark">
-    <div class="container text-center py-5">
-        <p class="btn fw-semibold">Accueil > CGU</p>
-        <h1 class="text-white">Conditions Générales d'Utilisations</h1>
-        <p class="text-white">Veuillez lire attentivement le présent accord, car il contient des informations importantes concernant vos droits et recours légaux.</p>
+<style>
+  .cgu-hero {
+    background: #000000;
+    padding: 6rem 0 4rem;
+    text-align: center;
+    border-bottom: 3px solid #FF6700;
+  }
+
+  [data-bs-theme="light"] .cgu-hero {
+    background: #ffffff;
+  }
+
+  .cgu-hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  [data-bs-theme="light"] .cgu-hero h1 {
+    color: #000000;
+  }
+
+  .cgu-hero p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  [data-bs-theme="light"] .cgu-hero p {
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .cgu-section {
+    background: #000000;
+    padding: 4rem 0 6rem;
+  }
+
+  [data-bs-theme="light"] .cgu-section {
+    background: #ffffff;
+  }
+
+  .cgu-content {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .cgu-article {
+    background: rgba(255, 103, 0, 0.05);
+    border-left: 4px solid #FF6700;
+    border-radius: 0 12px 12px 0;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  [data-bs-theme="light"] .cgu-article {
+    background: rgba(255, 103, 0, 0.03);
+  }
+
+  .cgu-article h2 {
+    color: #FF6700;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .cgu-article h2 i {
+    font-size: 1.2rem;
+  }
+
+  .cgu-article p {
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  [data-bs-theme="light"] .cgu-article p {
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  .cgu-article ul {
+    color: rgba(255, 255, 255, 0.85);
+    padding-left: 1.5rem;
+    line-height: 1.8;
+  }
+
+  [data-bs-theme="light"] .cgu-article ul {
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  .cgu-article li {
+    margin-bottom: 0.5rem;
+  }
+
+  .cgu-article strong {
+    color: #FF6700;
+  }
+
+  .last-updated {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 103, 0, 0.1);
+    border-radius: 12px;
+    margin-bottom: 3rem;
+  }
+
+  .last-updated i {
+    color: #FF6700;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .last-updated p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+  }
+
+  [data-bs-theme="light"] .last-updated p {
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .contact-cgu {
+    background: #FF6700;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    margin-top: 4rem;
+  }
+
+  .contact-cgu h3 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .contact-cgu p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-cgu {
+    background: white;
+    color: #FF6700;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid white;
+  }
+
+  .btn-cgu:hover {
+    background: transparent;
+    color: white;
+  }
+</style>
+
+<section class="cgu-hero">
+  <div class="container">
+    <h1>{% if page %}{{ page.titre }}{% else %}Conditions Générales d'Utilisation{% endif %}</h1>
+    <p>{% if page %}{{ page.sous_titre }}{% else %}Veuillez lire attentivement le présent accord, car il contient des informations importantes concernant vos droits et recours légaux.{% endif %}</p>
+  </div>
+</section>
+
+<section class="cgu-section">
+  <div class="container">
+    <div class="cgu-content">
+      
+      <div class="last-updated">
+        <i class="bi bi-calendar-check"></i>
+        <p>Dernière mise à jour : {% if page and page.derniere_mise_a_jour %}{{ page.derniere_mise_a_jour|date:"d F Y" }}{% else %}28 Février 2026{% endif %}</p>
+      </div>
+
+      {% if page %}
+        {{ page.contenu|safe }}
+      {% else %}
+        <div class="cgu-article">
+          <h2><i class="bi bi-1-circle-fill"></i> Objet des Conditions</h2>
+          <p>Les présentes Conditions Générales d'Utilisation (CGU) ont pour objet de définir les modalités et conditions dans lesquelles <strong>Mupenda Company</strong> met à disposition des utilisateurs ses services et produits, ainsi que les modalités et conditions dans lesquelles les utilisateurs accèdent et utilisent ces services.</p>
+          <p>Toute utilisation des services de Mupenda implique l'acceptation sans réserve des présentes CGU.</p>
+        </div>
+
+      <div class="cgu-article">
+        <h2><i class="bi bi-2-circle-fill"></i> Services Proposés</h2>
+        <p>Mupenda Company propose les services suivants :</p>
+        <ul>
+          <li>Réseaux informatiques et télécommunications</li>
+          <li>Cybersécurité et protection des données</li>
+          <li>Développement d'applications web et mobiles</li>
+          <li>Conception de logiciels sur mesure</li>
+          <li>Systèmes embarqués et IoT</li>
+          <li>Communication digitale et marketing</li>
+          <li>Formations professionnelles</li>
+        </ul>
+      </div>
+
+      <div class="cgu-article">
+        <h2><i class="bi bi-3-circle-fill"></i> Accès aux Services</h2>
+        <p>L'accès aux services est réservé aux utilisateurs disposant d'une connexion Internet et des équipements nécessaires. Mupenda s'efforce de maintenir les services accessibles 7j/7 et 24h/24, mais ne peut garantir une disponibilité permanente en raison des contraintes techniques et de maintenance.</p>
+        <p>Des interruptions temporaires peuvent être nécessaires pour des raisons de maintenance, de mise à jour ou de force majeure. Mupenda informera les utilisateurs des interruptions programmées dans la mesure du possible.</p>
+      </div>
+
+      <div class="cgu-article">
+        <h2><i class="bi bi-4-circle-fill"></i> Obligations des Utilisateurs</h2>
+        <p>L'utilisateur s'engage à :</p>
+        <ul>
+          <li>Fournir des informations exactes, complètes et à jour lors de l'utilisation des services</li>
+          <li>Ne pas utiliser les services à des fins illégales ou non autorisées</li>
+          <li>Ne pas tenter de porter atteinte à la sécurité des systèmes de Mupenda</li>
+          <li>Respecter les droits de propriété intellectuelle de Mupenda et des tiers</li>
+          <li>Ne pas diffuser de contenu diffamatoire, injurieux ou portant atteinte aux droits d'autrui</li>
+        </ul>
+      </div>
+
+      <div class="cgu-article">
+        <h2><i class="bi bi-5-circle-fill"></i> Propriété Intellectuelle</h2>
+        <p>L'ensemble des éléments constituant le site et les services de Mupenda (textes, graphismes, logos, images, vidéos, sons, logiciels, marques, etc.) sont la propriété exclusive de Mupenda ou de ses partenaires et sont protégés par les lois relatives à la propriété intellectuelle.</p>
+        <p>Toute reproduction, représentation, modification, publication, transmission, ou plus généralement toute exploitation non autorisée des éléments du site et des services est strictement interdite sans l'accord préalable écrit de Mupenda.</p>
+      </div>
+
+      <div class="cgu-article">
+        <h2><i class="bi bi-6-circle-fill"></i> Responsabilités</h2>
+        <p>Mupenda s'engage à mettre en œuvre tous les moyens nécessaires pour assurer la qualité de ses services, mais ne peut garantir l'exhaustivité, l'exactitude ou l'absence d'erreurs dans les informations fournies.</p>
+        <p>Mupenda ne saurait être tenu responsable des dommages résultant de l'utilisation des services, notamment en cas de force majeure, de dysfonctionnement du réseau Internet, ou de toute autre cause échappant à son contrôle raisonnable.</p>
+      </div>
+
+      <div class="cgu-article">
+        <h2><i class="bi bi-7-circle-fill"></i> Modification des CGU</h2>
+        <p>Mupenda se réserve le droit de modifier les présentes CGU à tout moment. Les modifications entrent en vigueur dès leur publication sur le site. Il est de la responsabilité de l'utilisateur de consulter régulièrement les CGU pour prendre connaissance des éventuelles modifications.</p>
+        <p>L'utilisation continue des services après publication des modifications constitue une acceptation des nouvelles CGU.</p>
+      </div>
+
+      <div class="cgu-article">
+        <h2><i class="bi bi-8-circle-fill"></i> Droit Applicable et Juridiction</h2>
+        <p>Les présentes CGU sont régies par les lois de la République Démocratique du Congo. Tout litige relatif à l'interprétation ou à l'exécution des présentes CGU sera soumis aux tribunaux compétents de Goma, à défaut d'accord amiable entre les parties.</p>
+      </div>
+      {% endif %}
+
+      <div class="contact-cgu">
+        <h3>Des questions sur nos CGU ?</h3>
+        <p>Notre équipe juridique est à votre disposition pour tout éclaircissement.</p>
+        <a href="{% url 'contact' %}" class="btn-cgu">
+          <i class="bi bi-envelope-fill"></i>
+          Nous Contacter
+        </a>
+      </div>
+
     </div>
+  </div>
 </section>
 {% endblock %}

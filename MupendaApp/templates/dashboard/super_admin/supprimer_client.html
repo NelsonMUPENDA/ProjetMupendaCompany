@@ -1,0 +1,367 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">Supprimer le Client</h1>
+{% endblock %}
+
+{% block content %}
+<div class="delete-client-container">
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {{ message }}
+            <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="glass-card danger-card">
+        <div class="card-header">
+            <div class="header-icon">
+                <i class="bi bi-trash-fill"></i>
+            </div>
+            <h2 class="header-title">Confirmation de suppression</h2>
+            <p class="header-subtitle">Cette action est irréversible</p>
+        </div>
+
+        <div class="card-body">
+            <div class="client-preview">
+                <div class="client-avatar">
+                    {% if client.nom %}{{ client.nom|first|upper }}{% endif %}
+                </div>
+                <div class="client-info">
+                    <h3 class="client-name">{{ client.nom }}</h3>
+                    <p class="client-email">{{ client.email|default:"Email non renseigné" }}</p>
+                    <span class="client-type">{% for code, label in client.TYPE_CLIENT_CHOICES %}{% if code == client.type_client %}{{ label }}{% endif %}{% endfor %}</span>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <i class="bi bi-exclamation-triangle"></i>
+                <div class="warning-content">
+                    <h4>Attention</h4>
+                    <p>Êtes-vous sûr de vouloir supprimer ce client ? Cette action est <strong>définitive</strong> et toutes les données associées (projets, devis, factures) seront également supprimées ou affectées.</p>
+                </div>
+            </div>
+
+            <form method="post" class="delete-form">
+                {% csrf_token %}
+                <div class="form-actions">
+                    <a href="{% url 'fiche_client' client.id %}" class="btn btn-outline-light">
+                        <i class="bi bi-x-circle"></i>
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn btn-glass-danger">
+                        <i class="bi bi-trash"></i>
+                        Confirmer la suppression
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .delete-client-container {
+        padding: 1.5rem;
+        max-width: 600px;
+        margin: 0 auto;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .messages-container {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1000;
+        max-width: 400px;
+    }
+
+    .alert {
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        animation: slideIn 0.3s ease;
+        background: rgba(244, 67, 54, 0.15);
+        border: 1px solid rgba(244, 67, 54, 0.3);
+        color: #f44336;
+        backdrop-filter: blur(10px);
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(100%); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+        padding: 0;
+        margin-left: auto;
+        color: inherit;
+    }
+
+    .close-btn:hover {
+        opacity: 1;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 0;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .danger-card {
+        border-color: rgba(244, 67, 54, 0.3);
+        box-shadow: 0 10px 40px rgba(244, 67, 54, 0.1);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, rgba(244, 67, 54, 0.2) 0%, rgba(244, 67, 54, 0.05) 100%);
+        padding: 2.5rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(244, 67, 54, 0.2);
+    }
+
+    .header-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #f44336 0%, #ff6b6b 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
+        50% { box-shadow: 0 0 0 20px rgba(244, 67, 54, 0); }
+    }
+
+    .header-icon i {
+        font-size: 2.5rem;
+        color: white;
+    }
+
+    .header-title {
+        color: var(--text-primary);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .header-subtitle {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .card-body {
+        padding: 2.5rem;
+    }
+
+    .client-preview {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        border: 1px solid var(--glass-border);
+    }
+
+    .client-avatar {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+
+    .client-info {
+        flex: 1;
+    }
+
+    .client-name {
+        color: var(--text-primary);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .client-email {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .client-type {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(255, 103, 0, 0.2);
+        color: var(--primary-orange);
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .warning-box {
+        display: flex;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: rgba(255, 193, 7, 0.1);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .warning-box i {
+        font-size: 1.5rem;
+        color: #FFC107;
+    }
+
+    .warning-content h4 {
+        color: #FFC107;
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .warning-content p {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .warning-content strong {
+        color: #FFC107;
+    }
+
+    .delete-form {
+        margin-top: 1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-glass-danger {
+        flex: 1;
+        background: linear-gradient(45deg, #f44336 0%, #ff6b6b 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-glass-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(244, 67, 54, 0.4);
+    }
+
+    .btn-outline-light {
+        flex: 1;
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        border-radius: 12px;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-light:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--text-primary);
+        color: var(--text-primary);
+    }
+
+    @media (max-width: 768px) {
+        .delete-client-container {
+            padding: 1rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+        }
+
+        .header-icon i {
+            font-size: 2rem;
+        }
+
+        .header-title {
+            font-size: 1.4rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .client-preview {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn-glass-danger,
+        .btn-outline-light {
+            width: 100%;
+        }
+
+        .messages-container {
+            left: 1rem;
+            right: 1rem;
+            max-width: none;
+        }
+    }
+</style>
+{% endblock %}

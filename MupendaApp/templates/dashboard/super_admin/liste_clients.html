@@ -1,0 +1,576 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">Liste des Clients</h1>
+{% endblock %}
+
+{% block content %}
+<div class="clients-list-container">
+    <!-- Messages Django -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+            <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Header avec bouton ajouter -->
+    <div class="dashboard-header-with-action">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">
+                <i class="bi bi-people"></i>
+                Gestion des Clients
+            </h1>
+            <p class="dashboard-description">
+                Consultez et gérez la liste de tous les clients enregistrés
+            </p>
+        </div>
+        <a href="{% url 'AjouterClient' %}" class="btn btn-glass-primary">
+            <i class="bi bi-plus-lg"></i>
+            Ajouter un Client
+        </a>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_clients|default:"0" }}</div>
+            <div class="stat-label">Total Clients</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ active_clients|default:"0" }}</div>
+            <div class="stat-label">Clients Actifs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ new_clients_month|default:"0" }}</div>
+            <div class="stat-label">Nouveaux (30j)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_projects|default:"0" }}</div>
+            <div class="stat-label">Projets</div>
+        </div>
+    </div>
+
+    <!-- Filtres améliorés -->
+    <div class="filters-container">
+        <form method="get" class="filters-form">
+            <input type="text" name="search" class="filter-input" placeholder="Rechercher par nom, email, téléphone ou société..." value="{{ search|default:'' }}">
+            
+            <select name="statut_client" class="filter-select" onchange="this.form.submit()">
+                <option value="">Tous les statuts</option>
+                {% for code, label in statut_choices %}
+                <option value="{{ code }}" {% if statut_filter == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            
+            <select name="type_client" class="filter-select" onchange="this.form.submit()">
+                <option value="">Tous les types</option>
+                {% for code, label in type_choices %}
+                <option value="{{ code }}" {% if type_filter == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-funnel"></i> Filtrer
+            </button>
+            <a href="{% url 'clients' %}" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-arrow-clockwise"></i> Réinitialiser
+            </a>
+        </form>
+    </div>
+
+    <!-- Tableau des clients -->
+    <div class="clients-table-container">
+        <table class="clients-table">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Contact</th>
+                    <th>Entreprise</th>
+                    <th>Projets</th>
+                    <th>Statut</th>
+                    <th>Date d'ajout</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <td>
+                        <div class="client-info">
+                            <div class="client-avatar">{{ client.nom|first|upper }}</div>
+                            <div>
+                                <div class="client-name">{{ client.nom }}</div>
+                                <small class="client-id">ID: {{ client.id }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="contact-info">
+                            <div><i class="bi bi-envelope"></i> {{ client.email|default:"-" }}</div>
+                            <div><i class="bi bi-telephone"></i> {{ client.telephone|default:"-" }}</div>
+                        </div>
+                    </td>
+                    <td>{{ client.entreprise|default:"-" }}</td>
+                    <td>
+                        <span class="project-count">{{ client.projets.count|default:"0" }}</span>
+                    </td>
+                    <td>
+                        {% if client.est_actif %}
+                            <span class="status-badge status-active">Actif</span>
+                        {% else %}
+                            <span class="status-badge status-inactive">Inactif</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ client.date_creation|date:"d/m/Y"|default:"-" }}</td>
+                    <td>
+                        <div class="action-cell">
+                            <a class="action-btn view" href="{% url 'fiche_client' client.id %}" title="Voir détails">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a class="action-btn edit" href="{% url 'modifier_client' client.id %}" title="Modifier">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a class="action-btn delete" href="{% url 'supprimer_client' client.id %}" title="Supprimer">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="empty-cell">
+                        <i class="bi bi-inbox"></i>
+                        <p>Aucun client trouvé</p>
+                        {% if search or statut_filter or type_filter %}
+                        <a href="{% url 'clients' %}" class="btn btn-outline-light btn-sm mt-3">
+                            Réinitialiser les filtres
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-btn">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            {% endif %}
+            
+            <span class="page-info">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+            
+            {% if page_obj.has_next %}
+                <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-btn">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .clients-list-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .messages-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .alert {
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .alert-success {
+        background: rgba(76, 175, 80, 0.2);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        color: #4CAF50;
+    }
+
+    .alert-error, .alert-danger {
+        background: rgba(244, 67, 54, 0.2);
+        border: 1px solid rgba(244, 67, 54, 0.3);
+        color: #f44336;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+        padding: 0;
+        margin-left: 1rem;
+        color: inherit;
+    }
+
+    .close-btn:hover {
+        opacity: 1;
+    }
+
+    .dashboard-header-with-action {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn-glass-primary {
+        background: linear-gradient(45deg, var(--primary-orange) 0%, #ff8533 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        height: fit-content;
+    }
+
+    .btn-glass-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(255, 103, 0, 0.4);
+        color: white;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .dashboard-title i {
+        color: var(--primary-orange);
+    }
+
+    .dashboard-description {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .filters-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .filters-form {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .filter-input, .filter-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .filter-input {
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+    }
+
+    .btn-outline-light {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-light:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--primary-orange);
+    }
+
+    .clients-table-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    .clients-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .clients-table th {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .clients-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+    }
+
+    .clients-table tr:hover {
+        background: rgba(255, 103, 0, 0.05);
+    }
+
+    .client-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .client-avatar {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .client-name {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .client-id {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+    }
+
+    .contact-info {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .contact-info i {
+        margin-right: 0.5rem;
+        color: var(--primary-orange);
+    }
+
+    .project-count {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(255, 103, 0, 0.1);
+        color: var(--primary-orange);
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+
+    .status-inactive {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+    }
+
+    .action-cell {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .action-btn.view:hover {
+        background: rgba(33, 150, 243, 0.2);
+        border-color: #2196F3;
+        color: #2196F3;
+    }
+
+    .action-btn.edit:hover {
+        background: rgba(255, 193, 7, 0.2);
+        border-color: #FFC107;
+        color: #FFC107;
+    }
+
+    .action-btn.delete:hover {
+        background: rgba(244, 67, 54, 0.2);
+        border-color: #f44336;
+        color: #f44336;
+    }
+
+    .empty-cell {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-cell i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .page-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .page-btn:hover {
+        background: var(--primary-orange);
+        border-color: var(--primary-orange);
+        color: white;
+    }
+
+    .page-info {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .filters-form {
+            flex-direction: column;
+        }
+
+        .filter-input, .filter-select {
+            width: 100%;
+        }
+
+        .clients-table th, .clients-table td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.85rem;
+        }
+    }
+</style>
+{% endblock %}

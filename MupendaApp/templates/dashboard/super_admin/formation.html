@@ -1,0 +1,132 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}Formations{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion des Formations</h1>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Retour</a>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Liste des formations</h5>
+                </div>
+                <div class="card-body">
+                    {% if formations %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Dates</th>
+                                    <th>Prix</th>
+                                    <th>Formateur</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for formation in formations %}
+                                <tr>
+                                    <td>{{ formation.nom }}</td>
+                                    <td>{{ formation.date_debut|date:"d/m/Y" }} - {{ formation.date_fin|date:"d/m/Y" }}</td>
+                                    <td>{{ formation.prix }} €</td>
+                                    <td>{{ formation.formateur.get_full_name|default:formation.formateur.username }}</td>
+                                    <td>
+                                        <span class="badge {% if formation.status == 1 %}bg-success{% else %}bg-warning{% endif %}">
+                                            {% if formation.status == 1 %}Actif{% else %}Brouillon{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="alert('À implémenter')">Modifier</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Aucune formation enregistrée.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Ajouter une formation</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="nom" class="form-label">Nom de la formation *</label>
+                            <input type="text" class="form-control" id="nom" name="nom" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Image</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="date_debut" class="form-label">Date début</label>
+                                <input type="date" class="form-control" id="date_debut" name="date_debut">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="date_fin" class="form-label">Date fin</label>
+                                <input type="date" class="form-control" id="date_fin" name="date_fin">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="heure_debut" class="form-label">Heure début</label>
+                                <input type="time" class="form-control" id="heure_debut" name="heure_debut">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="heure_fin" class="form-label">Heure fin</label>
+                                <input type="time" class="form-control" id="heure_fin" name="heure_fin">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="prix" class="form-label">Prix (€)</label>
+                            <input type="number" step="0.01" class="form-control" id="prix" name="prix" value="0">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="formateur" class="form-label">Formateur</label>
+                            <select class="form-select" id="formateur" name="formateur">
+                                <option value="">Sélectionner un formateur</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="categorie" class="form-label">Catégorie</label>
+                            <select class="form-select" id="categorie" name="categorie">
+                                <option value="">Sélectionner une catégorie</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Enregistrer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

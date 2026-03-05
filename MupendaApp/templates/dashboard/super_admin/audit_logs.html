@@ -1,0 +1,422 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">Journaux d'Audit</h1>
+{% endblock %}
+
+{% block content %}
+<div class="audit-logs-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="bi bi-file-text"></i>
+            Journaux d'Audit
+        </h1>
+        <p class="dashboard-description">
+            Consultez l'historique complet des actions effectuées sur le système
+        </p>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.total }}</div>
+            <div class="stat-label">Total Logs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.today }}</div>
+            <div class="stat-label">Aujourd'hui</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.week }}</div>
+            <div class="stat-label">Cette semaine</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.critical }}</div>
+            <div class="stat-label">Actions Critiques</div>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters-container">
+        <form method="get" class="filters-form">
+            <input type="text" name="q" class="filter-input" placeholder="Rechercher..." value="{{ filters.q|default:'' }}">
+            
+            <select name="action" class="filter-select" onchange="this.form.submit()">
+                <option value="">Toutes les actions</option>
+                {% for code, label in action_choices %}
+                <option value="{{ code }}" {% if filters.action == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            
+            <select name="user_id" class="filter-select" onchange="this.form.submit()">
+                <option value="">Tous les utilisateurs</option>
+                {% for user in users_for_filter %}
+                <option value="{{ user.id }}" {% if filters.user_id == user.id|stringformat:"s" %}selected{% endif %}>{{ user.username }}</option>
+                {% endfor %}
+            </select>
+            
+            <select name="period" class="filter-select" onchange="this.form.submit()">
+                <option value="">Toutes les périodes</option>
+                <option value="today" {% if filters.period == 'today' %}selected{% endif %}>Aujourd'hui</option>
+                <option value="week" {% if filters.period == 'week' %}selected{% endif %}>Cette semaine</option>
+                <option value="month" {% if filters.period == 'month' %}selected{% endif %}>Ce mois</option>
+                <option value="year" {% if filters.period == 'year' %}selected{% endif %}>Cette année</option>
+            </select>
+            
+            <button type="submit" class="btn btn-outline-light btn-sm">Filtrer</button>
+            <a href="{% url 'audit_logs' %}" class="btn btn-outline-light btn-sm">Réinitialiser</a>
+        </form>
+    </div>
+
+    <!-- Tableau des logs -->
+    <div class="logs-table-container">
+        <table class="logs-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Utilisateur</th>
+                    <th>Action</th>
+                    <th>Modèle</th>
+                    <th>Description</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td class="log-date">{{ log.date_action|date:"d/m/Y H:i:s" }}</td>
+                    <td class="log-user">
+                        {% if log.utilisateur %}
+                            <div class="user-info-small">
+                                <span class="username">{{ log.utilisateur.username }}</span>
+                            </div>
+                        {% else %}
+                            <span class="text-muted">Système</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="action-badge action-{{ log.action|lower }}">
+                            {{ log.get_action_display }}
+                        </span>
+                    </td>
+                    <td class="log-model">{{ log.modele|default:"-" }}</td>
+                    <td class="log-description">{{ log.description|truncatechars:80 }}</td>
+                    <td class="log-ip">{{ log.adresse_ip|default:"-" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty-cell">
+                        <i class="bi bi-inbox"></i>
+                        <p>Aucun log trouvé</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-btn">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            {% endif %}
+            
+            <span class="page-info">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+            
+            {% if page_obj.has_next %}
+                <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-btn">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .audit-logs-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .dashboard-title i {
+        color: var(--primary-orange);
+    }
+
+    .dashboard-description {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .filters-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .filters-form {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .filter-input, .filter-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .filter-input {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+    }
+
+    .btn-outline-light {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-light:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--primary-orange);
+    }
+
+    .logs-table-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    .logs-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .logs-table th {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .logs-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .logs-table tr:hover {
+        background: rgba(255, 103, 0, 0.05);
+    }
+
+    .log-date {
+        font-family: monospace;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .username {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .action-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .action-connexion {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+
+    .action-deconnexion {
+        background: rgba(255, 152, 0, 0.2);
+        color: #FF9800;
+    }
+
+    .action-creation {
+        background: rgba(33, 150, 243, 0.2);
+        color: #2196F3;
+    }
+
+    .action-modification {
+        background: rgba(255, 193, 7, 0.2);
+        color: #FFC107;
+    }
+
+    .action-suppression {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+    }
+
+    .action-exportation {
+        background: rgba(156, 39, 176, 0.2);
+        color: #9c27b0;
+    }
+
+    .action-autre {
+        background: rgba(158, 158, 158, 0.2);
+        color: #9e9e9e;
+    }
+
+    .log-description {
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .log-ip {
+        font-family: monospace;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-cell {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-cell i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .page-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .page-btn:hover {
+        background: var(--primary-orange);
+        border-color: var(--primary-orange);
+        color: white;
+    }
+
+    .page-info {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .filters-form {
+            flex-direction: column;
+        }
+
+        .filter-input, .filter-select {
+            width: 100%;
+        }
+
+        .logs-table th, .logs-table td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,378 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">Gestion des Permissions</h1>
+{% endblock %}
+
+{% block content %}
+<div class="permissions-management-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="bi bi-key"></i>
+            Gestion des Permissions
+        </h1>
+        <p class="dashboard-description">
+            Gérez les permissions et accès du système
+        </p>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_permissions }}</div>
+            <div class="stat-label">Total Permissions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ active_permissions }}</div>
+            <div class="stat-label">Permissions Actives</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_modules }}</div>
+            <div class="stat-label">Modules</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ permission_assignments }}</div>
+            <div class="stat-label">Assignations</div>
+        </div>
+    </div>
+
+    <!-- Liste des permissions -->
+    <div class="permissions-table-container">
+        <div class="table-header">
+            <h2 class="table-title">
+                <i class="bi bi-list-ul"></i>
+                Liste des Permissions
+            </h2>
+        </div>
+
+        <div class="permissions-list">
+            {% for permission in permissions %}
+            <div class="permission-card {% if not permission.est_active %}inactive{% endif %}">
+                <div class="permission-header">
+                    <div class="permission-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div class="permission-info">
+                        <h3>{{ permission.nom }}</h3>
+                        <span class="permission-code">{{ permission.code }}</span>
+                    </div>
+                    <div class="permission-status">
+                        {% if permission.est_active %}
+                            <span class="badge badge-active">Active</span>
+                        {% else %}
+                            <span class="badge badge-inactive">Inactive</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="permission-body">
+                    <p class="permission-description">{{ permission.description|default:"Aucune description" }}</p>
+                    <div class="permission-category">
+                        <i class="bi bi-folder"></i>
+                        {{ permission.get_categorie_display }}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>Aucune permission trouvée</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+                <span class="pagination-total">({{ page_obj.paginator.count }} permissions)</span>
+            </div>
+            <nav class="pagination-nav">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Précédent</a>
+                {% endif %}
+                <span class="pagination-page active">{{ page_obj.number }}</span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Suivant</a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .permissions-management-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .dashboard-title i {
+        color: var(--primary-orange);
+    }
+
+    .dashboard-description {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .permissions-table-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    .table-header {
+        margin-bottom: 2rem;
+    }
+
+    .table-title {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .permissions-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .permission-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .permission-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+    }
+
+    .permission-card.inactive {
+        opacity: 0.6;
+    }
+
+    .permission-header {
+        padding: 1.5rem;
+        background: rgba(255, 103, 0, 0.05);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .permission-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .permission-info {
+        flex: 1;
+    }
+
+    .permission-info h3 {
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+        font-size: 1rem;
+    }
+
+    .permission-code {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        font-family: monospace;
+    }
+
+    .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-active {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+
+    .badge-inactive {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+    }
+
+    .permission-body {
+        padding: 1.5rem;
+    }
+
+    .permission-description {
+        color: var(--text-secondary);
+        margin: 0 0 1rem 0;
+        font-size: 0.9rem;
+    }
+
+    .permission-category {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--primary-orange);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .permissions-list {
+            grid-template-columns: 1fr;
+        }
+
+        .pagination-nav {
+            gap: 0.25rem;
+        }
+    }
+
+    /* Pagination Styles */
+    .pagination-container {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--glass-border);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .pagination-info {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .pagination-total {
+        color: var(--primary-orange);
+        font-weight: 500;
+    }
+
+    .pagination-nav {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .pagination-btn {
+        padding: 0.5rem 1rem;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+    }
+
+    .pagination-btn:hover {
+        background: rgba(255, 103, 0, 0.1);
+        border-color: var(--primary-orange);
+        color: var(--primary-orange);
+    }
+
+    .pagination-page {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        background: var(--primary-orange);
+        border: 1px solid var(--primary-orange);
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}

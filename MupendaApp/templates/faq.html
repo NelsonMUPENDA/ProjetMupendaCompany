@@ -1,92 +1,293 @@
 {% extends 'base.html' %}
 {% load static %}
+
+{% block title %}FAQ - Questions Fréquentes{% endblock %}
+
 {% block content %}
+<style>
+  :root {
+    --faq-primary: #FF6700;
+    --faq-dark: #000000;
+    --faq-light: #ffffff;
+  }
 
-<section class="py-5">
-    <div class="container text-center py-5">
-        <p class="btn fw-semibold text-white">Accueil > Faq</p>
-        <h1 class="display-5 fw-bold" style="color: #ff6700;">Foire Aux Questions</h1>
-        <p class="text-white">Découvrer nos dernières questions mise en ligne!</p>
-    </div>
+  .faq-hero {
+    background: #000000;
+    padding: 6rem 0 4rem;
+    text-align: center;
+    border-bottom: 3px solid #FF6700;
+  }
+
+  [data-bs-theme="light"] .faq-hero {
+    background: #ffffff;
+  }
+
+  .faq-hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  [data-bs-theme="light"] .faq-hero-title {
+    color: #000000;
+  }
+
+  .faq-hero-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  [data-bs-theme="light"] .faq-hero-subtitle {
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .faq-section {
+    background: #000000;
+    padding: 5rem 0;
+  }
+
+  [data-bs-theme="light"] .faq-section {
+    background: #ffffff;
+  }
+
+  .faq-accordion {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .accordion-item {
+    background: #000000;
+    border: 1px solid rgba(255, 103, 0, 0.3);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  [data-bs-theme="light"] .accordion-item {
+    background: #ffffff;
+    border-color: #000000;
+  }
+
+  .accordion-button {
+    background: #000000;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 1.5rem;
+    border: none;
+    box-shadow: none;
+  }
+
+  [data-bs-theme="light"] .accordion-button {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  .accordion-button:not(.collapsed) {
+    background: #FF6700;
+    color: white;
+  }
+
+  [data-bs-theme="light"] .accordion-button:not(.collapsed) {
+    background: #FF6700;
+    color: white;
+  }
+
+  .accordion-button:focus {
+    box-shadow: none;
+    border-color: #FF6700;
+  }
+
+  .accordion-button::after {
+    filter: invert(1);
+  }
+
+  .accordion-button:not(.collapsed)::after {
+    filter: invert(0);
+  }
+
+  [data-bs-theme="light"] .accordion-button::after {
+    filter: none;
+  }
+
+  [data-bs-theme="light"] .accordion-button:not(.collapsed)::after {
+    filter: invert(1);
+  }
+
+  .accordion-body {
+    background: #000000;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 1.5rem;
+    line-height: 1.8;
+    font-size: 1rem;
+  }
+
+  [data-bs-theme="light"] .accordion-body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  .faq-icon {
+    color: #FF6700;
+    font-size: 1.25rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+  }
+
+  .accordion-button:not(.collapsed) .faq-icon {
+    color: white;
+  }
+
+  .faq-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #FF6700;
+    color: white;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+  }
+
+  .accordion-button:not(.collapsed) .faq-number {
+    background: white;
+    color: #FF6700;
+  }
+
+  /* Contact Banner */
+  .contact-banner {
+    background: #FF6700;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 16px;
+    margin-top: 4rem;
+  }
+
+  .contact-banner h3 {
+    color: white;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .contact-banner p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .btn-contact {
+    background: white;
+    color: #FF6700;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid white;
+  }
+
+  .btn-contact:hover {
+    background: transparent;
+    color: white;
+    transform: translateY(-3px);
+  }
+
+  /* Empty State */
+  .empty-faq {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 103, 0, 0.05);
+    border: 2px dashed #FF6700;
+    border-radius: 16px;
+  }
+
+  .empty-faq i {
+    font-size: 4rem;
+    color: #FF6700;
+    margin-bottom: 1.5rem;
+  }
+
+  .empty-faq h4 {
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  [data-bs-theme="light"] .empty-faq h4 {
+    color: #000000;
+  }
+
+  .empty-faq p {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  [data-bs-theme="light"] .empty-faq p {
+    color: rgba(0, 0, 0, 0.7);
+  }
+</style>
+
+<!-- FAQ Hero -->
+<section class="faq-hero">
+  <div class="container">
+    <h1 class="faq-hero-title">Foire Aux Questions</h1>
+    <p class="faq-hero-subtitle">
+      Retrouvez les réponses aux questions les plus fréquemment posées par nos clients.
+    </p>
+  </div>
 </section>
 
-<section class="">
-    <div class="container">
-        <div class="row g-4 py-5">
-            <div class="col-md-6">
-                <img src="{% static 'images/bg-6.jpg' %}" alt="FAQ Image" width="100%">
-            </div>
-            <div class="col-md-6 text-white d-flex flex-column justify-content-center">
-                <h1 class="fw-semibold">Les Questions les plus fréquentes.</h1>
-                <p>Dans cette section, trouver les questions les plus populaires de prospects et clients qui vous ont précédé. Si jamais votre préoccupation ne trouvera sa réponse, n’hésitez pas de nous contacter pour en discuter d'avantage.</p>
-                <a href="" class="btn fw-semibold" style="background-color: #ff6700; color: black;"><i class="bi bi-whatsapp"></i> Discuter maintenant</a>
-            </div>
+<!-- FAQ Section -->
+<section class="faq-section">
+  <div class="container">
+    {% if faqs %}
+    <div class="accordion faq-accordion" id="faqAccordion">
+      {% for faq in faqs %}
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" 
+                  data-bs-toggle="collapse" data-bs-target="#faq{{ forloop.counter }}">
+            <span class="faq-number">{{ forloop.counter }}</span>
+            <i class="bi bi-question-circle-fill faq-icon"></i>
+            {{ faq.question }}
+          </button>
+        </h2>
+        <div id="faq{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" 
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            {{ faq.reponse|safe }}
+          </div>
         </div>
+      </div>
+      {% endfor %}
     </div>
-</section>
-
-<section class="py-5">
-    <div class="container">
-        <div class="row g-4 text-white">
-            <div class="col-md-12">
-                <h1 class="pb-2 fw-bold">Questions sur le Site web</h1>
-                <div class="accordion" id="accordionExample">
-                    <div class="accordion-item">
-                      <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Quels sont vos tarifs pour la conception d'un site web ?
-                        </button>
-                      </h2>
-                      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                        <div class="accordion-body bg-dark text-white">
-                            Tout projet ayant toujours son  caractère unique, nos tarifs pour le site web dépend d’un projet à un autre.
-                        </div>
-                      </div>
-                    </div>
-                    <div class="accordion-item">
-                      <h2 class="accordion-header" id="headingTwo">
-                        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            Combien de temps peut-il prendre la conception d'un site web ?
-                        </button>
-                      </h2>
-                      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                        <div class="accordion-body bg-dark text-white">
-                            Généralement, le délai de livraison pour un site web de type vitrine (entreprise, ONG, etc.), site d’actualité, e-commerce ou cours en ligne est estimé entre 3 à 5 jours.
-
-                            Mais cela peut aussi dépendre de la quantité de données du site, du temps de transmission de données du site par le client, de la complexité du site, etc.
-                        </div>
-                      </div>
-                    </div>
-                    <div class="accordion-item">
-                      <h2 class="accordion-header fw-semibold" id="headingThree">
-                        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">                    
-                            Puis-je avoir les liens de quelques sites web que vous avez déjà réalisé ?
-                        </button>
-                      </h2>
-                      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                        <div class="accordion-body bg-dark text-white">
-                            Bien-sûr ! Pour des sites que nous avons réalisés, prière de consulter notre portfolio n cliquant sur le lien suivant :
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-            </div>
-        </div>
+    {% else %}
+    <div class="empty-faq">
+      <i class="bi bi-question-circle"></i>
+      <h4>Aucune FAQ pour le moment</h4>
+      <p>Nos questions fréquentes seront bientôt disponibles.</p>
     </div>
-</section>
+    {% endif %}
 
-<section class="py-5">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-md-6">
-                <img class="rounded-3" src="{% static 'images/contact.jpg' %}" alt="FAQ Image" width="100%">
-            </div>
-            <div class="col-md-6 d-flex flex-column justify-content-center text-white">
-                <h1 class="fw-bold my-3">Poser une Question ?</h1>
-                <p>N'hésitez pas à nous contacter, nous sommes disponible pour répondre à toutes vos question et réaccueillir toute suggestion.</p>
-                <a href="" class="btn fw-bold" style="background-color: #ff6700; color: black;"><i class="bi bi-whatsapp"></i> Discuter maintenant</a>
-            </div>
-        </div>
+    <!-- Contact Banner -->
+    <div class="contact-banner">
+      <h3>Vous ne trouvez pas votre réponse ?</h3>
+      <p>Notre équipe est disponible pour répondre à toutes vos questions.</p>
+      <a href="{% url 'contact' %}" class="btn-contact">
+        <i class="bi bi-envelope-fill"></i>
+        Nous Contacter
+      </a>
     </div>
+  </div>
 </section>
-{% endblock content %}
+{% endblock %}

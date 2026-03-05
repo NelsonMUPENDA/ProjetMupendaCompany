@@ -1,292 +1,999 @@
-<!-- Ajout de la page base.html dans index.html  -->
 {% extends 'base.html' %}
 {% load static %}
-<!-- Fin  -->
+
 {% block content %}
 <style>
-  .bg-custom {
-    background-image: url('{% static "images/bg_3.jpg" %}');
+  /* Variables CSS */
+  :root {
+    --primary-orange: #ff6700;
+    --dark-bg: #0a0a0a;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Hero Section - Modern Glassmorphism */
+  .hero-section {
+    min-height: 100vh;
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.9) 100%),
+                url('{% static "images/bg_3.jpg" %}');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
-}
-  .bg-custom2 {
-    background-image: url('{% static "images/cartoon-man.jpg" %}');
-    background-color: rgba(0, 0, 0, 0.8); /* couche semi-transparente */ 
-    background-blend-mode: multiply;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: 80px;
+  }
+
+  .hero-content {
+    text-align: center;
+    z-index: 2;
+    max-width: 900px;
+    padding: 2rem;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 103, 0, 0.15);
+    border: 1px solid rgba(255, 103, 0, 0.3);
+    color: var(--primary-orange);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+  }
+
+  .hero-title .highlight {
+    background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-description {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-hero-primary {
+    background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(255, 103, 0, 0.3);
+    border: none;
+  }
+
+  .btn-hero-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(255, 103, 0, 0.4);
+    color: white;
+  }
+
+  .btn-hero-secondary {
+    background: transparent;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-hero-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-orange);
+    color: var(--primary-orange);
+  }
+
+  /* Section Styles */
+  .section-title-wrapper {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-subtitle {
+    color: var(--primary-orange);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .section-bar {
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-orange), #ff8533);
+    margin: 0 auto;
+    border-radius: 2px;
+  }
+
+  /* About Section */
+  .about-section {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    padding: 6rem 0;
+  }
+
+  .about-image-wrapper {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(255, 103, 0, 0.2);
+  }
+
+  .about-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .about-content {
+    padding: 2rem;
+  }
+
+  .about-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+
+  .about-features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .about-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    font-weight: 500;
+  }
+
+  .about-feature i {
+    color: var(--primary-orange);
+    font-size: 1.2rem;
+  }
+
+  /* Services Section */
+  .services-section {
+    background: linear-gradient(135deg, #0f0f0f 0%, #1f1f1f 100%);
+    padding: 6rem 0;
+  }
+
+  .service-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    height: 100%;
+  }
+
+  .service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(255, 103, 0, 0.15);
+    border-color: rgba(255, 103, 0, 0.3);
+  }
+
+  .service-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .service-body {
+    padding: 1.5rem;
+  }
+
+  .service-title {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .service-description {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .service-link {
+    color: var(--primary-orange);
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .service-link:hover {
+    gap: 1rem;
+    color: #ff8533;
+  }
+
+  /* Realizations Section */
+  .realizations-section {
+    background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+    padding: 6rem 0;
+  }
+
+  .realization-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    cursor: pointer;
+  }
+
+  .realization-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .realization-card:hover .realization-image {
+    transform: scale(1.1);
+  }
+
+  .realization-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+    padding: 2rem;
+    transform: translateY(100%);
+    transition: transform 0.4s ease;
+  }
+
+  .realization-card:hover .realization-overlay {
+    transform: translateY(0);
+  }
+
+  .realization-title {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .realization-category {
+    color: var(--primary-orange);
+    font-size: 0.9rem;
+  }
+
+  /* Why Choose Us Section */
+  .why-us-section {
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+    padding: 6rem 0;
+  }
+
+  .why-us-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: all 0.4s ease;
+    height: 100%;
+  }
+
+  .why-us-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(255, 103, 0, 0.1);
+    border-color: rgba(255, 103, 0, 0.3);
+  }
+
+  .why-us-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, rgba(255, 103, 0, 0.2) 0%, rgba(255, 103, 0, 0.05) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: var(--primary-orange);
+    transition: all 0.4s ease;
+  }
+
+  .why-us-card:hover .why-us-icon {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+    color: white;
+  }
+
+  .why-us-title {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .why-us-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* Testimonials Section */
+  .testimonials-section {
+    background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
+    padding: 6rem 0;
+  }
+
+  .testimonial-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.4s ease;
+    height: 100%;
+  }
+
+  .testimonial-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 103, 0, 0.3);
+  }
+
+  .testimonial-quote {
+    color: var(--primary-orange);
+    font-size: 3rem;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .testimonial-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .testimonial-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-orange);
+  }
+
+  .testimonial-info h5 {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .testimonial-info span {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+  }
+
+  /* Stats Section */
+  .stats-section {
+    background: linear-gradient(135deg, rgba(255, 103, 0, 0.1) 0%, rgba(10, 10, 10, 0.95) 100%),
+                url('{% static "images/cartoon-man.jpg" %}');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
-}
-  .bg-realisation {
-    background-image: url('{% static "images/bg-5.jpg" %}');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-  .partenaire {
-    background-image: url('{% static "images/bg-7.jpg" %}');
-    background-color: rgba(0, 0, 0, 0.5); /* couche semi-transparente */ 
-    background-blend-mode: multiply;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
+    background-attachment: fixed;
+    padding: 5rem 0;
+    position: relative;
+  }
+
+  .stats-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .stats-container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .stat-number {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--primary-orange);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  /* Partners Section */
+  .partners-section {
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+    padding: 5rem 0;
+  }
+
+  .partner-logo {
+    filter: grayscale(100%) brightness(200%);
+    opacity: 0.6;
+    transition: all 0.4s ease;
+    max-width: 150px;
+  }
+
+  .partner-logo:hover {
+    filter: grayscale(0%) brightness(100%);
+    opacity: 1;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+    padding: 5rem 0;
+    text-align: center;
+  }
+
+  .cta-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .cta-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .btn-cta {
+    background: white;
+    color: var(--primary-orange);
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    color: var(--primary-orange);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+    }
+
+    .about-features {
+      grid-template-columns: 1fr;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+    }
+
+    .hero-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
 </style>
 
-<!-- Caroussel  -->
- <section class="mb-5" style="margin-top: 60px;">
-   <div id="carouselExampleCaptions" class="carousel slide bg-dark w-100 h-100 mx-auto" data-bs-ride="carousel">
-       <div class="carousel-indicators">
-         <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-         <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
-         <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
-       </div>
-       <div class="carousel-inner">
-         <div class="carousel-item active">
-           <img src="{% static 'images/fond_1.jpg' %}" class="d-block" alt="..." width="100%">
-           <div class="carousel-caption d-none d-md-block">
-             <h2>Mupenda Company</h2>
-             <p class="fw-semibold">Entreprise Congolaise de solutions Informatique et technologique.</p>
-           </div>
-         </div>
-         <div class="carousel-item">
-           <img src="{% static 'images/caroussel_3.jpg' %}" class="d-block" alt="..." width="100%">
-           <div class="carousel-caption d-none d-md-block">
-             <h5>Second slide label</h5>
-             <p>Some representative placeholder content for the second slide.</p>
-           </div>
-         </div>
-         <div class="carousel-item">
-           <img src="{% static 'images/caroussel_2.jpg' %}" class="d-block" alt="..." width="100%">
-           <div class="carousel-caption d-none d-md-block">
-             <h5>Third slide label</h5>
-             <p>Some representative placeholder content for the third slide.</p>
-           </div>
-         </div>
-       </div>
-       <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-         <span class="carousel-control-prev-icon btn btn-secondary" aria-hidden="true"></span>
-         <span class="visually-hidden">Précédent</span>
-       </button>
-       <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-         <span class="carousel-control-next-icon btn btn-secondary" aria-hidden="true"></span>
-         <span class="visually-hidden">Suivant</span>
-       </button>
-     </div>
-    <!-- Fin Caroussel -->
- </section>
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <i class="bi bi-stars"></i>
+      Solutions Innovantes
+    </div>
+    <h1 class="hero-title">
+      Transformez Votre <span class="highlight">Entreprise</span> Digitale
+    </h1>
+    <p class="hero-description">
+      Mupenda Company - Entreprise Congolaise de solutions informatiques et technologiques. 
+      Nous développons des solutions sur mesure pour propulser votre croissance.
+    </p>
+    <div class="hero-buttons">
+      <a href="{% url 'apropos' %}" class="btn-hero-primary">
+        <i class="bi bi-play-circle"></i>
+        Découvrir Nos Services
+      </a>
+      <a href="{% url 'contact' %}" class="btn-hero-secondary">
+        <i class="bi bi-envelope"></i>
+        Nous Contacter
+      </a>
+    </div>
+  </div>
+</section>
 
- <!-- Section A propos de nous  -->
-  <section class="bg-custom">
-    <div class="container py-5">
-      <div class="row g-3 justify-content-center align-items-center h-100">
+<!-- About Section -->
+<section class="about-section">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
         {% if afficherApropos %}
-        <div class="col-md-6">
-          {% for apropos in afficherApropos %}
-          <img class="img shadow rounded-5" src="{{apropos.photo.url}}" alt="{{apropos.nom}}" width="100%">
-          {% endfor %}
+        <div class="about-image-wrapper">
+          <img src="{{ afficherApropos.photo_principale.url }}" alt="{{ afficherApropos.nom_entreprise }}" class="about-image">
         </div>
         {% else %}
-        <p class="alert fw-semibold alert-danger text-dark">Aucune Image à afficher pour le moment !</p>
-        {% endif %}                                                         
-        <div class="col-md-6 text-white text-center p-5">
-          <h1 class="apropos fw-bold display-5">A propos de nous !</h1>
-          <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
-          <!-- {% for apropos in afficherApropos %} -->
-          <h3 class="pt-3 fw-semibold">Nous vous aidons à développer votre entreprise.</h3>
-          <p>Nous mettons à votre disposition des solutions numériques pour      simplifier la gestion et favoriser la croissance de votre entreprise.
-            Loyauté, Intégrité et Professionnalisme restent nos seules valeurs loyales.</p>
-          <!-- {% endfor %} -->
-          <a href="{% url 'apropos' %}" class="btn fw-semibold mt-3" style="background-color: #ff6700; color: black;">En savoir plus </a>
+        <div class="about-image-wrapper">
+          <img src="{% static 'images/default-about.jpg' %}" alt="Mupenda Company" class="about-image">
         </div>
+        {% endif %}
       </div>
-    </div>
-  </section>
-
- <!-- Section Nos realisation -->
- <section class="bg-dark bg-realisation">
-   <div class="container py-5">
-     <div class="text-center my-5">
-       <h1 class="text-white realisation fw-bold display-5">Nos Réalisations</h1>
-       <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
-      </div>
-      <p class="text-white text-center fs-5 pb-5">Explorez notre parcours numérique, 
-        des projets qui ont transformé des idées en réalité, <br>
-        des pixels qui racontent des histoires.
-      </p>
-      {% if afficher %}
-      <div class="row g-4">
-        {% for realisation in afficher %}
-        <div class="col-md-3">
-          <div class="card shadow h-100" style="width: 100%;">
-            {% if realisation.image %}
-            <img src="{{ realisation.image.url }}" class="card-img-top img-fluid" alt="{{realisation.titre}}">
+      <div class="col-lg-6">
+        <div class="about-content">
+          <div class="section-title-wrapper text-start mb-4">
+            <p class="section-subtitle">À Propos de Nous</p>
+            <h2 class="section-title text-start">{{ afficherApropos.titre_page|default:"Qui Sommes-Nous ?" }}</h2>
+            <div class="section-bar" style="margin: 0;"></div>
+          </div>
+          <p class="about-text">
+            {% if afficherApropos.description_entreprise %}
+              {{ afficherApropos.description_entreprise|safe }}
             {% else %}
-            <img src="{% static 'images/caroussel_3.jpg' %}" class="card-img-top img-fluid" alt="Image par défaut">
+              Nous mettons à votre disposition des solutions numériques pour simplifier la gestion 
+              et favoriser la croissance de votre entreprise. Loyauté, Intégrité et Professionnalisme 
+              restent nos valeurs fondamentales.
             {% endif %}
-            <div class="card-body">
-              <h5 class="card-title">{{ realisation.titre }}</h5>
-              <a href="#" class="btn btn-dark fw-semibold">Voir plus</a>
+          </p>
+          <div class="about-features">
+            <div class="about-feature">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>{{ afficherApropos.annee_experience|default:"10" }}+ ans d'expérience</span>
+            </div>
+            <div class="about-feature">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>Équipe d'experts</span>
+            </div>
+            <div class="about-feature">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>Support 24/7</span>
+            </div>
+            <div class="about-feature">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>Solutions sur mesure</span>
             </div>
           </div>
+          <a href="{% url 'apropos' %}" class="btn-hero-primary">
+            En Savoir Plus
+            <i class="bi bi-arrow-right"></i>
+          </a>
         </div>
-        {% endfor %}
       </div>
-      {% else %}
-        <p class="alert fw-semibold alert-danger text-dark">Aucune Réalisation à afficher pour le moment !</p>
-      {% endif %}      
     </div>
-  </section>
+  </div>
+</section>
 
-<!-- Section Nos Services -->
-<section class="bg-custom py-5">
-  <div class="container py-5 d-flex flex-column justify-content-center align-items-center">
-    <div class="text-center mb-5">
-      <h1 class="text-white fw-bold display-5">Nos Services</h1>
-      <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
+<!-- Services Section -->
+<section class="services-section">
+  <div class="container">
+    <div class="section-title-wrapper">
+      <p class="section-subtitle">Nos Expertises</p>
+      <h2 class="section-title">Nos Services</h2>
+      <div class="section-bar"></div>
     </div>
-    <p class="text-white text-center fs-5 pb-5">Explorez notre parcours numérique, 
-      des projets qui ont transformé des idées en réalité, <br>
-      des pixels qui racontent des histoires.
-    </p>
+
     {% if service %}
     <div class="row g-4">
-      {% for Services in service %}
-      <div class="col-md-3 d-flex pt-3">
-        <div class="card shadow h-100" style="width: 100%;">
-          {% if Services.photo %} 
-          <img src="{{ Services.photo.url }}" class="card-img-top img-fluid" alt="{{ Services.nom }}">
-          {% else %}
-          <img src="{% static 'images/caroussel_3.jpg' %}" class="card-img-top img-fluid" alt="Image par défaut">
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title">{{ Services.nom }}</h5>
+      {% for s in service|slice:":7" %}
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="service-card">
+          <div style="overflow: hidden;">
+            {% if s.photo %}
+            <img src="{{ s.photo.url }}" alt="{{ s.nom }}" class="service-image">
+            {% else %}
+            <img src="{% static 'images/default-service.jpg' %}" alt="{{ s.nom }}" class="service-image">
+            {% endif %}
+          </div>
+          <div class="service-body">
+            <h5 class="service-title">{{ s.nom }}</h5>
+            <a href="{% url 'service_detail' s.slug %}" class="service-link">
+              En savoir plus
+              <i class="bi bi-arrow-right"></i>
+            </a>
           </div>
         </div>
       </div>
       {% endfor %}
-      {% else %}
-      <p class="alert fw-semibold alert-danger text-dark">Aucun Service à afficher pour le moment !</p>
-      {% endif %}
     </div>
-    <a href="{% url 'service' %}" class="btn fw-bold mt-5" style="background-color: #ff6700; color: black;">Voir plus</a>
+
+    <div class="text-center mt-5">
+      <a href="{% url 'service' %}" class="btn-hero-secondary">
+        Voir Tous les Services
+        <i class="bi bi-grid-3x3-gap"></i>
+      </a>
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center">
+      <i class="bi bi-info-circle"></i>
+      Aucun service disponible pour le moment.
+    </div>
+    {% endif %}
   </div>
 </section>
 
-<!-- Section Pourquoi nous choisir ? -->
-<section class="py-5">
-  <div class="container py-5 text-center">
-    <div> 
-      <h1 class="text-white fw-bold display-5 mb-3">Pourquoi nous choisir ?</h1>
-      <img class="mb-5" src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
+<!-- Realizations Section -->
+<section class="realizations-section">
+  <div class="container">
+    <div class="section-title-wrapper">
+      <p class="section-subtitle">Notre Portfolio</p>
+      <h2 class="section-title">Nos Réalisations</h2>
+      <div class="section-bar"></div>
     </div>
+
+    {% if afficher %}
     <div class="row g-4">
-      <div class="col-md-3">
-        <img class="mb-2" src="{% static 'images/portefeuille.png' %}" alt="Barre" width="150">
-        <h2 class="text-white">Expérience</h2>
-        <hr class="text-white w-100">
-        <p class="text-white">Nous disposons d'une expérience de plus de 8 ans, Nous avons une équipe qui est  toujours à l’écoute de nos clients. Vous accompagner, vous satisfaire et réussir votre projet sont nos principales préoccupations.</p>
-      </div>
-      <div class="col-md-3">
-        <img class="mb-2" src="{% static 'images/modernite.png' %}" alt="Barre" width="150">
-        <h2 class="text-white">Modernité</h2>
-        <hr class="text-white w-100">
-        <p class="text-white">Nous sommes créatifs et pointus dans notre travail. Vous pouvez naviguer et consulter notre site officiel en tapant : www.mupenda.cd et découvrer nos réalisations et références afin de vous en assurer.</p>
-      </div>
-      <div class="col-md-3">
-        <img class="mb-2" src="{% static 'images/reunion2.png' %}" alt="Barre" width="150">
-        <h2 class="text-white">Equipe</h2>
-        <hr class="text-white w-100">
-        <p class="text-white">Notre société est composée d'une équipe dirigée par le Graphiste en personne. vous aurez donc un contact direct avec celui-ci sans passer par des commerciaux.</p>
-      </div>
-      <div class="col-md-3">
-        <img class="mb-2" src="{% static 'images/charge-rapide.png' %}" alt="Barre" width="150">
-        <h2 class="text-white">Rapide et Propre</h2>
-        <hr class="text-white w-100">
-        <p class="text-white">Nous exerçons notre métier avec passion, implication et courage. le taux de satisfaction de nos clients témoigne de la qualité de notre travail.</p>
-      </div>
-    </div>
-    <a class="btn fw-semibold my-5" href="{% url 'contact' %}" style="background-color: #ff6700; color:black">Nous contacter </a>
-   </div>
- </section>
-
-<!-- Nos partenaires -->
- <section class="partenaire">
-   <div class="container py-5">
-    <div class="text-center">
-      <h1 class="text-white fw-bold display-5">Nos Partenaires</h1>
-      <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
-    </div>
-    <div class="row g-4 my-5 justify-content-center align-items-center">
-      <div class="col-md-2">
-        <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
-      </div>
-      <div class="col-md-2">
-        <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
-      </div>
-      <div class="col-md-2">
-        <img class="w-75" src="{% static '/images/White Mupenda Company.png' %}" alt="">
-      </div>
-    </div>
-    <!-- <a class="btn" href="">Voir plus ...</a> -->
-   </div>
- </section>
-
- <!-- Temoignages -->
-  <section class="my-5">
-    <div class="container py-5">
-      <div class="text-center mb-4">
-        <h1 class="fw-bold text-white display-5">Témoignages</h1>
-        <img src="{% static 'images/Barre latterale.png' %}" alt="Barre" width="150">
-      </div>
-     <div class="row g-3">
-      <div class="col-md-4">
-        <div class="card" style="width: 100%;">
-          <div class="card-body">
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      {% for realisation in afficher %}
+      <div class="col-md-6 col-lg-3">
+        <div class="realization-card">
+          {% if realisation.image %}
+          <img src="{{ realisation.image.url }}" alt="{{ realisation.titre }}" class="realization-image">
+          {% else %}
+          <img src="{% static 'images/default-project.jpg' %}" alt="{{ realisation.titre }}" class="realization-image">
+          {% endif %}
+          <div class="realization-overlay">
+            <h5 class="realization-title">{{ realisation.titre }}</h5>
+            <span class="realization-category">{{ realisation.category }}</span>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="card" style="width: 100%;">
-          <div class="card-body">
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card" style="width: 100%;">
-          <div class="card-body">
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          </div>
-        </div>
-      </div>
-     </div>
+      {% endfor %}
     </div>
-  </section>
 
-  <!-- Années d'expérience -->
-   <section class="mb-5 bg-custom2">
-    <div class="container py-5">
-      <div class="row g-3 text-white">
-        <div class="col-md-3 text-center">
-          <h1 class="fw-semibold">+ 3 ans</h1>
-          <h4>Années d'expérience</h4>
+    <div class="text-center mt-5">
+      <a href="{% url 'realisations' %}" class="btn-hero-primary">
+        Voir Toutes les Réalisations
+        <i class="bi bi-grid"></i>
+      </a>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+      <i class="bi bi-info-circle"></i>
+      Aucune réalisation à afficher pour le moment.
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-us-section">
+  <div class="container">
+    <div class="section-title-wrapper">
+      <p class="section-subtitle">Pourquoi Nous ?</p>
+      <h2 class="section-title">Nos Atouts</h2>
+      <div class="section-bar"></div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="why-us-card">
+          <div class="why-us-icon">
+            <i class="bi bi-award"></i>
+          </div>
+          <h4 class="why-us-title">Expérience</h4>
+          <p class="why-us-text">
+            Plus de 8 ans d'expérience dans les solutions informatiques. 
+            Une équipe toujours à l'écoute de vos besoins.
+          </p>
         </div>
-        <div class="col-md-3 text-center">
-          <h1 class="fw-semibold">+ 60%</h1>
-          <h4>Projets terminés</h4>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="why-us-card">
+          <div class="why-us-icon">
+            <i class="bi bi-lightning-charge"></i>
+          </div>
+          <h4 class="why-us-title">Modernité</h4>
+          <p class="why-us-text">
+            Créatifs et pointus dans notre travail. 
+            Découvrez nos réalisations et références sur www.mupenda.cd
+          </p>
         </div>
-        <div class="col-md-3 text-center">
-          <h1 class="fw-semibold">+ 105</h1>
-          <h4>Clients satisfaits</h4>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="why-us-card">
+          <div class="why-us-icon">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <h4 class="why-us-title">Équipe</h4>
+          <p class="why-us-text">
+            Une équipe dirigée par des experts. 
+            Contact direct avec les responsables sans intermédiaires.
+          </p>
         </div>
-        <div class="col-md-3 text-center">
-          <h1 class="fw-semibold">+ 8</h1>
-          <h4>Experts en services</h4>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="why-us-card">
+          <div class="why-us-icon">
+            <i class="bi bi-rocket-takeoff"></i>
+          </div>
+          <h4 class="why-us-title">Rapide & Propre</h4>
+          <p class="why-us-text">
+            Nous exerçons notre métier avec passion et implication. 
+            Un taux de satisfaction client exceptionnel.
+          </p>
         </div>
       </div>
     </div>
-   </section>
-  {% endblock %}
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+  <div class="container">
+    <div class="section-title-wrapper">
+      <p class="section-subtitle">Témoignages</p>
+      <h2 class="section-title">Ce Que Disent Nos Clients</h2>
+      <div class="section-bar"></div>
+    </div>
+
+    {% if temoignages %}
+    <div class="row g-4">
+      {% for temoignage in temoignages %}
+      <div class="col-md-6 col-lg-4">
+        <div class="testimonial-card">
+          <div class="testimonial-quote">
+            <i class="bi bi-quote"></i>
+          </div>
+          <p class="testimonial-text">
+            "{{ temoignage.message|striptags|truncatewords:25 }}"
+          </p>
+          <div class="testimonial-author">
+            {% if temoignage.image %}
+            <img src="{{ temoignage.image.url }}" alt="{{ temoignage.nom }}" class="testimonial-avatar">
+            {% else %}
+            <img src="{% static 'images/default-avatar.png' %}" alt="{{ temoignage.nom }}" class="testimonial-avatar">
+            {% endif %}
+            <div class="testimonial-info">
+              <h5>{{ temoignage.prenom }} {{ temoignage.nom }}</h5>
+              <span>Client satisfait</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="testimonial-card">
+          <div class="testimonial-quote">
+            <i class="bi bi-quote"></i>
+          </div>
+          <p class="testimonial-text">
+            "Équipe professionnelle et réactive. Notre projet a été livré dans les délais avec une qualité exceptionnelle."
+          </p>
+          <div class="testimonial-author">
+            <img src="{% static 'images/default-avatar.png' %}" alt="Client" class="testimonial-avatar">
+            <div class="testimonial-info">
+              <h5>Jean M.</h5>
+              <span>Directeur Général</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="testimonial-card">
+          <div class="testimonial-quote">
+            <i class="bi bi-quote"></i>
+          </div>
+          <p class="testimonial-text">
+            "Une transformation digitale réussie grâce à l'expertise de Mupenda. Leur accompagnement sur mesure a fait toute la différence."
+          </p>
+          <div class="testimonial-author">
+            <img src="{% static 'images/default-avatar.png' %}" alt="Client" class="testimonial-avatar">
+            <div class="testimonial-info">
+              <h5>Sarah K.</h5>
+              <span>Responsable Marketing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="testimonial-card">
+          <div class="testimonial-quote">
+            <i class="bi bi-quote"></i>
+          </div>
+          <p class="testimonial-text">
+            "Excellent rapport qualité-prix. L'équipe a su comprendre nos besoins et proposer des solutions innovantes."
+          </p>
+          <div class="testimonial-author">
+            <img src="{% static 'images/default-avatar.png' %}" alt="Client" class="testimonial-avatar">
+            <div class="testimonial-info">
+              <h5>Paul L.</h5>
+              <span>Entrepreneur</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="container stats-container">
+    <div class="row">
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number">+{{ afficherApropos.annee_experience|default:"10" }}</div>
+          <div class="stat-label">{{ afficherApropos.label_annee_experience|default:"Années d'expérience" }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number">+{{ afficherApropos.nombre_projets|default:"500" }}</div>
+          <div class="stat-label">{{ afficherApropos.label_projets|default:"Projets réalisés" }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number">+{{ afficherApropos.nombre_clients|default:"200" }}</div>
+          <div class="stat-label">{{ afficherApropos.label_clients|default:"Clients satisfaits" }}</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item">
+          <div class="stat-number">+{{ afficherApropos.annee_experience|default:"10" }}</div>
+          <div class="stat-label">Experts</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Partners Section -->
+<section class="partners-section">
+  <div class="container">
+    <div class="section-title-wrapper">
+      <p class="section-subtitle">Confiance</p>
+      <h2 class="section-title">Nos Partenaires</h2>
+      <div class="section-bar"></div>
+    </div>
+
+    {% if partenaires %}
+    <div class="row justify-content-center align-items-center g-5">
+      {% for partenaire in partenaires %}
+      <div class="col-6 col-md-3 text-center">
+        {% if partenaire.site_web %}
+        <a href="{{ partenaire.site_web }}" target="_blank" rel="noopener" style="text-decoration: none;">
+        {% endif %}
+          {% if partenaire.logo %}
+          <div class="partner-logo-wrapper" style="
+            background: rgba(255,255,255,0.9);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          " onmouseover="this.style.background='#fff'; this.style.borderColor='#FF6700';" onmouseout="this.style.background='rgba(255,255,255,0.9)'; this.style.borderColor='rgba(0,0,0,0.1)';">
+            <img src="{{ partenaire.logo.url }}" alt="{{ partenaire.nom }}" style="
+              max-width: 100%;
+              max-height: 80px;
+              object-fit: contain;
+            ">
+          </div>
+          {% else %}
+          <div class="partner-logo-wrapper" style="
+            background: rgba(255,255,255,0.9);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <span style="color: #FF6700; font-weight: 700; font-size: 1rem;">{{ partenaire.nom }}</span>
+          </div>
+          {% endif %}
+        {% if partenaire.site_web %}
+        </a>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="row justify-content-center align-items-center g-5">
+      <div class="col-6 col-md-3 text-center">
+        <img src="{% static 'images/White Mupenda Company.png' %}" alt="Partenaire 1" class="partner-logo">
+      </div>
+      <div class="col-6 col-md-3 text-center">
+        <img src="{% static 'images/White Mupenda Company.png' %}" alt="Partenaire 2" class="partner-logo">
+      </div>
+      <div class="col-6 col-md-3 text-center">
+        <img src="{% static 'images/White Mupenda Company.png' %}" alt="Partenaire 3" class="partner-logo">
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="container">
+    <h2 class="cta-title">Prêt à Transformer Votre Entreprise ?</h2>
+    <p class="cta-text">
+      Contactez-nous dès maintenant pour discuter de votre projet et obtenir un devis gratuit.
+    </p>
+    <a href="{% url 'contact' %}" class="btn-cta">
+      <i class="bi bi-envelope-paper"></i>
+      Demander un Devis
+    </a>
+  </div>
+</section>
+
+{% endblock %}

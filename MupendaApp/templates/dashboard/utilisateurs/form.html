@@ -1,0 +1,346 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">{{ page_title|default:"Gestion des Utilisateurs" }}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="users-management-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h2>
+                {% if utilisateur %}
+                    <i class="bi bi-pencil-square"></i> Modifier l'utilisateur
+                {% else %}
+                    <i class="bi bi-person-plus"></i> Créer un nouvel utilisateur
+                {% endif %}
+            </h2>
+            <p class="form-description">
+                {% if utilisateur %}
+                    Modifiez les informations de {{ utilisateur.username }}
+                {% else %}
+                    Remplissez le formulaire pour créer un nouvel utilisateur
+                {% endif %}
+            </p>
+        </div>
+
+        <form method="post" class="user-form">
+            {% csrf_token %}
+            
+            <div class="form-section">
+                <h3><i class="bi bi-person"></i> Informations personnelles</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur *</label>
+                        <input type="text" id="username" name="username" class="form-control" 
+                               value="{{ form.username.value|default:'' }}" required>
+                        {% if form.username.errors %}
+                            <span class="error-message">{{ form.username.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" class="form-control"
+                               value="{{ form.email.value|default:'' }}" required>
+                        {% if form.email.errors %}
+                            <span class="error-message">{{ form.email.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">Prénom</label>
+                        <input type="text" id="first_name" name="first_name" class="form-control"
+                               value="{{ form.first_name.value|default:'' }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="last_name">Nom</label>
+                        <input type="text" id="last_name" name="last_name" class="form-control"
+                               value="{{ form.last_name.value|default:'' }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3><i class="bi bi-telephone"></i> Contact</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telephone">Téléphone</label>
+                        <input type="tel" id="telephone" name="telephone" class="form-control"
+                               value="{{ form.telephone.value|default:'' }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date_embauche">Date d'embauche</label>
+                        <input type="date" id="date_embauche" name="date_embauche" class="form-control"
+                               value="{{ form.date_embauche.value|default:'' }}">
+                    </div>
+                </div>
+            </div>
+
+            {% if not utilisateur %}
+            <div class="form-section">
+                <h3><i class="bi bi-shield-lock"></i> Sécurité</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password1">Mot de passe *</label>
+                        <input type="password" id="password1" name="password1" class="form-control" required>
+                        <small class="help-text">Minimum 8 caractères</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password2">Confirmer le mot de passe *</label>
+                        <input type="password" id="password2" name="password2" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="form-section">
+                <h3><i class="bi bi-toggle-on"></i> Statut</h3>
+                
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_active" {% if form.is_active.value or not utilisateur %}checked{% endif %}>
+                        <span class="checkmark"></span>
+                        Utilisateur actif
+                    </label>
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_administrateur" {% if form.is_administrateur.value %}checked{% endif %}>
+                        <span class="checkmark"></span>
+                        Administrateur
+                    </label>
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_utilisateur" {% if form.is_utilisateur.value or not utilisateur %}checked{% endif %}>
+                        <span class="checkmark"></span>
+                        Utilisateur standard
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'super_admin_manage_users' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Annuler
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i>
+                    {% if utilisateur %}Enregistrer les modifications{% else %}Créer l'utilisateur{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .users-management-container {
+        padding: 1.5rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .form-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .form-header {
+        padding: 2rem;
+        border-bottom: 1px solid var(--glass-border);
+        background: linear-gradient(135deg, rgba(255, 103, 0, 0.1) 0%, transparent 100%);
+    }
+
+    .form-header h2 {
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .form-header h2 i {
+        color: var(--primary-orange);
+    }
+
+    .form-description {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .user-form {
+        padding: 2rem;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .form-section h3 {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        margin: 0 0 1.25rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .form-section h3 i {
+        color: var(--primary-orange);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 600px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 3px rgba(255, 103, 0, 0.1);
+    }
+
+    .error-message {
+        color: #f44336;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+
+    .help-text {
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .checkbox-group {
+        margin-bottom: 0.75rem;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .checkbox-label input {
+        display: none;
+    }
+
+    .checkmark {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--glass-border);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .checkbox-label input:checked + .checkmark {
+        background: var(--primary-orange);
+        border-color: var(--primary-orange);
+    }
+
+    .checkbox-label input:checked + .checkmark::after {
+        content: '✓';
+        color: white;
+        font-size: 12px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--glass-border);
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: none;
+        font-size: 0.9rem;
+    }
+
+    .btn-secondary {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 103, 0, 0.3);
+    }
+</style>
+{% endblock %}

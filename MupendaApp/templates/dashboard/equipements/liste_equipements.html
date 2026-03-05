@@ -1,0 +1,396 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load dashboard_menu %}
+
+{% block dashboard_title %}Liste des Équipements{% endblock %}
+
+{% block page_title %}
+<i class="bi bi-tools"></i>
+Liste des Équipements
+{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'creer_equipement' %}" class="btn btn-primary-orange">
+    <i class="bi bi-plus-lg"></i>
+    Nouvel Équipement
+</a>
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .equipements-content {
+        padding: 0;
+    }
+
+    .equipements-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .equipements-title {
+        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary-orange) 0%, #ff8533 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        background: var(--glass-bg-hover);
+        transform: translateY(-5px);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-orange);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .filters-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .equipements-table {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .table {
+        color: var(--text-primary);
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: rgba(255, 103, 0, 0.1);
+        color: var(--primary-orange);
+        font-weight: 600;
+        border: none;
+        padding: 1rem;
+    }
+
+    .table tbody td {
+        border-color: var(--glass-border);
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    .table tbody tr:hover {
+        background: var(--glass-bg-hover);
+    }
+
+    .equipement-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 2px solid var(--primary-orange);
+    }
+
+    .equipement-name {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .equipement-model {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .badge-marque {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+    }
+
+    .quantity-badge {
+        background: var(--primary-orange);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .action-btns {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid var(--glass-border);
+        background: var(--glass-bg);
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        background: var(--glass-bg-hover);
+        color: var(--primary-orange);
+        border-color: var(--primary-orange);
+    }
+
+    .action-btn.delete:hover {
+        color: var(--danger);
+        border-color: var(--danger);
+    }
+
+    .pagination {
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .page-link {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        margin: 0 0.25rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        background: var(--glass-bg-hover);
+        border-color: var(--primary-orange);
+        color: var(--primary-orange);
+    }
+
+    .page-item.active .page-link {
+        background: var(--primary-orange);
+        border-color: var(--primary-orange);
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: var(--text-secondary);
+    }
+</style>
+
+<div class="equipements-content">
+    <!-- Header -->
+    <div class="equipements-header">
+        <h1 class="equipements-title">
+            <i class="bi bi-tools me-2"></i>
+            Gestion des Équipements
+        </h1>
+        <p class="text-secondary">
+            Gérez l'inventaire de tous vos équipements et matériels
+        </p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_equipements }}</div>
+            <div class="stat-label">Total Équipements</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ marques|length }}</div>
+            <div class="stat-label">Marques</div>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters-section">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control glass-input" 
+                       placeholder="Rechercher..." value="{{ search }}">
+            </div>
+            <div class="col-md-3">
+                <select name="marque" class="form-select glass-input">
+                    <option value="">Toutes les marques</option>
+                    {% for m in marques %}
+                    <option value="{{ m.marque }}" {% if marque_filter == m.marque %}selected{% endif %}>
+                        {{ m.marque }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary-orange w-100">
+                    <i class="bi bi-funnel me-1"></i>
+                    Filtrer
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'liste_equipements' %}" class="btn btn-glass w-100">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Réinitialiser
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div class="equipements-table">
+        {% if equipements %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Nom</th>
+                    <th>Marque/Modèle</th>
+                    <th>Couleur</th>
+                    <th>Quantité</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eq in equipements %}
+                <tr>
+                    <td>
+                        {% if eq.image %}
+                        <img src="{{ eq.image.url }}" alt="{{ eq.name }}" class="equipement-image">
+                        {% else %}
+                        <div class="equipement-image d-flex align-items-center justify-content-center bg-dark">
+                            <i class="bi bi-image text-secondary"></i>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="equipement-name">{{ eq.name }}</div>
+                        <div class="equipement-model">{{ eq.model|default:"-" }}</div>
+                    </td>
+                    <td>
+                        <span class="badge-marque">
+                            <i class="bi bi-tag me-1"></i>
+                            {{ eq.marque|default:"Non spécifié" }}
+                        </span>
+                    </td>
+                    <td>
+                        <span style="display: inline-block; width: 24px; height: 24px; border-radius: 50%; background: {{ eq.color }}; border: 2px solid white;"></span>
+                    </td>
+                    <td>
+                        <span class="quantity-badge">{{ eq.quantity }}</span>
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            <a href="{% url 'modifier_equipement' eq.slug %}" class="action-btn" title="Modifier">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'supprimer_equipement' eq.slug %}" class="action-btn delete" title="Supprimer">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Pagination" class="p-3">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if marque_filter %}&marque={{ marque_filter }}{% endif %}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if marque_filter %}&marque={{ marque_filter }}{% endif %}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if marque_filter %}&marque={{ marque_filter }}{% endif %}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-tools"></i>
+            <h3>Aucun équipement</h3>
+            <p>Commencez par ajouter votre premier équipement</p>
+            <a href="{% url 'creer_equipement' %}" class="btn btn-primary-orange mt-3">
+                <i class="bi bi-plus-lg me-1"></i>
+                Ajouter un équipement
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

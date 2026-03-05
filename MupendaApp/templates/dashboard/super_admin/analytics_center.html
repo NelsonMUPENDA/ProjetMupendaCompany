@@ -1,0 +1,570 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+<h1 class="page-title">{{ page_title|default:"Centre d'Analytics" }}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-container">
+    <!-- Header Section -->
+    <div class="analytics-header">
+        <h2><i class="bi bi-graph-up-arrow"></i> Centre d'Analytics</h2>
+        <p>Analyse et métriques détaillées du système</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon revenue">
+                <i class="bi bi-currency-dollar"></i>
+            </div>
+            <div class="kpi-content">
+                <h3>Chiffre d'affaires</h3>
+                <span class="kpi-value">${{ kpis.revenue|default:"0" }}</span>
+                <span class="kpi-change positive">
+                    <i class="bi bi-arrow-up"></i> +12.5%
+                </span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon customers">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="kpi-content">
+                <h3>Nouveaux clients</h3>
+                <span class="kpi-value">{{ kpis.new_customers|default:"0" }}</span>
+                <span class="kpi-change positive">
+                    <i class="bi bi-arrow-up"></i> +8.2%
+                </span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon churn">
+                <i class="bi bi-person-dash"></i>
+            </div>
+            <div class="kpi-content">
+                <h3>Taux d'attrition</h3>
+                <span class="kpi-value">{{ kpis.churn_rate|default:"0" }}%</span>
+                <span class="kpi-change negative">
+                    <i class="bi bi-arrow-down"></i> -2.1%
+                </span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon health">
+                <i class="bi bi-heart-pulse"></i>
+            </div>
+            <div class="kpi-content">
+                <h3>Santé système</h3>
+                <span class="kpi-value">{{ kpis.system_health|default:"0" }}%</span>
+                <span class="kpi-change positive">
+                    <i class="bi bi-check-circle"></i> Optimal
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="bi bi-people-fill"></i>
+                <h4>Utilisateurs</h4>
+            </div>
+            <div class="stat-body">
+                <div class="stat-item">
+                    <span class="stat-label">Total</span>
+                    <span class="stat-value">{{ total_users|default:"0" }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Actifs</span>
+                    <span class="stat-value text-success">{{ active_users|default:"0" }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Inactifs</span>
+                    <span class="stat-value text-danger">{{ total_users|default:"0"|add:"-"|add:active_users|default:"0" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="bi bi-activity"></i>
+                <h4>Activité récente</h4>
+            </div>
+            <div class="stat-body activity-list">
+                {% for report in recent_reports %}
+                <div class="activity-item">
+                    <div class="activity-icon {{ report.action|lower }}">
+                        <i class="bi bi-{% if report.action == 'CREATION' %}plus-circle{% elif report.action == 'MODIFICATION' %}pencil{% elif report.action == 'SUPPRESSION' %}trash{% elif report.action == 'CONNEXION' %}box-arrow-in-right{% elif report.action == 'DECONNEXION' %}box-arrow-right{% elif report.action == 'VISUALISATION' %}eye{% elif report.action == 'EXPORTATION' %}download{% else %}clock{% endif %}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <p class="activity-text">{{ report.description|truncatechars:50 }}</p>
+                        <span class="activity-time">{{ report.date_action|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="activity-empty">
+                    <i class="bi bi-inbox"></i>
+                    <p>Aucune activité récente</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h4><i class="bi bi-bar-chart-line"></i> Tendance utilisateurs</h4>
+                <div class="chart-period">
+                    <button class="period-btn active">7j</button>
+                    <button class="period-btn">30j</button>
+                    <button class="period-btn">1an</button>
+                </div>
+            </div>
+            <div class="chart-body">
+                <canvas id="userTrendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h4><i class="bi bi-pie-chart"></i> Répartition par rôle</h4>
+            </div>
+            <div class="chart-body">
+                <canvas id="roleDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .analytics-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .analytics-header {
+        margin-bottom: 2rem;
+    }
+
+    .analytics-header h2 {
+        color: var(--text-primary);
+        font-size: 1.75rem;
+        margin: 0 0 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .analytics-header h2 i {
+        color: var(--primary-orange);
+    }
+
+    .analytics-header p {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .kpi-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 103, 0, 0.3);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .kpi-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .kpi-icon.revenue {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(76, 175, 80, 0.1) 100%);
+        color: #4CAF50;
+    }
+
+    .kpi-icon.customers {
+        background: linear-gradient(135deg, rgba(33, 150, 243, 0.2) 0%, rgba(33, 150, 243, 0.1) 100%);
+        color: #2196F3;
+    }
+
+    .kpi-icon.churn {
+        background: linear-gradient(135deg, rgba(244, 67, 54, 0.2) 0%, rgba(244, 67, 54, 0.1) 100%);
+        color: #f44336;
+    }
+
+    .kpi-icon.health {
+        background: linear-gradient(135deg, rgba(255, 103, 0, 0.2) 0%, rgba(255, 103, 0, 0.1) 100%);
+        color: var(--primary-orange);
+    }
+
+    .kpi-content h3 {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin: 0 0 0.5rem 0;
+        font-weight: 500;
+    }
+
+    .kpi-value {
+        display: block;
+        color: var(--text-primary);
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .kpi-change {
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .kpi-change.positive {
+        color: #4CAF50;
+    }
+
+    .kpi-change.negative {
+        color: #f44336;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .stat-header {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .stat-header i {
+        color: var(--primary-orange);
+        font-size: 1.25rem;
+    }
+
+    .stat-header h4 {
+        color: var(--text-primary);
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .stat-body {
+        padding: 1.25rem;
+    }
+
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .stat-item:last-child {
+        border-bottom: none;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .stat-value {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .stat-value.text-success {
+        color: #4CAF50;
+    }
+
+    .stat-value.text-danger {
+        color: #f44336;
+    }
+
+    /* Activity List */
+    .activity-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .activity-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .activity-icon.creation {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+
+    .activity-icon.modification {
+        background: rgba(33, 150, 243, 0.2);
+        color: #2196F3;
+    }
+
+    .activity-icon.suppression {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+    }
+
+    .activity-icon.connexion {
+        background: rgba(255, 103, 0, 0.2);
+        color: var(--primary-orange);
+    }
+
+    .activity-icon.deconnexion {
+        background: rgba(96, 125, 139, 0.2);
+        color: #607D8B;
+    }
+
+    .activity-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .activity-text {
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+        font-size: 0.9rem;
+    }
+
+    .activity-time {
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+    }
+
+    .activity-empty {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+    }
+
+    .activity-empty i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Charts Section */
+    .charts-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .chart-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .chart-header {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chart-header h4 {
+        color: var(--text-primary);
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chart-header h4 i {
+        color: var(--primary-orange);
+    }
+
+    .chart-period {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .period-btn {
+        padding: 0.25rem 0.75rem;
+        border: 1px solid var(--glass-border);
+        background: transparent;
+        color: var(--text-secondary);
+        border-radius: 6px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .period-btn:hover,
+    .period-btn.active {
+        background: rgba(255, 103, 0, 0.1);
+        border-color: var(--primary-orange);
+        color: var(--primary-orange);
+    }
+
+    .chart-body {
+        padding: 1.25rem;
+        height: 300px;
+    }
+
+    .chart-body canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .kpi-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .charts-section {
+            grid-template-columns: 1fr;
+        }
+
+        .chart-card {
+            min-width: auto;
+        }
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // User Trend Chart
+    const userTrendCtx = document.getElementById('userTrendChart').getContext('2d');
+    new Chart(userTrendCtx, {
+        type: 'line',
+        data: {
+            labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+            datasets: [{
+                label: 'Nouveaux utilisateurs',
+                data: [12, 19, 15, 25, 22, 30, 28],
+                borderColor: '#ff6700',
+                backgroundColor: 'rgba(255, 103, 0, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: '#ffffff' }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#b0b0b0' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                y: {
+                    ticks: { color: '#b0b0b0' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        }
+    });
+
+    // Role Distribution Chart
+    const roleDistCtx = document.getElementById('roleDistributionChart').getContext('2d');
+    new Chart(roleDistCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Super Admin', 'Admin', 'Chef Projet', 'Développeur', 'Autre'],
+            datasets: [{
+                data: [5, 15, 25, 45, 20],
+                backgroundColor: [
+                    '#ff6700',
+                    '#2196F3',
+                    '#4CAF50',
+                    '#9C27B0',
+                    '#607D8B'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: { color: '#ffffff' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

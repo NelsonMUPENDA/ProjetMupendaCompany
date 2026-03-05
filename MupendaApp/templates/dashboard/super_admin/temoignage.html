@@ -1,0 +1,83 @@
+{% extends 'dashboard/base_super_admin.html' %}
+{% load static %}
+
+{% block title %}Témoignages Clients{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion des Témoignages</h1>
+        <div>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Retour</a>
+            <button class="btn btn-primary" onclick="alert('Fonctionnalité à implémenter')">Ajouter un témoignage</button>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Liste des témoignages</h5>
+                </div>
+                <div class="card-body">
+                    {% if temoignages %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Message</th>
+                                    <th>Auteur</th>
+                                    <th>Statut</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for temoignage in temoignages %}
+                                <tr>
+                                    <td>{{ temoignage.nom }} {{ temoignage.prenom|default:"" }}</td>
+                                    <td>{{ temoignage.message|truncatewords:10|default:"-" }}</td>
+                                    <td>{{ temoignage.auteur.get_full_name|default:temoignage.auteur.username }}</td>
+                                    <td>
+                                        <span class="badge {% if temoignage.status == 1 %}bg-success{% else %}bg-warning{% endif %}">
+                                            {% if temoignage.status == 1 %}Publié{% else %}Brouillon{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ temoignage.created_on|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="alert('À implémenter')">Modifier</button>
+                                        <button class="btn btn-sm btn-danger" onclick="alert('À implémenter')">Supprimer</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">Aucun témoignage enregistré.</p>
+                        <p class="mb-0 mt-2"><strong>Modèle TemoignageClient :</strong> nom, prenom, message, image, auteur, status, created_on</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Les témoignages clients sont affichés sur le site public.</p>
+                    <ul class="list-unstyled">
+                        <li><strong>Statut 0:</strong> Brouillon (non visible)</li>
+                        <li><strong>Statut 1:</strong> Publié (visible)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
