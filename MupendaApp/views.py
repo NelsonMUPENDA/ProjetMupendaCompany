@@ -17,7 +17,7 @@ except Exception:
     Session = None
 from .models import (
     Client, Projet, SuiviTemps, AffectationCollaborateur, 
-    Services, Apropos, Realisation, Post, Contact, TemoignageClient, Category,
+    Services, Apropos, Realisation, Post, Contact, Formation, TemoignageClient, Category,
     CustomUser, Role, Permission, UserRole, Departement, Tache, Notification, LogAction,
     Partenaire, FAQ, PageLegale, Devis, NewsletterSubscriber, SiteContact
 )

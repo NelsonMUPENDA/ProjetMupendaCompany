@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from .models import (CustomUser, Apropos, Equipement, Services, Post, Category, Realisation, 
-                    TemoignageClient, Contact, Formateur, Client, 
+                    TemoignageClient, Formation, Contact, Formateur, Client, 
                     HistoriqueInteraction, AssociationClientProjet, Permission, Role, UserRole,
                     Departement, Projet, Tache, Notification, LogAction, 
                     AffectationCollaborateur, SuiviTemps,
@@ -95,6 +95,11 @@ class TemoignageAdmin (admin.ModelAdmin):
     list_display = ('id', 'nom', 'prenom', 'message', 'image', 'auteur', 'status', 'created_on', 'update_on')
     search_fields = ['id', 'nom', 'prenom', 'auteur', 'status', 'created_on']
 
+class FormationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nom', 'slug', 'description', 'image', 'date_debut', 'date_fin', 'heure_debut', 'heure_fin', 'prix', 'formateur', 'categorie', 'created_on', 'update_on', 'status')
+    search_fields = ('id', 'nom', 'date_debut', 'date_fin', 'heure_debut', 'heure_fin', 'prix', 'formateur', 'categorie', 'status')
+    prepopulated_fields = {'slug' : ('nom',)}
+
 class CategoryAdmin (admin.ModelAdmin):
     list_display = ('id', 'name', 'created_on', 'update_on')
     search_fields = ['name']
@@ -160,6 +165,7 @@ admin.site.register(Post, PostAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Realisation, RealisationAdmin)
 admin.site.register(TemoignageClient, TemoignageAdmin)
+admin.site.register(Formation, FormationAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(Equipement, EquipementAdmin)
 admin.site.register(Formateur, FormateurAdmin)

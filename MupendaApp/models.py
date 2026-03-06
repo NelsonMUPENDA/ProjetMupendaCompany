@@ -464,26 +464,7 @@ class SiteContact(models.Model):
     def get_contact_actif(cls):
         """Récupère les informations de contact actives"""
         return cls.objects.filter(est_actif=True).first()
-    nom = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(max_length=255, unique=True, null=True)
-    description = CKEditor5Field(null=True)
-    image = models.ImageField(upload_to="static/images", blank=True, null=True)
-    date_debut = models.DateField(null=True)
-    date_fin = models.DateField(null=True)
-    heure_debut = models.TimeField(null=True)
-    heure_fin = models.TimeField(null=True)
-    prix = models.FloatField(default=0, null=True)
-    formateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='formation_post')
-    categorie = models.ForeignKey(Category, on_delete=models.CASCADE)
-    created_on = models.DateTimeField(auto_now_add=True, null=True)
-    update_on = models.DateTimeField(auto_now=True)
-    status = models.IntegerField(choices=STATUS, default=0)
 
-    class Meta:
-        ordering = ['-date_debut']
-
-    def __str__(self):
-        return self.nom
 
 class Apropos(models.Model):
     """Modèle complet pour la page À propos - contient toutes les sections dynamiques"""
@@ -1033,6 +1014,31 @@ class NewsletterCampaign(models.Model):
     
     def __str__(self):
         return f"{self.sujet} ({self.date_envoi.strftime('%d/%m/%Y')})"
+
+
+# Table Formation
+class Formation(models.Model):
+    """Modèle pour les formations proposées par Mupenda Company"""
+    nom = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True, null=True)
+    description = CKEditor5Field(null=True)
+    image = models.ImageField(upload_to="static/images", blank=True, null=True)
+    date_debut = models.DateField(null=True)
+    date_fin = models.DateField(null=True)
+    heure_debut = models.TimeField(null=True)
+    heure_fin = models.TimeField(null=True)
+    prix = models.FloatField(default=0, null=True)
+    formateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='formation_post')
+    categorie = models.ForeignKey(Category, on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True, null=True)
+    update_on = models.DateTimeField(auto_now=True)
+    status = models.IntegerField(choices=STATUS, default=0)
+
+    class Meta:
+        ordering = ['-date_debut']
+
+    def __str__(self):
+        return self.nom
 
 
 # Table Devis - Demandes de devis des utilisateurs

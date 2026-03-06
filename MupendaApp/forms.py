@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator, MinLengthValidator, RegexValidator
 from django.utils import timezone
-from MupendaApp.models import Apropos, Role, Departement, Projet, Tache, CustomUser
+from MupendaApp.models import Apropos, Formation, Role, Departement, Projet, Tache, CustomUser
 
 User = get_user_model()
 
