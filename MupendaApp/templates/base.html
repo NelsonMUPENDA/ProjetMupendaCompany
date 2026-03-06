@@ -728,6 +728,24 @@
           <!-- Contact Info -->
           <div class="col-lg-3 col-md-6">
             <h5 class="footer-title">Contact</h5>
+            {% if site_contact %}
+            <div class="footer-contact-item">
+              <i class="bi bi-geo-alt-fill"></i>
+              <span>{{ site_contact.adresse_complete|default:"Goma, République Démocratique du Congo" }}</span>
+            </div>
+            <div class="footer-contact-item">
+              <i class="bi bi-envelope-fill"></i>
+              <span>{{ site_contact.email_principal|default:"contact@mupenda.cd" }}</span>
+            </div>
+            <div class="footer-contact-item">
+              <i class="bi bi-telephone-fill"></i>
+              <span>{{ site_contact.telephone_principal|default:"+243 998 329 985" }}</span>
+            </div>
+            <div class="footer-contact-item">
+              <i class="bi bi-clock-fill"></i>
+              <span>{{ site_contact.horaires_ouverture|default:"Lun - Ven: 8h00 - 17h00" }}</span>
+            </div>
+            {% else %}
             <div class="footer-contact-item">
               <i class="bi bi-geo-alt-fill"></i>
               <span>Goma, République Démocratique du Congo</span>
@@ -744,6 +762,7 @@
               <i class="bi bi-clock-fill"></i>
               <span>Lun - Ven: 8h00 - 17h00</span>
             </div>
+            {% endif %}
           </div>
 
           <!-- Newsletter -->
