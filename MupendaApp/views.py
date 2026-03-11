@@ -11,6 +11,9 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.views import generic
 from datetime import timedelta, datetime
+import random
+from django.core.mail import send_mail
+from django.conf import settings
 try:
     from django.contrib.sessions.models import Session
 except Exception:
@@ -19,7 +22,7 @@ from .models import (
     Client, Projet, SuiviTemps, AffectationCollaborateur, 
     Services, Apropos, Realisation, Post, Contact, Formation, TemoignageClient, Category,
     CustomUser, Role, Permission, UserRole, Departement, Tache, Notification, LogAction,
-    Partenaire, FAQ, PageLegale, Devis, NewsletterSubscriber, SiteContact
+    Partenaire, FAQ, PageLegale, Devis, NewsletterSubscriber, SiteContact, PasswordResetCode
 )
 from .forms import (
     FormationForm, UserForm, InsertApropos,
@@ -57,6 +60,13 @@ def _require_roles(request, allowed_roles):
 def _forbidden(request):
     messages.error(request, "Accès refusé.")
     return redirect('connexion')
+
+
+def custom_404_view(request, exception=None):
+    """Custom 404 error handler with nice design."""
+    return render(request, '404.html', {
+        'request_path': request.path,
+    }, status=404)
 
 
 @login_required
@@ -4213,3 +4223,353 @@ def annuler_devis(request, devis_id):
         return redirect('profil')
     
     return render(request, 'dashboard/annuler_devis.html', {'devis': devis})
+
+
+# =============================================================================
+# PASSWORD RESET WITH VERIFICATION CODE
+# =============================================================================
+
+def password_reset_request(request):
+    """
+    Step 1: User enters email, system verifies user exists and sends code
+    """
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+        
+        # Validate email
+        if not email:
+            messages.error(request, 'Veuillez entrer une adresse email.')
+            return redirect('password_reset_request')
+        
+        # Check if user exists and is active
+        User = get_user_model()
+        try:
+            user = User.objects.get(email=email)
+            if not user.is_active:
+                messages.error(request, 'Ce compte est désactivé. Veuillez contacter l\'administrateur.')
+                return redirect('password_reset_request')
+        except User.DoesNotExist:
+            # For security, don't reveal if email exists or not
+            messages.success(request, 'Si cet email existe dans notre système, un code de réinitialisation a été envoyé.')
+            return redirect('password_reset_request')
+        
+        # Generate 6-digit code
+        code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+        
+        # Set expiration (15 minutes)
+        expires_at = timezone.now() + timedelta(minutes=15)
+        
+        # Create password reset code
+        reset_code = PasswordResetCode.objects.create(
+            user=user,
+            code=code,
+            expires_at=expires_at
+        )
+        
+        # Send email with code
+        try:
+            subject = 'Code de réinitialisation de mot de passe - Mupenda Company'
+            
+            # HTML email
+            html_message = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 10px;">
+                    <h2 style="color: #ff6700; text-align: center; margin-bottom: 30px;">Réinitialisation de mot de passe</h2>
+                    
+                    <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <p style="font-size: 16px; margin-bottom: 20px;">Bonjour <strong>{user.get_full_name() or user.username}</strong>,</p>
+                        
+                        <p style="font-size: 16px; margin-bottom: 20px;">
+                            Vous avez demandé à réinitialiser votre mot de passe. Voici votre code de vérification :
+                        </p>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <div style="display: inline-block; background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%); color: white; padding: 20px 40px; border-radius: 10px; font-size: 32px; font-weight: bold; letter-spacing: 8px; box-shadow: 0 4px 15px rgba(255, 103, 0, 0.3);">
+                                {code}
+                            </div>
+                        </div>
+                        
+                        <p style="font-size: 14px; color: #666; margin-top: 20px;">
+                            <strong>Important :</strong> Ce code expirera dans <strong>15 minutes</strong>.<br>
+                            Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet email.
+                        </p>
+                        
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+                        
+                        <p style="font-size: 12px; color: #999; text-align: center;">
+                            Mupenda Company - Solutions digitales innovantes<br>
+                            <a href="https://mupendacompany.com" style="color: #ff6700; text-decoration: none;">www.mupendacompany.com</a>
+                        </p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            # Plain text fallback
+            plain_message = f"""Bonjour {user.get_full_name() or user.username},
+
+Vous avez demandé à réinitialiser votre mot de passe. Voici votre code de vérification :
+
+CODE : {code}
+
+Ce code expirera dans 15 minutes.
+
+Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet email.
+
+Mupenda Company
+https://mupendacompany.com
+"""
+            
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+            
+            messages.success(request, 'Un code de vérification a été envoyé à votre adresse email.')
+            
+            # Store email in session for the next steps
+            request.session['reset_email'] = email
+            request.session['reset_code_sent'] = True
+            
+            return redirect('password_reset_verify')
+            
+        except Exception as e:
+            # Delete the code if email failed to send
+            reset_code.delete()
+            messages.error(request, f"Erreur lors de l'envoi de l'email : {str(e)}. Veuillez réessayer.")
+            return redirect('password_reset_request')
+    
+    return render(request, 'auth/password_reset_request.html')
+
+
+def password_reset_verify(request):
+    """
+    Step 2: User enters the verification code received by email
+    """
+    # Check if user has gone through step 1
+    if not request.session.get('reset_code_sent'):
+        messages.error(request, 'Veuillez d\'abord entrer votre adresse email.')
+        return redirect('password_reset_request')
+    
+    email = request.session.get('reset_email')
+    
+    if not email:
+        messages.error(request, 'Session invalide. Veuillez recommencer.')
+        return redirect('password_reset_request')
+    
+    if request.method == 'POST':
+        code = request.POST.get('code', '').strip()
+        
+        if not code or len(code) != 6 or not code.isdigit():
+            messages.error(request, 'Veuillez entrer un code valide de 6 chiffres.')
+            return redirect('password_reset_verify')
+        
+        # Verify the code
+        User = get_user_model()
+        try:
+            user = User.objects.get(email=email)
+            reset_code = PasswordResetCode.objects.filter(
+                user=user,
+                code=code,
+                is_used=False,
+                expires_at__gt=timezone.now()
+            ).first()
+            
+            if not reset_code:
+                messages.error(request, 'Code invalide ou expiré. Veuillez réessayer ou demander un nouveau code.')
+                return redirect('password_reset_verify')
+            
+            # Code is valid - mark as used and proceed to password reset
+            reset_code.is_used = True
+            reset_code.save()
+            
+            # Store verification success in session
+            request.session['reset_code_verified'] = True
+            request.session['reset_user_id'] = user.id
+            
+            messages.success(request, 'Code vérifié avec succès. Vous pouvez maintenant définir un nouveau mot de passe.')
+            return redirect('password_reset_new')
+            
+        except User.DoesNotExist:
+            messages.error(request, 'Utilisateur non trouvé.')
+            return redirect('password_reset_request')
+    
+    # Mask email for display (e.g., a***@gmail.com)
+    masked_email = mask_email(email)
+    
+    return render(request, 'auth/password_reset_verify.html', {
+        'masked_email': masked_email,
+        'email': email
+    })
+
+
+def password_reset_new(request):
+    """
+    Step 3: User enters new password
+    """
+    # Check if user has gone through step 2
+    if not request.session.get('reset_code_verified'):
+        messages.error(request, 'Veuillez d\'abord vérifier votre code.')
+        return redirect('password_reset_request')
+    
+    user_id = request.session.get('reset_user_id')
+    
+    if not user_id:
+        messages.error(request, 'Session invalide. Veuillez recommencer.')
+        return redirect('password_reset_request')
+    
+    User = get_user_model()
+    
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        messages.error(request, 'Utilisateur non trouvé.')
+        return redirect('password_reset_request')
+    
+    if request.method == 'POST':
+        password1 = request.POST.get('new_password1', '')
+        password2 = request.POST.get('new_password2', '')
+        
+        # Validation
+        if not password1 or not password2:
+            messages.error(request, 'Veuillez remplir tous les champs.')
+            return redirect('password_reset_new')
+        
+        if password1 != password2:
+            messages.error(request, 'Les mots de passe ne correspondent pas.')
+            return redirect('password_reset_new')
+        
+        if len(password1) < 8:
+            messages.error(request, 'Le mot de passe doit contenir au moins 8 caractères.')
+            return redirect('password_reset_new')
+        
+        # Set new password
+        user.set_password(password1)
+        user.save()
+        
+        # Clear session data
+        for key in ['reset_email', 'reset_code_sent', 'reset_code_verified', 'reset_user_id']:
+            if key in request.session:
+                del request.session[key]
+        
+        messages.success(request, 'Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.')
+        return redirect('connexion')
+    
+    return render(request, 'auth/password_reset_new.html', {
+        'user': user
+    })
+
+
+def password_reset_resend_code(request):
+    """
+    Resend verification code
+    """
+    email = request.session.get('reset_email')
+    
+    if not email:
+        messages.error(request, 'Session invalide. Veuillez recommencer.')
+        return redirect('password_reset_request')
+    
+    User = get_user_model()
+    
+    try:
+        user = User.objects.get(email=email)
+        
+        # Generate new code
+        code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+        expires_at = timezone.now() + timedelta(minutes=15)
+        
+        # Create new password reset code
+        reset_code = PasswordResetCode.objects.create(
+            user=user,
+            code=code,
+            expires_at=expires_at
+        )
+        
+        # Send email
+        try:
+            subject = 'Nouveau code de réinitialisation - Mupenda Company'
+            
+            html_message = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 10px;">
+                    <h2 style="color: #ff6700; text-align: center; margin-bottom: 30px;">Nouveau code de réinitialisation</h2>
+                    
+                    <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <p style="font-size: 16px; margin-bottom: 20px;">Bonjour <strong>{user.get_full_name() or user.username}</strong>,</p>
+                        
+                        <p style="font-size: 16px; margin-bottom: 20px;">
+                            Vous avez demandé un nouveau code. Voici votre code de vérification :
+                        </p>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <div style="display: inline-block; background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%); color: white; padding: 20px 40px; border-radius: 10px; font-size: 32px; font-weight: bold; letter-spacing: 8px; box-shadow: 0 4px 15px rgba(255, 103, 0, 0.3);">
+                                {code}
+                            </div>
+                        </div>
+                        
+                        <p style="font-size: 14px; color: #666; margin-top: 20px;">
+                            <strong>Important :</strong> Ce code expirera dans <strong>15 minutes</strong>.
+                        </p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            plain_message = f"""Bonjour {user.get_full_name() or user.username},
+
+Votre nouveau code de vérification est :
+
+CODE : {code}
+
+Ce code expirera dans 15 minutes.
+
+Mupenda Company
+"""
+            
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+            
+            messages.success(request, 'Un nouveau code a été envoyé à votre adresse email.')
+            
+        except Exception as e:
+            reset_code.delete()
+            messages.error(request, f"Erreur lors de l'envoi : {str(e)}")
+            
+    except User.DoesNotExist:
+        messages.error(request, 'Utilisateur non trouvé.')
+    
+    return redirect('password_reset_verify')
+
+
+def mask_email(email):
+    """
+    Mask email for display (e.g., a***@gmail.com)
+    """
+    if '@' not in email:
+        return email
+    
+    parts = email.split('@')
+    username = parts[0]
+    domain = parts[1]
+    
+    if len(username) <= 2:
+        masked_username = username[0] + '***'
+    else:
+        masked_username = username[0] + '***' + username[-1] if len(username) > 3 else username[0] + '***'
+    
+    return f"{masked_username}@{domain}"

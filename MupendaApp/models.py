@@ -239,6 +239,26 @@ class Projet(models.Model):
             return max(0, delta.days)
         return 0
 
+class PasswordResetCode(models.Model):
+    """Model to store password reset verification codes"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reset_codes')
+    code = models.CharField(max_length=6, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Code de réinitialisation"
+        verbose_name_plural = "Codes de réinitialisation"
+    
+    def __str__(self):
+        return f"Code pour {self.user.email} - {self.code}"
+    
+    def is_valid(self):
+        """Check if code is still valid (not expired and not used)"""
+        return not self.is_used and timezone.now() < self.expires_at
+
 class Tache(models.Model):
     """Modèle pour les tâches des projets"""
     STATUT_CHOICES = [

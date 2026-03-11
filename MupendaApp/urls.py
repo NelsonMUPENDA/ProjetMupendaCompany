@@ -33,19 +33,11 @@ urlpatterns=[
     path('blog/<slug:slug>/', views.BlogDetailView.as_view(), name="blog_detail"),
     path('formation/<slug:slug>/', views.FormationDetailView.as_view(), name="detail_formation"),
 
-    # RÉINITIALISATION DE MOT DE PASSE
-    path('password-reset/', 
-         auth_views.PasswordResetView.as_view(template_name='auth/password_reset.html'), 
-         name='password_reset'),
-    path('password-reset/done/', 
-         auth_views.PasswordResetDoneView.as_view(template_name='auth/password_reset_done.html'), 
-         name='password_reset_done'),
-    path('reset/<uidb64>/<token>/', 
-         auth_views.PasswordResetConfirmView.as_view(template_name='auth/password_reset_confirm.html'), 
-         name='password_reset_confirm'),
-    path('reset/done/', 
-         auth_views.PasswordResetCompleteView.as_view(template_name='auth/password_reset_complete.html'), 
-         name='password_reset_complete'),
+    # RÉINITIALISATION DE MOT DE PASSE - Système basé sur code
+    path('password-reset/', views.password_reset_request, name='password_reset'),
+    path('password-reset/verify/', views.password_reset_verify, name='password_reset_verify'),
+    path('password-reset/new-password/', views.password_reset_new, name='password_reset_new'),
+    path('password-reset/resend-code/', views.password_reset_resend_code, name='password_reset_resend_code'),
 
     # TABLEAUX DE BORD PAR RÔLE
     path('dashboard/super-admin/', views.super_admin_dashboard, name="super_admin_dashboard"),

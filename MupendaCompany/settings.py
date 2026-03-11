@@ -165,10 +165,15 @@ CKEDITOR_5_CONFIGS = {
 # Configuration pour l'upload d'images
 CKEDITOR_5_FILE_UPLOAD_HANDLER = "django_ckeditor_5.upload_handlers.FileSystemUploadHandler"
 CKEDITOR_5_UPLOAD_PATH = "ckeditor_5/uploads/"
-CKEDITOR_5_CONFIGS['default']['image'] = {
-    'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:alignCenter', 'imageStyle:alignRight'],
-    'styles': [
-        'full',
-        'side'
-    ]
-}
+# Configuration Email - Pour l'envoi des codes de réinitialisation de mot de passe
+# Vous devez configurer ces paramètres avec vos informations SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Modifiez selon votre fournisseur SMTP
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'votre-email@gmail.com'  # Remplacez par votre email
+EMAIL_HOST_PASSWORD = 'votre-mot-de-passe'  # Remplacez par votre mot de passe
+DEFAULT_FROM_EMAIL = 'Mupenda Company <noreply@mupendacompany.com>'
+
+# Pour le développement (emails affichés dans la console)
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

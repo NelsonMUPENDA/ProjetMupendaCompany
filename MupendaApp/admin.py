@@ -7,7 +7,7 @@ from .models import (CustomUser, Apropos, Equipement, Services, Post, Category, 
                     Departement, Projet, Tache, Notification, LogAction, 
                     AffectationCollaborateur, SuiviTemps,
                     Partenaire, FAQ, PageLegale, NewsletterSubscriber, NewsletterCampaign, Devis,
-                    SiteContact)
+                    SiteContact, PasswordResetCode)
 
 admin.site.site_header = "mupenda.cd | Administration"
 admin.site.site_title = "mupenda.cd"
@@ -400,3 +400,12 @@ admin.site.register(NewsletterSubscriber, NewsletterSubscriberAdmin)
 admin.site.register(NewsletterCampaign, NewsletterCampaignAdmin)
 admin.site.register(Devis, DevisAdmin)
 admin.site.register(SiteContact, SiteContactAdmin)
+
+# Enregistrement du modèle PasswordResetCode
+class PasswordResetCodeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'code', 'created_at', 'expires_at', 'is_used')
+    list_filter = ('is_used', 'created_at')
+    search_fields = ('user__email', 'user__username', 'code')
+    readonly_fields = ('code', 'created_at', 'expires_at')
+    
+admin.site.register(PasswordResetCode, PasswordResetCodeAdmin)

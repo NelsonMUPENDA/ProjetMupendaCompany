@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .error-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .error-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(255, 103, 0, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 103, 0, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .error-container {
+    text-align: center;
+    max-width: 600px;
+    z-index: 1;
+  }
+
+  .error-code {
+    font-size: clamp(8rem, 15vw, 12rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ff6700 0%, #ff8533 50%, #ffa500 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 1rem;
+    animation: pulse 2s ease-in-out infinite;
+    text-shadow: none;
+  }
+
+  @keyframes pulse {
+    0%, 100% { 
+      transform: scale(1);
+      filter: brightness(1);
+    }
+    50% { 
+      transform: scale(1.02);
+      filter: brightness(1.1);
+    }
+  }
+
+  .error-icon {
+    font-size: 4rem;
+    color: #ff6700;
+    margin-bottom: 1.5rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .error-title {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .error-message {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ff6700 0%, #ff8533 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 103, 0, 0.3);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 103, 0, 0.4);
+    color: white;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #ff6700;
+    color: #ff6700;
+  }
+
+  .error-illustration {
+    margin-bottom: 2rem;
+  }
+
+  .error-illustration svg {
+    width: 200px;
+    height: 200px;
+    filter: drop-shadow(0 10px 30px rgba(255, 103, 0, 0.3));
+  }
+
+  .error-details {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 103, 0, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .error-details p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .error-details code {
+    color: #ff6700;
+    background: rgba(255, 103, 0, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+  }
+</style>
+
+<section class="error-page">
+  <div class="error-container">
+    <div class="error-illustration">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="80" stroke="#ff6700" stroke-width="4" stroke-dasharray="10 5" opacity="0.5"/>
+        <circle cx="100" cy="85" r="35" fill="url(#grad1)" opacity="0.3"/>
+        <circle cx="85" cy="75" r="5" fill="#ff6700"/>
+        <circle cx="115" cy="75" r="5" fill="#ff6700"/>
+        <path d="M85 100 Q100 115 115 100" stroke="#ff6700" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <path d="M60 140 Q100 120 140 140" stroke="#ff6700" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <defs>
+          <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#ff6700;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ff8533;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    
+    <div class="error-code">404</div>
+    <h1 class="error-title">Page Non Trouvée</h1>
+    <p class="error-message">
+      Oups ! La page que vous recherchez semble avoir disparu dans le cyberespace. 
+      Elle a peut-être été déplacée, supprimée ou n'a jamais existé.
+    </p>
+    
+    <div class="error-actions">
+      <a href="{% url 'home' %}" class="btn-primary">
+        <i class="bi bi-house-door-fill"></i>
+        Retour à l'accueil
+      </a>
+      <a href="{% url 'contact' %}" class="btn-secondary">
+        <i class="bi bi-envelope-fill"></i>
+        Nous contacter
+      </a>
+    </div>
+
+    <div class="error-details">
+      <p>
+        <i class="bi bi-info-circle me-2"></i>
+        URL demandée : <code>{{ request_path }}</code>
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}
